@@ -7,6 +7,7 @@ import { TenantProvider } from "@/contexts/TenantContext";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import { SetupPage } from "./pages/SetupPage";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
@@ -22,6 +23,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/setup" element={<SetupPage />} />
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <DashboardPage />
