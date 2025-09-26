@@ -137,15 +137,15 @@ export const LoginPage = () => {
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-purple-600">Moyo:</span>
-                  <span className="text-muted-foreground">moyo@demo.com / demo123</span>
+                  <span className="text-muted-foreground">demo@moyo.com / demo123</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-green-600">Nutrisa:</span>
-                  <span className="text-muted-foreground">nutrisa@demo.com / demo123</span>
+                  <span className="text-muted-foreground">demo@nutrisa.com / demo123</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-orange-600">Crepas:</span>
-                  <span className="text-muted-foreground">crepas@demo.com / demo123</span>
+                  <span className="text-muted-foreground">demo@crepas.com / demo123</span>
                 </div>
               </div>
             </div>
