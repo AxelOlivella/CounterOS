@@ -133,19 +133,24 @@ export const LoginPage = () => {
 
             {/* Demo credentials */}
             <div className="mt-8 p-4 bg-muted rounded-lg">
-              <h4 className="font-medium text-sm mb-3 text-center">Credenciales de Demo</h4>
+              <h4 className="font-medium text-sm mb-3 text-center">Cuentas de Demo Disponibles</h4>
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-purple-600">Moyo:</span>
-                  <span className="text-muted-foreground">demo@moyo.com / demo123</span>
+                  <span className="text-muted-foreground">demo@moyo.com</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-green-600">Nutrisa:</span>
-                  <span className="text-muted-foreground">demo@nutrisa.com / demo123</span>
+                  <span className="text-muted-foreground">demo@nutrisa.com</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-orange-600">Crepas:</span>
-                  <span className="text-muted-foreground">demo@crepas.com / demo123</span>
+                  <span className="text-muted-foreground">demo@crepas.com</span>
+                </div>
+                <div className="mt-3 pt-3 border-t border-muted-foreground/20">
+                  <p className="text-center text-muted-foreground text-xs">
+                    Contacta al administrador para obtener las credenciales
+                  </p>
                 </div>
               </div>
             </div>
