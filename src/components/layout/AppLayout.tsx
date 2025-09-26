@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Sidebar } from './Sidebar';
 import { UploadPage } from '@/components/pages/UploadPage';
 import { FoodCostAnalysisPage } from '@/components/pages/FoodCostAnalysisPage';
+import { PnLReportsPage } from '@/components/pages/PnLReportsPage';
 import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
@@ -75,7 +76,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
           {currentPage === 'dashboard' && children}
           {currentPage === 'upload' && <UploadPage />}
           {currentPage === 'food-cost' && <FoodCostAnalysisPage />}
-          {currentPage === 'pnl' && <div className="p-8 text-center text-muted-foreground">Módulo P&L - Próximamente</div>}
+          {currentPage === 'pnl' && <PnLReportsPage />}
           {currentPage === 'stores' && <div className="p-8 text-center text-muted-foreground">Módulo de Tiendas - Próximamente</div>}
           {currentPage === 'reports' && <div className="p-8 text-center text-muted-foreground">Módulo de Reportes - Próximamente</div>}
           {currentPage === 'settings' && <div className="p-8 text-center text-muted-foreground">Configuración - Próximamente</div>}
