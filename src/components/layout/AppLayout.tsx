@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { useCounter } from '@/contexts/CounterContext';
 import { Button } from '@/components/ui/button';
 import { LogOut, Menu } from 'lucide-react';
@@ -7,11 +7,12 @@ import { Sidebar } from './Sidebar';
 import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export const AppLayout = ({ children }: AppLayoutProps) => {
   const { userProfile, tenant, signOut } = useCounter();
+  const [currentPage, setCurrentPage] = useState('dashboard');
 
   // Apply tenant theme
   const primaryColor = tenant?.theme?.primary || '#00C853';
@@ -25,7 +26,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
     >
       {/* Desktop Sidebar */}
       <div className="hidden md:flex">
-        <Sidebar className="w-64" />
+        <Sidebar className="w-64" currentPage={currentPage} onPageChange={setCurrentPage} />
       </div>
 
       {/* Mobile Layout */}
@@ -42,7 +43,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="p-0 w-64">
-                  <Sidebar />
+                  <Sidebar currentPage={currentPage} onPageChange={setCurrentPage} />
                 </SheetContent>
               </Sheet>
             </div>
@@ -69,7 +70,13 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
 
         {/* Main Content */}
         <main className="flex-1 p-6">
-          {children}
+          {currentPage === 'dashboard' && children}
+          {currentPage === 'upload' && <div className="p-8 text-center text-muted-foreground">Módulo de Subida de Datos - Próximamente</div>}
+          {currentPage === 'food-cost' && <div className="p-8 text-center text-muted-foreground">Módulo Food Cost - Próximamente</div>}
+          {currentPage === 'pnl' && <div className="p-8 text-center text-muted-foreground">Módulo P&L - Próximamente</div>}
+          {currentPage === 'stores' && <div className="p-8 text-center text-muted-foreground">Módulo de Tiendas - Próximamente</div>}
+          {currentPage === 'reports' && <div className="p-8 text-center text-muted-foreground">Módulo de Reportes - Próximamente</div>}
+          {currentPage === 'settings' && <div className="p-8 text-center text-muted-foreground">Configuración - Próximamente</div>}
         </main>
       </div>
     </div>

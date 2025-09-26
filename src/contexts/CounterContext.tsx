@@ -71,11 +71,15 @@ export const CounterProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const fetchUserData = async (userId: string) => {
     try {
-      // Fetch user profile
+      // Get user info from auth
+      const { data: authUser } = await supabase.auth.getUser();
+      if (!authUser?.user?.email) return;
+
+      // Fetch user profile by email (since auth.users.id won't match our users.id)
       const { data: profile, error: profileError } = await supabase
         .from('users')
         .select('*')
-        .eq('id', userId)
+        .eq('email', authUser.user.email)
         .single();
 
       if (profileError) {

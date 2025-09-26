@@ -11,10 +11,11 @@ import {
   Settings,
   Home
 } from 'lucide-react';
-import { useState } from 'react';
 
 interface SidebarProps {
   className?: string;
+  currentPage?: string;
+  onPageChange?: (page: string) => void;
 }
 
 const menuItems = [
@@ -27,9 +28,8 @@ const menuItems = [
   { id: 'settings', label: 'Configuración', icon: Settings },
 ];
 
-export const Sidebar = ({ className }: SidebarProps) => {
+export const Sidebar = ({ className, currentPage = 'dashboard', onPageChange }: SidebarProps) => {
   const { tenant } = useCounter();
-  const [currentPage, setCurrentPage] = useState('dashboard');
   
   const primaryColor = tenant?.theme?.primary || '#00C853';
 
@@ -62,7 +62,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
               style={{
                 backgroundColor: isActive ? primaryColor : undefined,
               }}
-              onClick={() => setCurrentPage(item.id)}
+              onClick={() => onPageChange?.(item.id)}
             >
               <Icon className="mr-3 h-4 w-4" />
               {item.label}

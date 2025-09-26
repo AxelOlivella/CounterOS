@@ -46,7 +46,7 @@ export const DashboardPage = () => {
 
       // Fetch today's sales
       const today = new Date().toISOString().split('T')[0];
-      const { data: sales, error: salesError } = await supabase
+      const { data: salesData, error: salesError } = await supabase
         .from('daily_sales')
         .select('net_sales')
         .eq('tenant_id', userProfile.tenant_id)
@@ -54,7 +54,42 @@ export const DashboardPage = () => {
 
       if (salesError) throw salesError;
 
-      const todaySales = sales?.reduce((sum, sale) => sum + (sale.net_sales || 0), 0) || 0;
+      const todaySales = salesData?.reduce((sum, sale) => sum + (sale.net_sales || 0), 0) || 0;
+
+      // Calculate food cost % (last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const { data: recentSales, error: recentSalesError } = await supabase
+        .from('daily_sales')
+        .select('net_sales')
+        .eq('tenant_id', userProfile.tenant_id)
+        .gte('date', thirtyDaysAgo.toISOString().split('T')[0]);
+
+      const { data: recentPurchases, error: recentPurchasesError } = await supabase
+        .from('purchases')
+        .select('total')
+        .eq('tenant_id', userProfile.tenant_id)
+        .gte('issue_date', thirtyDaysAgo.toISOString().split('T')[0]);
+
+      if (recentSalesError) throw recentSalesError;
+      if (recentPurchasesError) throw recentPurchasesError;
+
+      const totalSales30d = recentSales?.reduce((sum, sale) => sum + (sale.net_sales || 0), 0) || 1;
+      const totalPurchases30d = recentPurchases?.reduce((sum, purchase) => sum + (purchase.total || 0), 0) || 0;
+      const foodCostPercent = (totalPurchases30d / totalSales30d) * 100;
+
+      // Calculate labor cost % (last 30 days)
+      const { data: recentLabor, error: recentLaborError } = await supabase
+        .from('labor_costs')
+        .select('labor_cost')
+        .eq('tenant_id', userProfile.tenant_id)
+        .gte('date', thirtyDaysAgo.toISOString().split('T')[0]);
+
+      if (recentLaborError) throw recentLaborError;
+
+      const totalLabor30d = recentLabor?.reduce((sum, labor) => sum + (labor.labor_cost || 0), 0) || 0;
+      const laborPercent = (totalLabor30d / totalSales30d) * 100;
 
       // Fetch recent alerts
       const { data: alerts, error: alertsError } = await supabase
@@ -68,9 +103,9 @@ export const DashboardPage = () => {
 
       setData({
         todaySales,
-        foodCostPercent: 25.5, // Mock data - calculate from purchases/sales
-        laborPercent: 18.2, // Mock data - calculate from labor costs
-        ebitdaPercent: 15.8, // Mock data - calculate from P&L
+        foodCostPercent: Math.min(foodCostPercent, 100), // Cap at 100%
+        laborPercent: Math.min(laborPercent, 100), // Cap at 100%
+        ebitdaPercent: Math.max(15.8 - (foodCostPercent - 25) - (laborPercent - 18), 0), // Rough calculation
         storeCount: stores?.length || 0,
         alerts: alerts || []
       });
