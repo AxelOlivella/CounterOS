@@ -184,13 +184,34 @@ serve(async (req) => {
 
 async function parseAndValidateCFDI(xmlContent: string): Promise<CFDIData> {
   try {
-    // Parse XML using Deno's built-in XML parser
-    const decoder = new TextDecoder();
-    const xmlText = typeof xmlContent === 'string' ? xmlContent : decoder.decode(xmlContent);
+    const apiKey = Deno.env.get('CFDI_API_KEY');
+    if (!apiKey) {
+      throw new Error('CFDI_API_KEY not configured');
+    }
+
+    console.log('Calling external CFDI API for validation and parsing');
     
-    // For Deno, we need to use a different approach since DOMParser is not available
-    // We'll use regex-based parsing for basic CFDI extraction
-    const cfdiData = extractCFDIData(xmlText);
+    // Call external CFDI API (assuming Facturapi or similar service)
+    const response = await fetch('https://api.facturapi.io/v2/cfdi/parse', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/xml',
+      },
+      body: xmlContent
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('CFDI API error:', response.status, errorText);
+      throw new Error(`CFDI API failed: ${response.status} - ${errorText}`);
+    }
+
+    const apiResult = await response.json();
+    console.log('CFDI API response received:', apiResult.uuid || 'no UUID');
+    
+    // Transform API response to our CFDIData format
+    const cfdiData = transformApiResponseToCFDI(apiResult);
     
     return cfdiData;
 
@@ -201,95 +222,45 @@ async function parseAndValidateCFDI(xmlContent: string): Promise<CFDIData> {
   }
 }
 
-function extractCFDIData(xmlContent: string): CFDIData {
-  // Regex-based CFDI extraction for Deno environment
-  
-  // Extract Comprobante attributes
-  const comprobanteMatch = xmlContent.match(/<cfdi:Comprobante[^>]*>|<Comprobante[^>]*>/i);
-  if (!comprobanteMatch) {
-    throw new Error('No CFDI Comprobante element found');
-  }
-  
-  const comprobanteAttr = comprobanteMatch[0];
-  
-  // Extract Emisor attributes
-  const emisorMatch = xmlContent.match(/<cfdi:Emisor[^>]*\/>|<Emisor[^>]*\/>/i);
-  if (!emisorMatch) {
-    throw new Error('No Emisor information found');
-  }
-  
-  const emisorAttr = emisorMatch[0];
-  
-  // Extract TimbreFiscalDigital UUID
-  const timbreMatch = xmlContent.match(/<tfd:TimbreFiscalDigital[^>]*\/>|<TimbreFiscalDigital[^>]*\/>/i);
-  const timbreAttr = timbreMatch ? timbreMatch[0] : '';
-  
-  // Helper function to extract attribute value
-  const extractAttr = (text: string, attrName: string): string => {
-    const regex = new RegExp(`${attrName}=["']([^"']*)["']`, 'i');
-    const match = text.match(regex);
-    return match ? match[1] : '';
-  };
-  
-  const uuid = extractAttr(timbreAttr, 'UUID') || extractAttr(comprobanteAttr, 'UUID') || `TEMP-${Date.now()}`;
-  const supplierRfc = extractAttr(emisorAttr, 'Rfc') || extractAttr(emisorAttr, 'rfc');
-  const supplierName = extractAttr(emisorAttr, 'Nombre') || extractAttr(emisorAttr, 'nombre') || 'Proveedor desconocido';
-  const issueDate = extractAttr(comprobanteAttr, 'Fecha') || extractAttr(comprobanteAttr, 'fecha') || new Date().toISOString();
-  const subtotal = parseFloat(extractAttr(comprobanteAttr, 'SubTotal') || extractAttr(comprobanteAttr, 'subTotal') || '0');
-  const tax = parseFloat(extractAttr(comprobanteAttr, 'TotalImpuestos') || '0');
-  const total = parseFloat(extractAttr(comprobanteAttr, 'Total') || extractAttr(comprobanteAttr, 'total') || '0');
-  const currency = extractAttr(comprobanteAttr, 'Moneda') || 'MXN';
-  
-  // Validate required fields
-  if (!supplierRfc || !total || total <= 0) {
-    throw new Error('Invalid CFDI: missing critical data (RFC, total)');
-  }
-  
-  // Extract line items (Conceptos)
-  const conceptoRegex = /<cfdi:Concepto[^>]*\/>|<Concepto[^>]*\/>/gi;
-  const conceptoMatches = xmlContent.match(conceptoRegex) || [];
-  const items: CFDIItem[] = [];
-  
-  conceptoMatches.forEach((conceptoAttr, index) => {
-    const qty = parseFloat(extractAttr(conceptoAttr, 'Cantidad') || extractAttr(conceptoAttr, 'cantidad') || '0');
-    const unitPrice = parseFloat(extractAttr(conceptoAttr, 'ValorUnitario') || extractAttr(conceptoAttr, 'valorUnitario') || '0');
-    const lineTotal = parseFloat(extractAttr(conceptoAttr, 'Importe') || extractAttr(conceptoAttr, 'importe') || '0');
-    
-    if (qty > 0 && unitPrice >= 0 && lineTotal >= 0) {
-      const item: CFDIItem = {
-        sku: extractAttr(conceptoAttr, 'ClaveProdServ') || extractAttr(conceptoAttr, 'NoIdentificacion') || `ITEM-${index + 1}`,
-        description: extractAttr(conceptoAttr, 'Descripcion') || extractAttr(conceptoAttr, 'descripcion') || 'Producto sin descripción',
-        qty,
-        unit: extractAttr(conceptoAttr, 'ClaveUnidad') || extractAttr(conceptoAttr, 'Unidad') || 'PZA',
-        unit_price: unitPrice,
-        line_total: lineTotal,
-        category: 'ingrediente'
-      };
-      
-      items.push(item);
+function transformApiResponseToCFDI(apiResult: any): CFDIData {
+  // Transform the API response format to our CFDIData interface
+  const items: CFDIItem[] = apiResult.items?.map((item: any, index: number) => ({
+    sku: item.product?.product_key || `ITEM-${index + 1}`,
+    description: item.product?.description || 'Producto sin descripción',
+    qty: item.quantity || 0,
+    unit: item.product?.unit_key || 'PZA',
+    unit_price: item.product?.price || 0,
+    line_total: (item.quantity || 0) * (item.product?.price || 0),
+    category: categorizeCFDIItem(item.product?.description || '', item.product?.product_key || '')
+  })) || [];
+
+  // Calculate totals if not provided
+  let subtotal = 0;
+  let tax = 0;
+  let total = apiResult.total || 0;
+
+  if (items.length > 0) {
+    subtotal = items.reduce((sum, item) => sum + item.line_total, 0);
+    // Calculate tax based on items if available
+    if (apiResult.items?.[0]?.product?.taxes) {
+      const taxRate = apiResult.items[0].product.taxes[0]?.rate || 0.16;
+      tax = subtotal * taxRate;
     }
-  });
-  
-  if (items.length === 0) {
-    throw new Error('No valid line items found in CFDI');
   }
-  
-  const cfdiData: CFDIData = {
-    uuid,
-    supplier_rfc: supplierRfc,
-    supplier_name: supplierName,
-    issue_date: issueDate,
+
+  return {
+    uuid: apiResult.uuid || `TEMP-${Date.now()}`,
+    supplier_rfc: apiResult.issuer_info?.tax_id || 'RFC000000000',
+    supplier_name: apiResult.issuer_info?.legal_name || 'Proveedor desconocido',
+    issue_date: apiResult.stamp?.date || new Date().toISOString(),
     subtotal,
     tax,
     total,
-    currency,
-    payment_method: extractAttr(comprobanteAttr, 'MetodoPago') || extractAttr(comprobanteAttr, 'metodoPago'),
-    payment_conditions: extractAttr(comprobanteAttr, 'CondicionesDePago') || extractAttr(comprobanteAttr, 'condicionesDePago'),
+    currency: apiResult.currency || 'MXN',
+    payment_method: apiResult.payment_method,
+    payment_conditions: apiResult.payment_form,
     items
   };
-  
-  console.log(`CFDI parsed: UUID=${uuid}, Supplier=${supplierName}, Items=${items.length}`);
-  return cfdiData;
 }
 
 function categorizeCFDIItem(description: string, sku: string): string {
