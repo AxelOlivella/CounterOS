@@ -11,7 +11,7 @@ import {
   parseCSVSales, 
   parseCSVExpenses, 
   parseCSVInventory, 
-  parseXMLCFDI, 
+  parseJSONCFDI, 
   getFileKindFromName 
 } from '@/utils/fileProcessors';
 import { FileKind, ProcessingResult } from '@/types/upload';
@@ -197,7 +197,7 @@ export const FileProcessor = ({ files, onProcessingComplete, onRemoveFile }: Fil
           }
         }
       } else if (fileKind === 'xml_cfdi') {
-        // Use the new CFDI processing edge function
+        // XML files - Real CFDI invoices from suppliers (use Facturapi API)
         try {
           const response = await supabase.functions.invoke('process-cfdi', {
             body: {
@@ -225,6 +225,87 @@ export const FileProcessor = ({ files, onProcessingComplete, onRemoveFile }: Fil
         } catch (error) {
           console.error('CFDI processing error:', error);
           errors.push(`Error processing CFDI: ${error.message}`);
+        }
+      } else if (fileKind === 'json_cfdi') {
+        // JSON files - For testing and development (process directly)
+        const { data: cfdiData, errors: parseErrors } = parseJSONCFDI(content);
+        errors.push(...parseErrors);
+        
+        if (cfdiData && parseErrors.length === 0) {
+          // Check for duplicate UUID
+          const { data: existingPurchase } = await supabase
+            .from('purchases')
+            .select('id')
+            .eq('invoice_uuid', cfdiData.uuid)
+            .eq('tenant_id', userProfile.tenant_id)
+            .single();
+
+          if (existingPurchase) {
+            errors.push('Este CFDI ya existe en la base de datos');
+          } else {
+            // Get default store
+            const { data: stores } = await supabase
+              .from('stores')
+              .select('id')
+              .eq('tenant_id', userProfile.tenant_id)
+              .eq('is_active', true)
+              .limit(1);
+
+            if (!stores || stores.length === 0) {
+              errors.push('No active stores found');
+            } else {
+              // Insert purchase record
+              const { data: purchase, error: purchaseError } = await supabase
+                .from('purchases')
+                .insert({
+                  tenant_id: userProfile.tenant_id,
+                  store_id: stores[0].id,
+                  invoice_uuid: cfdiData.uuid,
+                  supplier_rfc: cfdiData.supplier_rfc,
+                  supplier_name: cfdiData.supplier_name,
+                  issue_date: cfdiData.issue_date.split('T')[0],
+                  subtotal: cfdiData.subtotal,
+                  tax: cfdiData.tax,
+                  total: cfdiData.total,
+                  xml_metadata: {
+                    processed_via_json: true,
+                    processed_at: new Date().toISOString(),
+                    items_count: cfdiData.items.length
+                  }
+                })
+                .select()
+                .single();
+
+              if (purchaseError) {
+                errors.push(`Failed to save purchase: ${purchaseError.message}`);
+              } else {
+                // Insert purchase items
+                const purchaseItems = cfdiData.items.map(item => ({
+                  tenant_id: userProfile.tenant_id,
+                  purchase_id: purchase.id,
+                  sku: item.sku,
+                  description: item.description.substring(0, 500),
+                  qty: item.qty,
+                  unit: item.unit,
+                  unit_price: item.unit_price,
+                  line_total: item.line_total,
+                  category: item.category
+                }));
+
+                const { error: itemsError } = await supabase
+                  .from('purchase_items')
+                  .insert(purchaseItems);
+
+                if (itemsError) {
+                  console.error('Error inserting purchase items:', itemsError);
+                  errors.push(`Error inserting items: ${itemsError.message}`);
+                } else {
+                  recordsProcessed = cfdiData.items.length;
+                  console.log(`JSON CFDI processed: ${cfdiData.items.length} items`);
+                }
+              }
+            }
+          }
         }
       }
 

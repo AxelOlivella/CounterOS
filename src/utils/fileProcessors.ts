@@ -356,6 +356,116 @@ export const parseCSVInventory = (csvContent: string): { records: InventoryRecor
   return { records, errors };
 };
 
+// Parse JSON CFDI directly (for testing/development)
+export const parseJSONCFDI = (jsonContent: string): { data: CFDIData | null, errors: string[] } => {
+  const errors: string[] = [];
+  
+  try {
+    const jsonData = JSON.parse(jsonContent);
+    
+    // Validate required fields
+    if (!jsonData.uuid) {
+      errors.push('Campo requerido: UUID');
+    }
+    
+    if (!jsonData.issuer_info?.tax_id) {
+      errors.push('Campo requerido: RFC del emisor');
+    }
+    
+    if (!jsonData.issuer_info?.legal_name) {
+      errors.push('Campo requerido: Nombre del emisor');
+    }
+    
+    if (!jsonData.total || jsonData.total <= 0) {
+      errors.push('El total debe ser mayor a 0');
+    }
+    
+    if (!jsonData.items || !Array.isArray(jsonData.items) || jsonData.items.length === 0) {
+      errors.push('Debe incluir al menos un item');
+    }
+    
+    if (errors.length > 0) {
+      return { data: null, errors };
+    }
+    
+    // Transform JSON structure to CFDIData
+    const items: Array<{
+      sku: string;
+      description: string;
+      qty: number;
+      unit: string;
+      unit_price: number;
+      line_total: number;
+      category: string;
+    }> = jsonData.items.map((item: any, index: number) => ({
+      sku: item.product?.product_key || `ITEM-${index + 1}`,
+      description: item.product?.description || 'Producto sin descripción',
+      qty: item.quantity || 0,
+      unit: item.product?.unit_key || 'PZA',
+      unit_price: item.product?.price || 0,
+      line_total: (item.quantity || 0) * (item.product?.price || 0),
+      category: categorizeCFDIItem(item.product?.description || '', item.product?.product_key || '')
+    }));
+    
+    const subtotal = items.reduce((sum, item) => sum + item.line_total, 0);
+    const tax = jsonData.items?.[0]?.product?.taxes?.[0]?.rate ? subtotal * jsonData.items[0].product.taxes[0].rate : subtotal * 0.16;
+    
+    const cfdiData: CFDIData = {
+      uuid: jsonData.uuid,
+      supplier_rfc: jsonData.issuer_info.tax_id,
+      supplier_name: jsonData.issuer_info.legal_name,
+      issue_date: jsonData.stamp?.date || new Date().toISOString(),
+      subtotal,
+      tax,
+      total: jsonData.total,
+      items
+    };
+    
+    return { data: cfdiData, errors: [] };
+    
+  } catch (error) {
+    errors.push(`Error parsing JSON: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return { data: null, errors };
+  }
+}
+
+// Helper function to categorize CFDI items
+function categorizeCFDIItem(description: string, sku: string): string {
+  const desc = description.toLowerCase();
+  const skuLower = sku.toLowerCase();
+  
+  // Food ingredients
+  if (desc.includes('harina') || desc.includes('azucar') || desc.includes('leche') || 
+      desc.includes('huevo') || desc.includes('mantequilla') || desc.includes('aceite') ||
+      desc.includes('sal') || desc.includes('polvo') || desc.includes('vainilla') ||
+      desc.includes('chocolate') || desc.includes('fruta') || desc.includes('carne') ||
+      desc.includes('pollo') || desc.includes('verdura') || desc.includes('vegetal')) {
+    return 'ingrediente';
+  }
+  
+  // Packaging
+  if (desc.includes('bolsa') || desc.includes('envase') || desc.includes('tapa') || 
+      desc.includes('vaso') || desc.includes('servilleta') || desc.includes('empaque') ||
+      desc.includes('caja') || desc.includes('papel')) {
+    return 'empaque';
+  }
+  
+  // Cleaning supplies
+  if (desc.includes('detergente') || desc.includes('jabon') || desc.includes('limpiador') ||
+      desc.includes('desinfectante') || desc.includes('cloro') || desc.includes('toalla')) {
+    return 'limpieza';
+  }
+  
+  // Equipment/maintenance
+  if (desc.includes('equipo') || desc.includes('maquina') || desc.includes('herramienta') ||
+      desc.includes('repuesto') || desc.includes('mantenimiento') || desc.includes('reparacion')) {
+    return 'equipo';
+  }
+  
+  // Default to ingredients for food businesses
+  return 'ingrediente';
+}
+
 export const parseXMLCFDI = (xmlContent: string): { data: CFDIData | null, errors: string[] } => {
   const errors: string[] = [];
   
@@ -425,6 +535,7 @@ export const getFileKindFromName = (filename: string): string => {
   if (name.includes('expenses') || name.includes('gastos')) return 'csv_expenses';
   if (name.includes('inventory') || name.includes('inventario')) return 'csv_inventory';
   if (name.endsWith('.xml')) return 'xml_cfdi';
+  if (name.endsWith('.json')) return 'json_cfdi';
   
   return 'csv_sales'; // Default
 };
@@ -442,7 +553,7 @@ export const validateFileSize = (file: File): string[] => {
 
 export const validateFileType = (file: File): string[] => {
   const errors: string[] = [];
-  const allowedTypes = ['.csv', '.xml'];
+  const allowedTypes = ['.csv', '.xml', '.json'];
   const fileName = file.name.toLowerCase();
   
   const isValidType = allowedTypes.some(type => fileName.endsWith(type));

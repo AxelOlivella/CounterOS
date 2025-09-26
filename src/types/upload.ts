@@ -10,7 +10,7 @@ export interface UploadFile {
   store_id?: string;
 }
 
-export type FileKind = 'csv_sales' | 'xml_cfdi' | 'csv_inventory' | 'csv_expenses';
+export type FileKind = 'csv_sales' | 'xml_cfdi' | 'json_cfdi' | 'csv_inventory' | 'csv_expenses';
 
 export interface SalesRecord {
   date: string;
