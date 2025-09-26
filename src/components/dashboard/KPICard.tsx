@@ -7,18 +7,22 @@ interface KPICardProps {
   title: string;
   value: string | number;
   change?: number;
+  changeType?: 'increase' | 'decrease' | 'neutral';
   format?: 'currency' | 'percentage' | 'number';
   variant?: 'default' | 'success' | 'warning' | 'danger';
   icon?: React.ReactNode;
+  subtitle?: string;
 }
 
 export const KPICard = ({
   title,
   value,
   change,
+  changeType = 'neutral',
   format = 'number',
   variant = 'default',
-  icon
+  icon,
+  subtitle
 }: KPICardProps) => {
   const formatValue = (val: string | number) => {
     const numVal = typeof val === 'string' ? parseFloat(val) : val;
@@ -40,12 +44,35 @@ export const KPICard = ({
 
   const getChangeIcon = () => {
     if (!change) return <Minus className="h-3 w-3" />;
-    if (change > 0) return <TrendingUp className="h-3 w-3" />;
-    return <TrendingDown className="h-3 w-3" />;
+    
+    // Use changeType if provided, otherwise infer from change value
+    const effectiveChangeType = changeType !== 'neutral' ? changeType : 
+      (change > 0 ? 'increase' : 'decrease');
+    
+    switch (effectiveChangeType) {
+      case 'increase':
+        return <TrendingUp className="h-3 w-3" />;
+      case 'decrease':
+        return <TrendingDown className="h-3 w-3" />;
+      default:
+        return <Minus className="h-3 w-3" />;
+    }
   };
 
   const getChangeVariant = () => {
     if (!change) return 'secondary';
+    
+    // For decrease in costs (good thing), show as positive
+    if (changeType === 'decrease' && (title.toLowerCase().includes('cost') || title.includes('%'))) {
+      return 'default';
+    }
+    
+    // For increase in sales/revenue (good thing), show as positive  
+    if (changeType === 'increase' && title.toLowerCase().includes('venta')) {
+      return 'default';
+    }
+    
+    // Default behavior
     if (change > 0) return 'default';
     return 'destructive';
   };
@@ -89,6 +116,11 @@ export const KPICard = ({
             </Badge>
           )}
         </div>
+        {subtitle && (
+          <p className="text-xs text-muted-foreground mt-2">
+            {subtitle}
+          </p>
+        )}
       </CardContent>
     </Card>
   );

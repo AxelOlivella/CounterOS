@@ -23,7 +23,7 @@ import { RevenueAnalysisChart } from '@/components/pnl/RevenueAnalysisChart';
 import { ExpenseBreakdownChart } from '@/components/pnl/ExpenseBreakdownChart';
 import { ProfitabilityTrendChart } from '@/components/pnl/ProfitabilityTrendChart';
 import { PnLTable } from '@/components/pnl/PnLTable';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { format, subDays, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 

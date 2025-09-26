@@ -11,7 +11,7 @@ import { KPICard } from '@/components/dashboard/KPICard';
 import { FoodCostTrendChart } from '@/components/food-cost/FoodCostTrendChart';
 import { CategoryBreakdownChart } from '@/components/food-cost/CategoryBreakdownChart';
 import { VarianceAnalysisChart } from '@/components/food-cost/VarianceAnalysisChart';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
 
 interface FoodCostData {
