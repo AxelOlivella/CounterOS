@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { LogOut, Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Sidebar } from './Sidebar';
+import { UploadPage } from '@/components/pages/UploadPage';
 import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
@@ -71,7 +72,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
         {/* Main Content */}
         <main className="flex-1 p-6">
           {currentPage === 'dashboard' && children}
-          {currentPage === 'upload' && <div className="p-8 text-center text-muted-foreground">Módulo de Subida de Datos - Próximamente</div>}
+          {currentPage === 'upload' && <UploadPage />}
           {currentPage === 'food-cost' && <div className="p-8 text-center text-muted-foreground">Módulo Food Cost - Próximamente</div>}
           {currentPage === 'pnl' && <div className="p-8 text-center text-muted-foreground">Módulo P&L - Próximamente</div>}
           {currentPage === 'stores' && <div className="p-8 text-center text-muted-foreground">Módulo de Tiendas - Próximamente</div>}
