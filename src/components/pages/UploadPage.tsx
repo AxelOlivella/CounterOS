@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Upload, FileText, HelpCircle, Download } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { UploadStats } from '@/components/upload/UploadStats';
 
 export const UploadPage = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -159,23 +160,7 @@ export const UploadPage = () => {
               </Card>
 
               {/* Quick Stats */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Estadísticas Rápidas</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-4 text-center">
-                    <div>
-                      <div className="text-2xl font-bold text-primary">0</div>
-                      <div className="text-sm text-muted-foreground">Archivos hoy</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold text-green-600">0</div>
-                      <div className="text-sm text-muted-foreground">Registros procesados</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <UploadStats />
             </div>
           </div>
         </TabsContent>

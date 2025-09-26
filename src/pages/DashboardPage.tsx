@@ -145,9 +145,16 @@ export const DashboardPage = () => {
         <div className="text-center py-16">
           <Upload className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
           <h2 className="text-2xl font-bold mb-4">Módulo de Upload</h2>
-          <p className="text-muted-foreground">
-            Funcionalidad de subida de datos próximamente
+          <p className="text-muted-foreground mb-6">
+            Funcionalidad de subida de datos integrada próximamente
           </p>
+          <Button 
+            onClick={() => window.open('/upload', '_blank')}
+            className="inline-flex items-center gap-2"
+          >
+            <Upload className="h-4 w-4" />
+            Abrir Upload en nueva ventana
+          </Button>
         </div>
       );
     }

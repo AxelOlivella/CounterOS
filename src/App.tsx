@@ -7,6 +7,7 @@ import { TenantProvider } from "@/contexts/TenantContext";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import { UploadPage } from "./components/pages/UploadPage";
 import { SetupPage } from "./pages/SetupPage";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -27,6 +28,11 @@ const App = () => (
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/upload" element={
+              <ProtectedRoute>
+                <UploadPage />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />

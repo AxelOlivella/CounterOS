@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useCounter } from '@/contexts/CounterContext';
+import { useTenant } from '@/contexts/TenantContext';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -31,7 +31,7 @@ interface FileProcessingState {
 }
 
 export const FileProcessor = ({ files, onProcessingComplete, onRemoveFile }: FileProcessorProps) => {
-  const { userProfile, tenant } = useCounter();
+  const { userProfile, tenant } = useTenant();
   const { toast } = useToast();
   const [processingStates, setProcessingStates] = useState<Record<number, FileProcessingState>>(
     Object.fromEntries(files.map((_, index) => [index, { status: 'pending', progress: 0 }]))
@@ -197,60 +197,34 @@ export const FileProcessor = ({ files, onProcessingComplete, onRemoveFile }: Fil
           }
         }
       } else if (fileKind === 'xml_cfdi') {
-        const { data: cfdiData, errors: parseErrors } = parseXMLCFDI(content);
-        errors.push(...parseErrors);
-
-        if (cfdiData && errors.length === 0) {
-          // For CFDI, we need to assign to a default store or ask user
-          const { data: stores } = await supabase
-            .from('stores')
-            .select('id')
-            .eq('tenant_id', userProfile.tenant_id)
-            .limit(1);
-
-          if (!stores || stores.length === 0) {
-            errors.push('No stores found for this tenant');
-          } else {
-            const storeId = stores[0].id;
-
-            const { error: insertError } = await supabase
-              .from('purchases')
-              .insert({
-                tenant_id: userProfile.tenant_id,
-                store_id: storeId,
-                invoice_uuid: cfdiData.uuid,
-                supplier_rfc: cfdiData.supplier_rfc,
-                supplier_name: cfdiData.supplier_name,
-                issue_date: cfdiData.issue_date.split('T')[0], // Extract date part
-                subtotal: cfdiData.subtotal,
-                tax: cfdiData.tax,
-                total: cfdiData.total,
-                xml_metadata: { version: '4.0', items_count: cfdiData.items.length }
-              });
-
-            if (insertError) {
-              errors.push(`Error inserting CFDI: ${insertError.message}`);
-            } else {
-              recordsProcessed = 1;
-
-              // Insert purchase items
-              for (const item of cfdiData.items) {
-                await supabase
-                  .from('purchase_items')
-                  .insert({
-                    tenant_id: userProfile.tenant_id,
-                    purchase_id: cfdiData.uuid, // This should be the actual purchase ID
-                    sku: item.sku,
-                    description: item.description,
-                    qty: item.qty,
-                    unit: item.unit,
-                    unit_price: item.unit_price,
-                    line_total: item.line_total,
-                    category: item.category
-                  });
-              }
+        // Use the new CFDI processing edge function
+        try {
+          const response = await supabase.functions.invoke('process-cfdi', {
+            body: {
+              xmlContent: content,
+              tenantId: userProfile.tenant_id
             }
+          });
+
+          if (response.error) {
+            throw new Error(response.error.message);
           }
+
+          const result = response.data;
+          
+          if (!result.success) {
+            if (result.duplicate) {
+              errors.push('Este CFDI ya existe en la base de datos');
+            } else {
+              errors.push(result.error || 'Error processing CFDI');
+            }
+          } else {
+            recordsProcessed = 1;
+            console.log(`CFDI processed successfully: ${result.data.itemsCount} items`);
+          }
+        } catch (error) {
+          console.error('CFDI processing error:', error);
+          errors.push(`Error processing CFDI: ${error.message}`);
         }
       }
 
