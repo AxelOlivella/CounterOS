@@ -1,0 +1,82 @@
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { useCounter } from '@/contexts/CounterContext';
+import {
+  BarChart3,
+  Upload,
+  DollarSign,
+  Store,
+  PieChart,
+  FileText,
+  Settings,
+  Home
+} from 'lucide-react';
+import { useState } from 'react';
+
+interface SidebarProps {
+  className?: string;
+}
+
+const menuItems = [
+  { id: 'dashboard', label: 'Dashboard', icon: Home },
+  { id: 'upload', label: 'Subir Datos', icon: Upload },
+  { id: 'food-cost', label: 'Food Cost', icon: PieChart },
+  { id: 'pnl', label: 'P&L', icon: BarChart3 },
+  { id: 'stores', label: 'Tiendas', icon: Store },
+  { id: 'reports', label: 'Reportes', icon: FileText },
+  { id: 'settings', label: 'Configuración', icon: Settings },
+];
+
+export const Sidebar = ({ className }: SidebarProps) => {
+  const { tenant } = useCounter();
+  const [currentPage, setCurrentPage] = useState('dashboard');
+  
+  const primaryColor = tenant?.theme?.primary || '#00C853';
+
+  return (
+    <div className={cn('flex h-screen flex-col border-r bg-card', className)}>
+      {/* Logo/Brand */}
+      <div className="flex h-16 items-center justify-center border-b">
+        <h2 
+          className="text-lg font-bold"
+          style={{ color: primaryColor }}
+        >
+          {tenant?.name || 'CounterOS'}
+        </h2>
+      </div>
+
+      {/* Navigation Menu */}
+      <nav className="flex-1 space-y-1 p-4">
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = currentPage === item.id;
+          
+          return (
+            <Button
+              key={item.id}
+              variant={isActive ? 'default' : 'ghost'}
+              className={cn(
+                'w-full justify-start',
+                isActive && 'text-white'
+              )}
+              style={{
+                backgroundColor: isActive ? primaryColor : undefined,
+              }}
+              onClick={() => setCurrentPage(item.id)}
+            >
+              <Icon className="mr-3 h-4 w-4" />
+              {item.label}
+            </Button>
+          );
+        })}
+      </nav>
+
+      {/* Footer */}
+      <div className="p-4 border-t">
+        <p className="text-xs text-muted-foreground text-center">
+          CounterOS v1.0
+        </p>
+      </div>
+    </div>
+  );
+};
