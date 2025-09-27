@@ -24,7 +24,7 @@ const secondaryCTA = {
 
 export const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-950 to-black text-zinc-100">
+    <div className="min-h-screen bg-background text-foreground">
       <Nav />
       <Hero />
       <LogoStrip />
@@ -42,17 +42,17 @@ export const LandingPage = () => {
 
 function Nav() {
   return (
-    <div className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/60 backdrop-blur">
+    <div className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-emerald-400" />
-          <span className="font-semibold tracking-tight">{productName}</span>
+          <Sparkles className="h-5 w-5 text-primary-dark" />
+          <span className="font-semibold tracking-tight text-foreground">{productName}</span>
         </div>
         <div className="hidden items-center gap-6 md:flex">
-          <a href="#funciona" className="text-sm text-zinc-300 hover:text-white">Cómo funciona</a>
-          <a href="#features" className="text-sm text-zinc-300 hover:text-white">Funciones</a>
-          <a href="#faq" className="text-sm text-zinc-300 hover:text-white">FAQ</a>
-          <a href="/login" className="text-sm text-zinc-300 hover:text-white">Iniciar sesión</a>
+          <a href="#funciona" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Cómo funciona</a>
+          <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Funciones</a>
+          <a href="#faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
+          <a href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Iniciar sesión</a>
           <Button asChild size="sm" className="gap-2">
             <a href={primaryCTA.href}>{primaryCTA.label} <ArrowRight className="h-4 w-4"/></a>
           </Button>
@@ -64,36 +64,36 @@ function Nav() {
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(700px_200px_at_50%_-20%,rgba(16,185,129,0.25),transparent)]"/>
+    <section className="relative overflow-hidden bg-gradient-subtle">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(700px_200px_at_50%_-20%,hsl(var(--primary-dark)/0.15),transparent)]"/>
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 py-20 md:grid-cols-2">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
-            Baja tu <span className="text-emerald-400">food cost</span> y obtén tu
-            <span className="text-emerald-400"> P&L automático</span> por tienda.
+          <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+            Baja tu <span className="text-primary-dark">food cost</span> y obtén tu
+            <span className="text-primary-dark"> P&L automático</span> por tienda.
           </h1>
-          <p className="mt-4 max-w-xl text-zinc-300">
-            {productName} convierte tus CFDIs y ventas en decisiones diarias: controla <span className="text-white">food cost y merma</span>, y genera <span className="text-white">P&L automático</span> por tienda sin hojas de cálculo.
+          <p className="mt-4 max-w-xl text-muted-foreground">
+            {productName} convierte tus CFDIs y ventas en decisiones diarias: controla <span className="text-foreground font-medium">food cost y merma</span>, y genera <span className="text-foreground font-medium">P&L automático</span> por tienda sin hojas de cálculo.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Button asChild size="lg" className="gap-2">
               <a href={primaryCTA.href}>{primaryCTA.label} <ArrowRight className="h-5 w-5"/></a>
             </Button>
-            <Button asChild size="lg" variant="secondary" className="bg-white/10 text-white hover:bg-white/20">
+            <Button asChild size="lg" variant="secondary">
               <a href={secondaryCTA.href}>{secondaryCTA.label}</a>
             </Button>
           </div>
-          <ul className="mt-6 grid max-w-xl grid-cols-1 gap-2 text-sm text-zinc-400 sm:grid-cols-2">
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400"/> Reduce 2–4 pts de food cost en 30–60 días*</li>
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400"/> P&L por tienda en un clic (cierra mes en horas, no semanas)</li>
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400"/> Merma visible por receta e insumo</li>
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400"/> Energía por ticket y nómina/ventas</li>
+          <ul className="mt-6 grid max-w-xl grid-cols-1 gap-2 text-sm text-muted-foreground sm:grid-cols-2">
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> Reduce 2–4 pts de food cost en 30–60 días*</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> P&L por tienda en un clic (cierra mes en horas, no semanas)</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> Merma visible por receta e insumo</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> Energía por ticket y nómina/ventas</li>
           </ul>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="relative">
-          <div className="aspect-[4/3] w-full rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-900 to-zinc-800 p-3 shadow-2xl">
-            <div className="h-full w-full rounded-2xl bg-[linear-gradient(120deg,rgba(16,185,129,0.2),transparent)] p-6">
-              <div className="mb-3 flex items-center justify-between text-xs text-zinc-400">
+          <div className="aspect-[4/3] w-full rounded-3xl border border-border bg-gradient-to-br from-card to-muted p-3 shadow-xl">
+            <div className="h-full w-full rounded-2xl bg-gradient-primary/10 p-6">
+              <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
                 <span>Demo • Portal Centro</span>
                 <span>Mar 2025</span>
               </div>
@@ -112,13 +112,13 @@ function Hero() {
 
 function Metric({ label, value, trend }: { label: string; value: string; trend: string }) {
   return (
-    <Card className="border-white/10 bg-zinc-900/60">
+    <Card className="border-border bg-card/80">
       <CardContent className="flex items-center justify-between p-5">
         <div>
-          <div className="text-xs uppercase tracking-wider text-zinc-400">{label}</div>
-          <div className="text-2xl font-semibold">{value}</div>
+          <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
+          <div className="text-2xl font-semibold text-foreground">{value}</div>
         </div>
-        <div className="flex items-center gap-2 text-emerald-400">
+        <div className="flex items-center gap-2 text-success">
           <TrendingUp className="h-5 w-5" />
           <span className="text-sm font-medium">{trend}</span>
         </div>
@@ -129,8 +129,8 @@ function Metric({ label, value, trend }: { label: string; value: string; trend: 
 
 function LogoStrip() {
   return (
-    <section className="border-y border-white/10 bg-zinc-950/60">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 items-center gap-6 px-6 py-8 opacity-80 md:grid-cols-5">
+    <section className="border-y border-border bg-muted/50">
+      <div className="mx-auto grid max-w-7xl grid-cols-2 items-center gap-6 px-6 py-8 md:grid-cols-5">
         {[
           "NutrisaOS",
           "MoyoOS",
@@ -138,7 +138,7 @@ function LogoStrip() {
           "SushiOS",
           "CoffeeOS",
         ].map((name) => (
-          <div key={name} className="text-center text-sm text-zinc-400">{name}</div>
+          <div key={name} className="text-center text-sm font-medium text-muted-foreground">{name}</div>
         ))}
       </div>
     </section>
@@ -150,20 +150,20 @@ function Problem() {
     <section className="mx-auto max-w-7xl px-6 py-16">
       <div className="grid gap-10 md:grid-cols-2">
         <div>
-          <h2 className="text-2xl font-semibold">El problema</h2>
-          <p className="mt-3 text-zinc-300">
-            El <span className="text-white">food cost</span> y la <span className="text-white">merma</span> se detectan tarde y el P&L llega semanas después: ya es muy tarde para corregir.
+          <h2 className="text-2xl font-semibold text-foreground">El problema</h2>
+          <p className="mt-3 text-muted-foreground">
+            El <span className="text-foreground font-medium">food cost</span> y la <span className="text-foreground font-medium">merma</span> se detectan tarde y el P&L llega semanas después: ya es muy tarde para corregir.
           </p>
-          <ul className="mt-4 space-y-2 text-sm text-zinc-400">
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400"/> -3% EBITDA por food cost mal controlado</li>
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400"/> -2% por mermas invisibles</li>
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400"/> Cierres de mes lentos y manuales</li>
+          <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-danger"/> -3% EBITDA por food cost mal controlado</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-danger"/> -2% por mermas invisibles</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-danger"/> Cierres de mes lentos y manuales</li>
           </ul>
         </div>
         <div>
-          <h2 className="text-2xl font-semibold">La solución</h2>
-          <p className="mt-3 text-zinc-300">
-            {productName} integra CFDIs + POS, calcula consumo teórico vs. real y entrega <span className="text-white">P&L automático</span>. Alertas de IA te avisan cuando el <span className="text-white">food cost</span> se sale de rango.
+          <h2 className="text-2xl font-semibold text-foreground">La solución</h2>
+          <p className="mt-3 text-muted-foreground">
+            {productName} integra CFDIs + POS, calcula consumo teórico vs. real y entrega <span className="text-foreground font-medium">P&L automático</span>. Alertas de IA te avisan cuando el <span className="text-foreground font-medium">food cost</span> se sale de rango.
           </p>
         </div>
       </div>
@@ -191,17 +191,17 @@ function HowItWorks() {
   ];
   return (
     <section id="funciona" className="mx-auto max-w-7xl px-6 py-12">
-      <h2 className="mb-6 text-center text-2xl font-semibold">Cómo funciona</h2>
+      <h2 className="mb-6 text-center text-2xl font-semibold text-foreground">Cómo funciona</h2>
       <div className="grid gap-6 md:grid-cols-3">
         {steps.map((s, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.05 }}>
-            <Card className="border-white/10 bg-zinc-900/60">
+            <Card className="border-border bg-card hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="mb-3 inline-flex rounded-full border border-white/10 bg-white/5 p-2 text-emerald-400">
+                <div className="mb-3 inline-flex rounded-full border border-border bg-primary-light p-2 text-primary-dark">
                   {s.icon}
                 </div>
-                <div className="text-lg font-medium">{s.title}</div>
-                <p className="mt-1 text-sm text-zinc-300">{s.desc}</p>
+                <div className="text-lg font-medium text-foreground">{s.title}</div>
+                <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -224,11 +224,11 @@ function Features() {
     <section id="features" className="mx-auto max-w-7xl px-6 py-16">
       <div className="grid gap-6 md:grid-cols-3">
         {items.map((f, i) => (
-          <Card key={i} className="border-white/10 bg-zinc-900/60">
+          <Card key={i} className="border-border bg-card hover:shadow-md transition-shadow">
             <CardContent className="p-6">
-              <div className="mb-3 inline-flex rounded-full border border-white/10 bg-white/5 p-2 text-emerald-400">{f.icon}</div>
-              <div className="text-lg font-semibold">{f.title}</div>
-              <p className="mt-1 text-sm text-zinc-300">{f.desc}</p>
+              <div className="mb-3 inline-flex rounded-full border border-border bg-primary-light p-2 text-primary-dark">{f.icon}</div>
+              <div className="text-lg font-semibold text-foreground">{f.title}</div>
+              <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
             </CardContent>
           </Card>
         ))}
@@ -239,14 +239,14 @@ function Features() {
 
 function Screenshots() {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-10" id="ejemplo">
-      <h2 className="mb-4 text-center text-2xl font-semibold">Ejemplo de P&L y KPIs</h2>
-      <p className="mx-auto mb-8 max-w-2xl text-center text-zinc-300">
+    <section className="mx-auto max-w-7xl px-6 py-10 bg-muted/30" id="ejemplo">
+      <h2 className="mb-4 text-center text-2xl font-semibold text-foreground">Ejemplo de P&L y KPIs</h2>
+      <p className="mx-auto mb-8 max-w-2xl text-center text-muted-foreground">
         Coloca aquí capturas reales de Metabase o del producto (P&L por tienda, food cost/merma, energía por ticket). Usa imágenes en /public y cámbialas cuando tengas screenshots.
       </p>
       <div className="grid gap-6 md:grid-cols-2">
         {[1,2,3,4].map((i) => (
-          <div key={i} className="aspect-[4/3] rounded-2xl border border-white/10 bg-zinc-900/60" />
+          <div key={i} className="aspect-[4/3] rounded-2xl border border-border bg-card shadow-sm" />
         ))}
       </div>
     </section>
@@ -256,22 +256,22 @@ function Screenshots() {
 function PricingCTA() {
   return (
     <section className="mx-auto max-w-5xl px-6 py-14">
-      <Card className="border-white/10 bg-emerald-500/10">
+      <Card className="border-border bg-gradient-success/10">
         <CardContent className="grid gap-6 p-8 md:grid-cols-2">
           <div>
-            <h3 className="text-xl font-semibold">ROI primero: paga solo si ahorras</h3>
-            <p className="mt-2 text-zinc-200">Piloto 30 días. Si no bajas food cost o no te entregamos P&L automático, no pagas. Luego desde $1,500 MXN/tienda/mes.</p>
-            <ul className="mt-4 space-y-2 text-sm text-zinc-200">
-              <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400"/> Reducción esperada: 2–4 pts de food cost</li>
-              <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400"/> P&L listo en horas, no semanas</li>
-              <li className="flex items-center gap-2"><Check className="h-4 w-4 text-emerald-400"/> Alertas de IA listas desde el día 1</li>
+            <h3 className="text-xl font-semibold text-foreground">ROI primero: paga solo si ahorras</h3>
+            <p className="mt-2 text-muted-foreground">Piloto 30 días. Si no bajas food cost o no te entregamos P&L automático, no pagas. Luego desde $1,500 MXN/tienda/mes.</p>
+            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> Reducción esperada: 2–4 pts de food cost</li>
+              <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> P&L listo en horas, no semanas</li>
+              <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> Alertas de IA listas desde el día 1</li>
             </ul>
           </div>
           <div className="flex flex-col items-start justify-center gap-3 md:items-end">
             <div className="w-full max-w-sm">
               <Input 
                 placeholder="tu@empresa.com" 
-                className="bg-white/5"
+                className="bg-background"
                 type="email"
                 onChange={(e) => console.log('Email subscription:', e.target.value)}
               />
@@ -304,10 +304,10 @@ function Testimonials() {
             author: "Director – Cadena Casual",
           },
         ].map((t, i) => (
-          <Card key={i} className="border-white/10 bg-zinc-900/60">
+          <Card key={i} className="border-border bg-card hover:shadow-md transition-shadow">
             <CardContent className="p-6">
-              <p className="text-zinc-200">"{t.quote}"</p>
-              <div className="mt-3 text-sm text-zinc-400">{t.author}</div>
+              <p className="text-foreground">"{t.quote}"</p>
+              <div className="mt-3 text-sm text-muted-foreground">{t.author}</div>
             </CardContent>
           </Card>
         ))}
@@ -336,14 +336,14 @@ function FAQ() {
     },
   ];
   return (
-    <section id="faq" className="mx-auto max-w-5xl px-6 py-14">
-      <h2 className="mb-6 text-center text-2xl font-semibold">Preguntas frecuentes</h2>
+    <section id="faq" className="mx-auto max-w-5xl px-6 py-14 bg-muted/30">
+      <h2 className="mb-6 text-center text-2xl font-semibold text-foreground">Preguntas frecuentes</h2>
       <div className="space-y-4">
         {faqs.map((f, i) => (
-          <Card key={i} className="border-white/10 bg-zinc-900/60">
+          <Card key={i} className="border-border bg-card hover:shadow-md transition-shadow">
             <CardContent className="p-6">
-              <div className="font-medium">{f.q}</div>
-              <p className="mt-1 text-zinc-300">{f.a.replace("{productName}", productName)}</p>
+              <div className="font-medium text-foreground">{f.q}</div>
+              <p className="mt-1 text-muted-foreground">{f.a.replace("{productName}", productName)}</p>
             </CardContent>
           </Card>
         ))}
@@ -354,13 +354,13 @@ function FAQ() {
 
 function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-black/60">
+    <footer className="border-t border-border bg-muted/50">
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-6 md:flex-row">
-        <div className="flex items-center gap-2 text-sm text-zinc-400">
-          <Sparkles className="h-4 w-4 text-emerald-400"/>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Sparkles className="h-4 w-4 text-primary-dark"/>
           <span>{productName} • Inteligencia Operativa para Cadenas</span>
         </div>
-        <div className="text-xs text-zinc-500">© {new Date().getFullYear()} {productName}. Todos los derechos reservados.</div>
+        <div className="text-xs text-muted-foreground">© {new Date().getFullYear()} {productName}. Todos los derechos reservados.</div>
       </div>
     </footer>
   );
