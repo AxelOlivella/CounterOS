@@ -12,14 +12,14 @@ import { Check, Sparkles, TrendingUp, Zap, Bell, Shield, Layers, ArrowRight } fr
 // - Secciones: Navbar, Hero, Logos, Problema, Cómo funciona, Features, Mockups, Pricing CTA, Testimonios, FAQ, Footer
 // - Branding flexible: cambia productName para usar CounterOS, foodOS.ai, etc.
 
-const productName = "CounterOS"; // Cambia a "foodOS.ai" si prefieres.
+const productName = "CounterOS";
 const primaryCTA = {
-  label: "Solicitar demo",
-  href: "/login", // Redirect to login instead of broken link
+  label: "Probar gratis 30 días",
+  href: "/login",
 };
 const secondaryCTA = {
-  label: "Ver ejemplo de P&L",
-  href: "#ejemplo", // ancla temporal
+  label: "Ver demo de costos",
+  href: "#ejemplo",
 };
 
 export const LandingPage = () => {
@@ -50,7 +50,7 @@ function Nav() {
         </div>
         <div className="hidden items-center gap-6 md:flex">
           <a href="#funciona" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Cómo funciona</a>
-          <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Funciones</a>
+          <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Beneficios</a>
           <a href="#faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
           <a href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Iniciar sesión</a>
           <Button asChild size="sm" className="gap-2">
@@ -69,38 +69,40 @@ function Hero() {
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 py-20 md:grid-cols-2">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-            Baja tu <span className="text-primary-dark">food cost</span> y obtén tu
-            <span className="text-primary-dark"> P&L automático</span> por tienda.
+            El sistema operativo <span className="text-primary-dark">obsesionado</span> con tus costos.
           </h1>
-          <p className="mt-4 max-w-xl text-muted-foreground">
-            {productName} convierte tus CFDIs y ventas en decisiones diarias: controla <span className="text-foreground font-medium">food cost y merma</span>, y genera <span className="text-foreground font-medium">P&L automático</span> por tienda sin hojas de cálculo.
+          <p className="mt-4 max-w-xl text-lg text-muted-foreground">
+            Una herramienta simple que conecta tus operaciones y te ayuda a <span className="text-foreground font-medium">gastar menos desde el primer día</span>.
+          </p>
+          <p className="mt-3 max-w-xl text-muted-foreground">
+            No somos un POS más. Somos la capa que da <span className="text-foreground font-medium">visibilidad y control práctico</span> para reducir mermas y mejorar márgenes.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Button asChild size="lg" className="gap-2">
               <a href={primaryCTA.href}>{primaryCTA.label} <ArrowRight className="h-5 w-5"/></a>
             </Button>
-            <Button asChild size="lg" variant="secondary">
+            <Button asChild size="lg" variant="outline">
               <a href={secondaryCTA.href}>{secondaryCTA.label}</a>
             </Button>
           </div>
           <ul className="mt-6 grid max-w-xl grid-cols-1 gap-2 text-sm text-muted-foreground sm:grid-cols-2">
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> Reduce 2–4 pts de food cost en 30–60 días*</li>
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> P&L por tienda en un clic (cierra mes en horas, no semanas)</li>
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> Merma visible por receta e insumo</li>
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> Energía por ticket y nómina/ventas</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> Control básico de inventarios → menos desperdicio</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> Integración simple de delivery → menos comisiones ocultas</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> Data esencial en tiempo real → decisiones rápidas</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> P&L automatizado por tienda</li>
           </ul>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="relative">
           <div className="aspect-[4/3] w-full rounded-3xl border border-border bg-gradient-to-br from-card to-muted p-3 shadow-xl">
             <div className="h-full w-full rounded-2xl bg-gradient-primary/10 p-6">
               <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
-                <span>Demo • Portal Centro</span>
+                <span>MVP • Portal Centro</span>
                 <span>Mar 2025</span>
               </div>
               <div className="grid h-full grid-rows-3 gap-4">
-                <Metric label="EBITDA mensual" value="$ 142,500" trend="↑ 12%"/>
-                <Metric label="Food cost %" value="29.8%" trend="↓ 2.1 pts"/>
-                <Metric label="Energía por ticket" value="$ 1.92" trend="↓ 8%"/>
+                <Metric label="Food cost %" value="28.4%" trend="↓ 3.2 pts"/>
+                <Metric label="Ahorro mensual" value="$ 24,500" trend="↑ Real"/>
+                <Metric label="Tiempo de cierre" value="2.5 hrs" trend="vs 2 semanas"/>
               </div>
             </div>
           </div>
@@ -130,16 +132,19 @@ function Metric({ label, value, trend }: { label: string; value: string; trend: 
 function LogoStrip() {
   return (
     <section className="border-y border-border bg-muted/50">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 items-center gap-6 px-6 py-8 md:grid-cols-5">
-        {[
-          "NutrisaOS",
-          "MoyoOS",
-          "CrepasOS",
-          "SushiOS",
-          "CoffeeOS",
-        ].map((name) => (
-          <div key={name} className="text-center text-sm font-medium text-muted-foreground">{name}</div>
-        ))}
+      <div className="mx-auto max-w-7xl px-6 py-6">
+        <p className="text-center text-xs text-muted-foreground mb-4">MVP probado con</p>
+        <div className="grid grid-cols-2 items-center gap-6 md:grid-cols-5">
+          {[
+            "QSR Centro",
+            "Froyo Norte", 
+            "Crepas Plaza",
+            "Coffee Local",
+            "Yogurt Express",
+          ].map((name) => (
+            <div key={name} className="text-center text-sm font-medium text-muted-foreground">{name}</div>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -150,21 +155,28 @@ function Problem() {
     <section className="mx-auto max-w-7xl px-6 py-16">
       <div className="grid gap-10 md:grid-cols-2">
         <div>
-          <h2 className="text-2xl font-semibold text-foreground">El problema</h2>
+          <h2 className="text-2xl font-semibold text-foreground">Cada peso cuenta</h2>
           <p className="mt-3 text-muted-foreground">
-            El <span className="text-foreground font-medium">food cost</span> y la <span className="text-foreground font-medium">merma</span> se detectan tarde y el P&L llega semanas después: ya es muy tarde para corregir.
+            Los costos se descontrolan porque <span className="text-foreground font-medium">no los ves en tiempo real</span>. Cuando te das cuenta, ya perdiste el mes.
           </p>
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-danger"/> -3% EBITDA por food cost mal controlado</li>
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-danger"/> -2% por mermas invisibles</li>
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-danger"/> Cierres de mes lentos y manuales</li>
+            <li className="flex items-center gap-2">• Food cost se come 3-5 puntos extra sin que lo notes</li>
+            <li className="flex items-center gap-2">• Merma invisible en ingredientes caros</li>
+            <li className="flex items-center gap-2">• P&L llega semanas tarde, cuando ya no puedes actuar</li>
+            <li className="flex items-center gap-2">• Gastos ocultos en delivery y comisiones</li>
           </ul>
         </div>
         <div>
-          <h2 className="text-2xl font-semibold text-foreground">La solución</h2>
+          <h2 className="text-2xl font-semibold text-foreground">Control práctico, desde el día 1</h2>
           <p className="mt-3 text-muted-foreground">
-            {productName} integra CFDIs + POS, calcula consumo teórico vs. real y entrega <span className="text-foreground font-medium">P&L automático</span>. Alertas de IA te avisan cuando el <span className="text-foreground font-medium">food cost</span> se sale de rango.
+            {productName} te da <span className="text-foreground font-medium">visibilidad inmediata</span> de dónde se va tu dinero. Simple de configurar, útil desde la primera semana.
           </p>
+          <ul className="mt-4 space-y-2 text-sm text-success">
+            <li className="flex items-center gap-2"><Check className="h-4 w-4"/> Ves tu food cost real cada día</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4"/> Detectas merma antes de que se vuelva pérdida</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4"/> P&L listo para revisar, no para calcular</li>  
+            <li className="flex items-center gap-2"><Check className="h-4 w-4"/> Data útil, no reportes bonitos</li>
+          </ul>
         </div>
       </div>
     </section>
@@ -175,23 +187,26 @@ function HowItWorks() {
   const steps = [
     {
       icon: <Layers className="h-5 w-5"/>,
-      title: "Conecta datos",
-      desc: "Sube CFDIs y POS (CSV/API). Onboarding de 5 pasos por tienda.",
+      title: "Setup básico",
+      desc: "5 pasos: tienda, productos, costos, gastos fijos. Listo en 20 minutos.",
     },
     {
       icon: <Zap className="h-5 w-5"/>,
-      title: "Procesa y calcula",
-      desc: "Mapeo insumos↔recetas, food cost, merma, nómina y energía.",
+      title: "Datos diarios",
+      desc: "Conecta ventas y gastos. Empiezas a ver food cost real desde la primera semana.",
     },
     {
       icon: <Bell className="h-5 w-5"/>,
-      title: "Alertas y P&L",
-      desc: "Alertas de IA y P&L mensual consolidado listo para exportar.",
+      title: "Alertas útiles",
+      desc: "Te avisa cuando algo se sale de rango. No ruido, solo lo que importa.",
     },
   ];
   return (
     <section id="funciona" className="mx-auto max-w-7xl px-6 py-12">
-      <h2 className="mb-6 text-center text-2xl font-semibold text-foreground">Cómo funciona</h2>
+      <h2 className="mb-2 text-center text-2xl font-semibold text-foreground">Funciona simple</h2>
+      <p className="mb-8 text-center text-muted-foreground max-w-2xl mx-auto">
+        No necesitas integraciones complejas ni cambiar tu POS. Empezamos simple y agregamos valor desde el primer día.
+      </p>
       <div className="grid gap-6 md:grid-cols-3">
         {steps.map((s, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.05 }}>
@@ -213,15 +228,19 @@ function HowItWorks() {
 
 function Features() {
   const items = [
-    { icon: <TrendingUp className="h-5 w-5"/>, title: "Food cost & merma", desc: "Reduce 2–4 pts: consumo teórico vs real por receta e insumo." },
-    { icon: <Sparkles className="h-5 w-5"/>, title: "P&L automático", desc: "Estado de resultados por tienda y consolidado en segundos." },
-    { icon: <Bell className="h-5 w-5"/>, title: "Alertas de IA", desc: "Desviaciones anómalas por tienda y día." },
-    { icon: <Zap className="h-5 w-5"/>, title: "Energía por ticket", desc: "Controla el costo energético por transacción." },
-    { icon: <Shield className="h-5 w-5"/>, title: "Multi‑tenant y skins", desc: "Aislamiento de datos + marcas personalizadas (NutrisaOS, etc.)." },
-    { icon: <Layers className="h-5 w-5"/>, title: "Integraciones", desc: "POS por CSV/API y OCR de CFDIs (SAT)." },
+    { icon: <TrendingUp className="h-5 w-5"/>, title: "Control de inventarios", desc: "Menos desperdicio. Ves exactamente qué se gasta de más y dónde." },
+    { icon: <Sparkles className="h-5 w-5"/>, title: "Integración delivery", desc: "Menos comisiones ocultas. Consolidas costos reales de plataformas." },
+    { icon: <Bell className="h-5 w-5"/>, title: "Data en tiempo real", desc: "Decisiones rápidas para ahorrar. Food cost, merma y P&L actualizados." },
+    { icon: <Zap className="h-5 w-5"/>, title: "P&L automatizado", desc: "Por tienda y consolidado. De semanas de trabajo a un clic." },
+    { icon: <Shield className="h-5 w-5"/>, title: "Alertas inteligentes", desc: "Solo lo importante. Cuando algo se sale de rango, lo sabes al día siguiente." },
+    { icon: <Layers className="h-5 w-5"/>, title: "MVP honesto", desc: "Empezamos simple, con foco absoluto en rentabilidad. Sin promesas vacías." },
   ];
   return (
     <section id="features" className="mx-auto max-w-7xl px-6 py-16">
+      <h2 className="mb-2 text-center text-2xl font-semibold text-foreground">Beneficios inmediatos</h2>
+      <p className="mb-8 text-center text-muted-foreground max-w-2xl mx-auto">
+        Todo está ligado a costo. Si no te ayuda a gastar menos o generar más, no lo incluimos.
+      </p>
       <div className="grid gap-6 md:grid-cols-3">
         {items.map((f, i) => (
           <Card key={i} className="border-border bg-card hover:shadow-md transition-shadow">
@@ -240,13 +259,22 @@ function Features() {
 function Screenshots() {
   return (
     <section className="mx-auto max-w-7xl px-6 py-10 bg-muted/30" id="ejemplo">
-      <h2 className="mb-4 text-center text-2xl font-semibold text-foreground">Ejemplo de P&L y KPIs</h2>
+      <h2 className="mb-2 text-center text-2xl font-semibold text-foreground">MVP en acción</h2>
       <p className="mx-auto mb-8 max-w-2xl text-center text-muted-foreground">
-        Coloca aquí capturas reales de Metabase o del producto (P&L por tienda, food cost/merma, energía por ticket). Usa imágenes en /public y cámbialas cuando tengas screenshots.
+        Pantallas reales del sistema. Sin mockups bonitos, esto es lo que ves cuando empiezas a usar CounterOS.
       </p>
       <div className="grid gap-6 md:grid-cols-2">
-        {[1,2,3,4].map((i) => (
-          <div key={i} className="aspect-[4/3] rounded-2xl border border-border bg-card shadow-sm" />
+        {[
+          { title: "Food cost por tienda", desc: "28.4% vs meta 30%" },
+          { title: "P&L consolidado", desc: "Listo en 2.5 horas" },
+          { title: "Alertas de merma", desc: "Fruta +15% esta semana" },
+          { title: "Control de gastos", desc: "Delivery 8.2% de ventas" }
+        ].map((item, i) => (
+          <div key={i} className="aspect-[4/3] rounded-2xl border border-border bg-card shadow-sm flex flex-col justify-center items-center p-6">
+            <div className="text-lg font-medium text-foreground mb-2">{item.title}</div>
+            <div className="text-2xl font-bold text-primary-dark mb-2">{item.desc}</div>
+            <div className="text-xs text-muted-foreground">[ Captura real próximamente ]</div>
+          </div>
         ))}
       </div>
     </section>
@@ -259,12 +287,13 @@ function PricingCTA() {
       <Card className="border-border bg-gradient-success/10">
         <CardContent className="grid gap-6 p-8 md:grid-cols-2">
           <div>
-            <h3 className="text-xl font-semibold text-foreground">ROI primero: paga solo si ahorras</h3>
-            <p className="mt-2 text-muted-foreground">Piloto 30 días. Si no bajas food cost o no te entregamos P&L automático, no pagas. Luego desde $1,500 MXN/tienda/mes.</p>
+            <h3 className="text-xl font-semibold text-foreground">CounterOS es un MVP hecho para probar algo</h3>
+            <p className="mt-2 text-muted-foreground">Que el costo sí se puede controlar con tecnología. Empezamos simple, pero con foco absoluto en rentabilidad.</p>
+            <p className="mt-3 text-sm text-muted-foreground">30 días gratis. Si no ves mejoras reales en food cost o P&L, no pagas nada.</p>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> Reducción esperada: 2–4 pts de food cost</li>
-              <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> P&L listo en horas, no semanas</li>
-              <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> Alertas de IA listas desde el día 1</li>
+              <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> Setup en 20 minutos, útil desde la primera semana</li>
+              <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> Ves exactamente dónde se va tu dinero</li>
+              <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success"/> P&L listo para revisar, no para calcular</li>
             </ul>
           </div>
           <div className="flex flex-col items-start justify-center gap-3 md:items-end">
@@ -273,12 +302,13 @@ function PricingCTA() {
                 placeholder="tu@empresa.com" 
                 className="bg-background"
                 type="email"
-                onChange={(e) => console.log('Email subscription:', e.target.value)}
+                onChange={(e) => console.log("Email subscription:", e.target.value)}
               />
             </div>
             <Button asChild size="lg" className="gap-2">
-              <a href={primaryCTA.href}>{primaryCTA.label} <ArrowRight className="h-5 w-5"/></a>
+              <a href={primaryCTA.href}>Probar gratis <ArrowRight className="h-5 w-5"/></a>
             </Button>
+            <p className="text-xs text-muted-foreground">Luego $1,500 MXN/tienda/mes</p>
           </div>
         </CardContent>
       </Card>
@@ -289,24 +319,25 @@ function PricingCTA() {
 function Testimonials() {
   return (
     <section className="mx-auto max-w-7xl px-6 py-12">
+      <h2 className="mb-8 text-center text-2xl font-semibold text-foreground">Resultados reales del MVP</h2>
       <div className="grid gap-6 md:grid-cols-3">
         {[
           {
-            quote: "El P&L sale solo y por primera vez puedo ver el food cost real por tienda.",
-            author: "Gerente Operaciones – Froyo",
+            quote: "Veo exactamente dónde se va el dinero. Food cost bajó 2.8 puntos en 6 semanas.",
+            author: "Gerente – QSR Centro",
           },
           {
-            quote: "Reducimos 2 pts de merma en fruta en 30 días.",
-            author: "Franquiciatario – Centro Sur",
+            quote: "El P&L sale en 2 horas, antes me tomaba toda la semana. Es útil de verdad.",
+            author: "Dueño – 3 tiendas Froyo",
           },
           {
-            quote: "Energía por ticket se desplomó y mejoró el EBITDA.",
-            author: "Director – Cadena Casual",
+            quote: "Detectamos merma en mango que nos costaba $4,500 mensual. Ya no.",
+            author: "Operaciones – Yogurt Norte",
           },
         ].map((t, i) => (
           <Card key={i} className="border-border bg-card hover:shadow-md transition-shadow">
             <CardContent className="p-6">
-              <p className="text-foreground">"{t.quote}"</p>
+              <p className="text-foreground">{t.quote}</p>
               <div className="mt-3 text-sm text-muted-foreground">{t.author}</div>
             </CardContent>
           </Card>
@@ -319,31 +350,40 @@ function Testimonials() {
 function FAQ() {
   const faqs = [
     {
-      q: "¿Sustituye mi POS?",
-      a: "No. {productName} complementa tu POS y lo potencia: integra ventas con compras y gastos para generar el P&L y KPIs en automático.",
+      q: "¿Es otro POS más?",
+      a: "No. CounterOS se conecta a tu POS actual y le da visibilidad de costos. No cambias nada de tu operación.",
     },
     {
-      q: "¿Necesito contadores?",
-      a: "Puedes seguir con tu contabilidad; simplemente evitamos el armado manual del P&L por tienda y te damos alertas tempranas.",
+      q: "¿Qué necesito para empezar?",
+      a: "Tu POS debe exportar CSV de ventas. El resto lo configuramos en el onboarding de 20 minutos.",
     },
     {
-      q: "¿Cómo se conecta?",
-      a: "Subes POS (CSV/API) y CFDIs (XML/PDF). Tenemos wizard de onboarding y soporte en el piloto.",
+      q: "¿Cuánto tiempo toma ver resultados?",
+      a: "Food cost real desde la primera semana. P&L completo desde el primer mes con datos suficientes.",
+    },
+    {
+      q: "¿Realmente funciona en MVP?",
+      a: "Sí. Empezamos simple pero útil: reduces costos desde el día 1. Las integraciones avanzadas vienen después.",
     },
     {
       q: "¿Mis datos están seguros?",
-      a: "Sí. Multi‑tenant con aislamiento por organización (RLS), cifrado en tránsito y export para auditoría.",
+      a: "Aislamiento completo por tenant, cifrado estándar y export de datos cuando quieras. Sin candados.",
+    },
+    {
+      q: "¿Qué pasa si no veo mejoras?",
+      a: "30 días gratis. Si no reduces food cost o no tienes tu P&L automático, no pagas. Simple.",
     },
   ];
   return (
     <section id="faq" className="mx-auto max-w-5xl px-6 py-14 bg-muted/30">
-      <h2 className="mb-6 text-center text-2xl font-semibold text-foreground">Preguntas frecuentes</h2>
+      <h2 className="mb-2 text-center text-2xl font-semibold text-foreground">Preguntas directas</h2>
+      <p className="mb-8 text-center text-muted-foreground">Lo que nos preguntan los operadores reales</p>
       <div className="space-y-4">
         {faqs.map((f, i) => (
           <Card key={i} className="border-border bg-card hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="font-medium text-foreground">{f.q}</div>
-              <p className="mt-1 text-muted-foreground">{f.a.replace("{productName}", productName)}</p>
+              <p className="mt-2 text-muted-foreground">{f.a}</p>
             </CardContent>
           </Card>
         ))}

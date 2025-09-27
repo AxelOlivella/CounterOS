@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTenant } from '@/contexts/TenantContext';
+import { StoreSelector } from '@/components/ui/store-selector';
+import { useStoreSelection } from '@/hooks/useStoreSelection';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -8,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 
 export const DashboardPage = () => {
   const { tenant, userProfile, signOut, brandName, primaryColor } = useTenant();
+  const { selectedStore, isConsolidatedView } = useStoreSelection();
   const { toast } = useToast();
   
   const [ventasHoy, setVentasHoy] = useState('Cargando...');
