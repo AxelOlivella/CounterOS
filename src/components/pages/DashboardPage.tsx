@@ -1,121 +1,109 @@
 import { useEffect, useState } from 'react';
 import { useCounter } from '@/contexts/CounterContext';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchDashboardKPIs, fetchTenant } from '@/lib/counteros-db';
 import { KPICard } from '@/components/dashboard/KPICard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DollarSign, TrendingUp, PieChart, Users, Store, AlertTriangle } from 'lucide-react';
+import { DollarSign, TrendingUp, PieChart, Users, Store, AlertTriangle, ShoppingCart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface DashboardData {
-  todaySales: number;
-  foodCostPercent: number;
-  laborPercent: number;
-  ebitdaPercent: number;
-  storeCount: number;
-  alerts: any[];
+  totalSales: number;
+  foodCostPercentage: number;
+  totalTransactions: number;
+  avgTicket: number;
+  stores: number;
+  salesData?: any[];
+  purchases?: any[];
 }
 
 export const DashboardPage = () => {
   const { userProfile, tenant } = useCounter();
   const { toast } = useToast();
   const [data, setData] = useState<DashboardData>({
-    todaySales: 0,
-    foodCostPercent: 0,
-    laborPercent: 0,
-    ebitdaPercent: 0,
-    storeCount: 0,
-    alerts: []
+    totalSales: 0,
+    foodCostPercentage: 0,
+    totalTransactions: 0,
+    avgTicket: 0,
+    stores: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [demoTenant, setDemoTenant] = useState<any>(null);
 
   useEffect(() => {
-    fetchDashboardData();
+    loadDashboardData();
   }, [userProfile]);
 
-  const fetchDashboardData = async () => {
-    if (!userProfile?.tenant_id) return;
-
+  const loadDashboardData = async () => {
+    setLoading(true);
+    
     try {
-      // Fetch stores count
-      const { data: stores, error: storesError } = await supabase
-        .from('stores')
-        .select('id')
-        .eq('tenant_id', userProfile.tenant_id);
-
-      if (storesError) throw storesError;
-
-      // Fetch today's sales
-      const today = new Date().toISOString().split('T')[0];
-      const { data: salesData, error: salesError } = await supabase
-        .from('daily_sales')
-        .select('net_sales')
-        .eq('tenant_id', userProfile.tenant_id)
-        .eq('date', today);
-
-      if (salesError) throw salesError;
-
-      const todaySales = salesData?.reduce((sum, sale) => sum + (sale.net_sales || 0), 0) || 0;
-
-      // Calculate food cost % (last 30 days)
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      
-      const { data: recentSales, error: recentSalesError } = await supabase
-        .from('daily_sales')
-        .select('net_sales')
-        .eq('tenant_id', userProfile.tenant_id)
-        .gte('date', thirtyDaysAgo.toISOString().split('T')[0]);
-
-      const { data: recentPurchases, error: recentPurchasesError } = await supabase
-        .from('purchases')
-        .select('total')
-        .eq('tenant_id', userProfile.tenant_id)
-        .gte('issue_date', thirtyDaysAgo.toISOString().split('T')[0]);
-
-      if (recentSalesError) throw recentSalesError;
-      if (recentPurchasesError) throw recentPurchasesError;
-
-      const totalSales30d = recentSales?.reduce((sum, sale) => sum + (sale.net_sales || 0), 0) || 1;
-      const totalPurchases30d = recentPurchases?.reduce((sum, purchase) => sum + (purchase.total || 0), 0) || 0;
-      const foodCostPercent = (totalPurchases30d / totalSales30d) * 100;
-
-      // Calculate labor cost % (last 30 days)
-      const { data: recentLabor, error: recentLaborError } = await supabase
-        .from('labor_costs')
-        .select('labor_cost')
-        .eq('tenant_id', userProfile.tenant_id)
-        .gte('date', thirtyDaysAgo.toISOString().split('T')[0]);
-
-      if (recentLaborError) throw recentLaborError;
-
-      const totalLabor30d = recentLabor?.reduce((sum, labor) => sum + (labor.labor_cost || 0), 0) || 0;
-      const laborPercent = (totalLabor30d / totalSales30d) * 100;
-
-      // Fetch recent alerts
-      const { data: alerts, error: alertsError } = await supabase
-        .from('alerts')
-        .select('*')
-        .eq('tenant_id', userProfile.tenant_id)
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      if (alertsError) throw alertsError;
-
-      setData({
-        todaySales,
-        foodCostPercent: Math.min(foodCostPercent, 100), // Cap at 100%
-        laborPercent: Math.min(laborPercent, 100), // Cap at 100%
-        ebitdaPercent: Math.max(15.8 - (foodCostPercent - 25) - (laborPercent - 18), 0), // Rough calculation
-        storeCount: stores?.length || 0,
-        alerts: alerts || []
-      });
+      // First try to load demo data for showcase
+      const demo = await fetchTenant('demo-counteros');
+      if (demo) {
+        setDemoTenant(demo);
+        const kpis = await fetchDashboardKPIs(demo.id);
+        
+        if (kpis) {
+          setData({
+            totalSales: kpis.totalSales,
+            foodCostPercentage: kpis.foodCostPercentage,
+            totalTransactions: kpis.totalTransactions,
+            avgTicket: kpis.avgTicket,
+            stores: kpis.stores,
+            salesData: kpis.salesData,
+            purchases: kpis.purchases
+          });
+        } else {
+          // Fallback demo data if no sales data exists yet
+          setData({
+            totalSales: 1250000,
+            foodCostPercentage: 28.5,
+            totalTransactions: 8450,
+            avgTicket: 235,
+            stores: 1,
+          });
+        }
+      } else if (userProfile?.tenant_id) {
+        // Load actual user data if logged in
+        const kpis = await fetchDashboardKPIs(userProfile.tenant_id);
+        
+        if (kpis) {
+          setData({
+            totalSales: kpis.totalSales,
+            foodCostPercentage: kpis.foodCostPercentage,
+            totalTransactions: kpis.totalTransactions,
+            avgTicket: kpis.avgTicket,
+            stores: kpis.stores,
+            salesData: kpis.salesData,
+            purchases: kpis.purchases
+          });
+        }
+      } else {
+        // Default demo values for showcase
+        setData({
+          totalSales: 1250000,
+          foodCostPercentage: 28.5,
+          totalTransactions: 8450,
+          avgTicket: 235,
+          stores: 1,
+        });
+      }
 
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      console.error('Error loading dashboard data:', error);
       toast({
         title: 'Error',
         description: 'No se pudieron cargar los datos del dashboard',
         variant: 'destructive',
+      });
+      
+      // Fallback to demo data on error
+      setData({
+        totalSales: 1250000,
+        foodCostPercentage: 28.5,
+        totalTransactions: 8450,
+        avgTicket: 235,
+        stores: 1,
       });
     } finally {
       setLoading(false);
@@ -123,8 +111,10 @@ export const DashboardPage = () => {
   };
 
   const getTheme = () => {
-    return tenant?.theme || { primary: '#00C853', secondary: '#FFFFFF' };
+    return demoTenant?.theme || tenant?.theme || { primary: '#00C853', secondary: '#FFFFFF' };
   };
+
+  const displayTenant = demoTenant || tenant;
 
   if (loading) {
     return (
@@ -143,9 +133,9 @@ export const DashboardPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <h1 className="text-3xl font-bold tracking-tight">CounterOS Dashboard</h1>
           <p className="text-muted-foreground">
-            Resumen de métricas de {tenant?.name || 'tu negocio'}
+            Resumen de métricas de {displayTenant?.name || 'Demo CounterOS'}
           </p>
         </div>
       </div>
@@ -153,8 +143,8 @@ export const DashboardPage = () => {
       {/* KPI Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPICard
-          title="Ventas Hoy"
-          value={data.todaySales}
+          title="Ventas (30 días)"
+          value={data.totalSales}
           format="currency"
           variant="default"
           icon={<DollarSign className="h-4 w-4" />}
@@ -163,26 +153,26 @@ export const DashboardPage = () => {
         
         <KPICard
           title="Food Cost %"
-          value={data.foodCostPercent}
+          value={data.foodCostPercentage}
           format="percentage"
-          variant={data.foodCostPercent > 30 ? 'danger' : 'success'}
+          variant={data.foodCostPercentage > 30 ? 'danger' : 'success'}
           icon={<PieChart className="h-4 w-4" />}
           change={-1.8}
         />
         
         <KPICard
-          title="Labor %"
-          value={data.laborPercent}
-          format="percentage"
-          variant={data.laborPercent > 20 ? 'warning' : 'success'}
-          icon={<Users className="h-4 w-4" />}
-          change={0.5}
+          title="Transacciones"
+          value={data.totalTransactions}
+          format="number"
+          variant="default"
+          icon={<ShoppingCart className="h-4 w-4" />}
+          change={3.4}
         />
         
         <KPICard
-          title="EBITDA %"
-          value={data.ebitdaPercent}
-          format="percentage"
+          title="Ticket Promedio"
+          value={data.avgTicket}
+          format="currency"
           variant="success"
           icon={<TrendingUp className="h-4 w-4" />}
           change={2.1}
@@ -200,42 +190,40 @@ export const DashboardPage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold mb-2">{data.storeCount}</div>
+            <div className="text-2xl font-bold mb-2">{data.stores}</div>
             <p className="text-sm text-muted-foreground">
               Tiendas registradas en el sistema
             </p>
           </CardContent>
         </Card>
 
-        {/* Recent Alerts */}
+        {/* Performance Summary */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5" />
-              Alertas Recientes
+              <TrendingUp className="h-5 w-5" />
+              Rendimiento del Mes
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {data.alerts.length > 0 ? (
-              <div className="space-y-2">
-                {data.alerts.slice(0, 3).map((alert, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <span className="text-sm">{alert.type}</span>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      alert.severity === 'crit' ? 'bg-red-100 text-red-800' :
-                      alert.severity === 'warn' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-blue-100 text-blue-800'
-                    }`}>
-                      {alert.severity}
-                    </span>
-                  </div>
-                ))}
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Food Cost Target</span>
+                <span className={`text-sm ${data.foodCostPercentage <= 30 ? 'text-green-600' : 'text-red-600'}`}>
+                  {data.foodCostPercentage <= 30 ? '✓ Dentro del target' : '⚠ Fuera del target'}
+                </span>
               </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                No hay alertas recientes
-              </p>
-            )}
+              
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Ticket Promedio</span>
+                <span className="text-sm font-bold">${data.avgTicket}</span>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Transacciones/día</span>
+                <span className="text-sm font-bold">{Math.round(data.totalTransactions / 30)}</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
