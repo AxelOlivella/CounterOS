@@ -9,7 +9,8 @@ import {
   PieChart,
   FileText,
   Settings,
-  Home
+  Home,
+  AlertTriangle
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -19,10 +20,13 @@ interface SidebarProps {
 }
 
 const menuItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: Home },
-  { id: 'upload', label: 'Subir Datos', icon: Upload },
+  { id: 'resumen', label: 'Resumen', icon: Home },
+  { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+  { id: 'datos', label: 'Cargar Datos', icon: Upload },
   { id: 'food-cost', label: 'Food Cost', icon: PieChart },
-  { id: 'pnl', label: 'P&L', icon: BarChart3 },
+  { id: 'pnl', label: 'P&L', icon: DollarSign },
+  { id: 'alertas', label: 'Alertas', icon: AlertTriangle },
+  { id: 'upload', label: 'Subir Datos (Legacy)', icon: Upload },
   { id: 'stores', label: 'Tiendas', icon: Store },
   { id: 'reports', label: 'Reportes', icon: FileText },
   { id: 'settings', label: 'Configuración', icon: Settings },

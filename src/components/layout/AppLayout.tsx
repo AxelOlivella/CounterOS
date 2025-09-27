@@ -7,6 +7,9 @@ import { Sidebar } from './Sidebar';
 import { UploadPage } from '@/components/pages/UploadPage';
 import { FoodCostAnalysisPage } from '@/components/pages/FoodCostAnalysisPage';
 import { PnLReportsPage } from '@/components/pages/PnLReportsPage';
+import DatosPage from '@/pages/DatosPage';
+import AlertasPage from '@/pages/AlertasPage';
+import ResumenPage from '@/pages/ResumenPage';
 import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
@@ -72,11 +75,14 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1">
           {currentPage === 'dashboard' && children}
+          {currentPage === 'resumen' && <ResumenPage />}
+          {currentPage === 'datos' && <DatosPage />}
           {currentPage === 'upload' && <UploadPage />}
           {currentPage === 'food-cost' && <FoodCostAnalysisPage />}
           {currentPage === 'pnl' && <PnLReportsPage />}
+          {currentPage === 'alertas' && <AlertasPage />}
           {currentPage === 'stores' && <div className="p-8 text-center text-muted-foreground">Módulo de Tiendas - Próximamente</div>}
           {currentPage === 'reports' && <div className="p-8 text-center text-muted-foreground">Módulo de Reportes - Próximamente</div>}
           {currentPage === 'settings' && <div className="p-8 text-center text-muted-foreground">Configuración - Próximamente</div>}
