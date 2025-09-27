@@ -27,59 +27,51 @@ export const DashboardPage = () => {
     if (!userProfile?.tenant_id) return;
 
     try {
-      // Obtener fecha de hoy
-      const hoy = new Date().toISOString().split('T')[0];
-      
-      // Cargar ventas de hoy para este tenant
-      const { data: ventasData, error: ventasError } = await supabase
-        .from('daily_sales')
-        .select('net_sales, transactions, gross_sales')
-        .eq('date', hoy)
-        .eq('tenant_id', userProfile.tenant_id);
+      // Use the existing views to get data
+      const { data: foodCostData } = await supabase
+        .from('daily_food_cost_view')
+        .select('*')
+        .eq('tenant_id', userProfile.tenant_id)
+        .order('day', { ascending: false })
+        .limit(30);
 
-      if (ventasError) throw ventasError;
+      const { data: salesData } = await supabase
+        .from('v_sales_daily')
+        .select('*')
+        .eq('tenant_id', userProfile.tenant_id)
+        .order('day', { ascending: false })
+        .limit(30);
 
-      if (ventasData && ventasData.length > 0) {
-        const totalVentas = ventasData.reduce((sum, v) => sum + (v.net_sales || 0), 0);
-        const totalTransacciones = ventasData.reduce((sum, v) => sum + (v.transactions || 0), 0);
+      if (salesData && salesData.length > 0) {
+        const totalVentas = salesData.reduce((sum, v) => sum + (Number(v.revenue) || 0), 0);
+        const totalQty = salesData.reduce((sum, v) => sum + (Number(v.qty_sold) || 0), 0);
         
         setVentasHoy(`$${totalVentas.toLocaleString()}`);
-        setTransacciones(totalTransacciones.toString());
+        setTransacciones(totalQty.toString());
         
-        if (totalTransacciones > 0) {
-          const ticket = (totalVentas / totalTransacciones).toFixed(0);
+        if (totalQty > 0) {
+          const ticket = (totalVentas / totalQty).toFixed(0);
           setTicketPromedio(`$${ticket}`);
         }
       } else {
-        // Si no hay datos de hoy, usar valores de demo específicos por marca
+        // Si no hay datos, usar valores de demo específicos por marca
         const demoData = getDemoDataForTenant(tenant?.name || '');
         setVentasHoy(demoData.ventas);
         setTransacciones(demoData.transacciones);
         setTicketPromedio(demoData.ticket);
       }
 
-      // Cargar compras del mes para calcular food cost
-      const { data: comprasData, error: comprasError } = await supabase
-        .from('purchases')
-        .select('total')
-        .eq('tenant_id', userProfile.tenant_id);
-
-      if (comprasError) throw comprasError;
-
-      if (comprasData && comprasData.length > 0 && ventasData && ventasData.length > 0) {
-        const totalCompras = comprasData.reduce((sum, p) => sum + parseFloat(String(p.total || '0')), 0);
-        const totalVentas = ventasData.reduce((sum, v) => sum + (v.net_sales || 0), 0);
+      // Use food cost data if available
+      if (foodCostData && foodCostData.length > 0) {
+        const avgFoodCost = foodCostData.reduce((sum, f) => sum + (Number(f.food_cost_pct) || 0), 0) / foodCostData.length;
+        const foodCostCalc = avgFoodCost.toFixed(1);
+        setFoodCost(`${foodCostCalc}%`);
         
-        if (totalVentas > 0) {
-          const foodCostCalc = ((totalCompras / totalVentas) * 100).toFixed(1);
-          setFoodCost(`${foodCostCalc}%`);
-          
-          // Cambiar color si está alto
-          if (parseFloat(foodCostCalc) > 30) {
-            setColorFood('#ef4444');
-          } else {
-            setColorFood('#22c55e');
-          }
+        // Cambiar color si está alto
+        if (parseFloat(foodCostCalc) > 30) {
+          setColorFood('#ef4444');
+        } else {
+          setColorFood('#22c55e');
         }
       } else {
         // Valor de demo por marca

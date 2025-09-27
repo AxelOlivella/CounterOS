@@ -43,11 +43,12 @@ export const LoginPage = () => {
         if (profileError) throw profileError;
 
         if (userProfile) {
-          // Store tenant info in localStorage for quick access
+          // Store tenant info in localStorage for quick access  
+          const tenantData = userProfile.tenants;
           localStorage.setItem('tenant_info', JSON.stringify({
-            id: userProfile.tenants.id,
-            name: userProfile.tenants.name,
-            theme: userProfile.tenants.theme
+            id: tenantData.tenant_id,
+            name: tenantData.name,
+            theme: tenantData.theme
           }));
 
           // Redirect to dashboard

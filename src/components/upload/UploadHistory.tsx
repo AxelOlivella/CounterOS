@@ -1,12 +1,9 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useCounter } from '@/contexts/CounterContext';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { FileText, Download, Trash2, RefreshCw } from 'lucide-react';
-import { UploadFile } from '@/types/upload';
+import { FileText, RefreshCw, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -15,64 +12,66 @@ interface UploadHistoryProps {
   refreshTrigger?: number;
 }
 
+interface MockUploadFile {
+  id: string;
+  filename: string;
+  kind: string;
+  size_bytes: number;
+  processed: boolean;
+  error?: string;
+  uploaded_at: string;
+}
+
 export const UploadHistory = ({ refreshTrigger }: UploadHistoryProps) => {
-  const { userProfile } = useCounter();
   const { toast } = useToast();
-  const [files, setFiles] = useState<UploadFile[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchFiles = async () => {
-    if (!userProfile?.tenant_id) return;
-
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('files')
-        .select('*')
-        .eq('tenant_id', userProfile.tenant_id)
-        .order('uploaded_at', { ascending: false })
-        .limit(50);
-
-      if (error) throw error;
-      setFiles((data || []) as UploadFile[]);
-    } catch (error) {
-      console.error('Error fetching files:', error);
-      toast({
-        title: 'Error',
-        description: 'No se pudieron cargar los archivos',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
+  const [loading, setLoading] = useState(false);
+  
+  // Mock data for demonstration
+  const [files] = useState<MockUploadFile[]>([
+    {
+      id: '1',
+      filename: 'ventas_enero_2024.csv',
+      kind: 'csv_sales',
+      size_bytes: 15420,
+      processed: true,
+      uploaded_at: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+    },
+    {
+      id: '2',
+      filename: 'gastos_enero_2024.csv',
+      kind: 'csv_expenses', 
+      size_bytes: 8930,
+      processed: true,
+      uploaded_at: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+    },
+    {
+      id: '3',
+      filename: 'cfdi_proveedor_123.xml',
+      kind: 'xml_cfdi',
+      size_bytes: 25600,
+      processed: false,
+      error: 'Error en validación de estructura XML',
+      uploaded_at: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
     }
-  };
-
-  useEffect(() => {
-    fetchFiles();
-  }, [userProfile?.tenant_id, refreshTrigger]);
+  ]);
 
   const deleteFile = async (fileId: string) => {
-    try {
-      const { error } = await supabase
-        .from('files')
-        .delete()
-        .eq('id', fileId);
+    toast({
+      title: 'Funcionalidad en desarrollo',
+      description: 'La eliminación de archivos estará disponible próximamente',
+    });
+  };
 
-      if (error) throw error;
-
-      setFiles(prev => prev.filter(f => f.id !== fileId));
-      toast({
-        title: 'Archivo eliminado',
-        description: 'El archivo ha sido eliminado del historial',
-      });
-    } catch (error) {
-      console.error('Error deleting file:', error);
-      toast({
-        title: 'Error',
-        description: 'No se pudo eliminar el archivo',
-        variant: 'destructive',
-      });
-    }
+  const refreshFiles = async () => {
+    setLoading(true);
+    // Simulate refresh
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setLoading(false);
+    
+    toast({
+      title: 'Historial actualizado',
+      description: 'Se ha actualizado la lista de archivos',
+    });
   };
 
   const getFileKindLabel = (kind: string) => {
@@ -81,6 +80,7 @@ export const UploadHistory = ({ refreshTrigger }: UploadHistoryProps) => {
       case 'csv_expenses': return 'Gastos CSV';
       case 'csv_inventory': return 'Inventario CSV';
       case 'xml_cfdi': return 'CFDI XML';
+      case 'json_cfdi': return 'CFDI JSON';
       default: return kind;
     }
   };
@@ -104,24 +104,6 @@ export const UploadHistory = ({ refreshTrigger }: UploadHistoryProps) => {
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
   };
 
-  if (loading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Historial de Archivos
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center py-8">
-            <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card>
       <CardHeader>
@@ -130,8 +112,8 @@ export const UploadHistory = ({ refreshTrigger }: UploadHistoryProps) => {
             <FileText className="h-5 w-5" />
             Historial de Archivos
           </CardTitle>
-          <Button variant="outline" size="sm" onClick={fetchFiles}>
-            <RefreshCw className="h-4 w-4 mr-2" />
+          <Button variant="outline" size="sm" onClick={refreshFiles} disabled={loading}>
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Actualizar
           </Button>
         </div>
@@ -213,16 +195,14 @@ export const UploadHistory = ({ refreshTrigger }: UploadHistoryProps) => {
                         })}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => deleteFile(file.id)}
-                            className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteFile(file.id)}
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}

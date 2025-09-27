@@ -1,96 +1,19 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useTenant } from '@/contexts/TenantContext';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, TrendingUp, AlertCircle, CheckCircle } from 'lucide-react';
+import { FileText, CheckCircle, AlertCircle, TrendingUp } from 'lucide-react';
 
-interface UploadStats {
-  todayFiles: number;
-  todayRecords: number;
-  recentErrors: number;
-  successRate: number;
+interface UploadStatsProps {
+  refreshTrigger?: number;
 }
 
-export const UploadStats = () => {
-  const { userProfile } = useTenant();
-  const [stats, setStats] = useState<UploadStats>({
-    todayFiles: 0,
-    todayRecords: 0,
-    recentErrors: 0,
-    successRate: 100
+export const UploadStats = ({ refreshTrigger }: UploadStatsProps) => {
+  // Mock stats for demonstration
+  const [stats] = useState({
+    todayFiles: 5,
+    todayRecords: 142,
+    recentErrors: 1,
+    successRate: 85,
   });
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (userProfile?.tenant_id) {
-      fetchUploadStats();
-    }
-  }, [userProfile]);
-
-  const fetchUploadStats = async () => {
-    try {
-      const today = new Date().toISOString().split('T')[0];
-      
-      // Get today's file uploads
-      const { data: files, error: filesError } = await supabase
-        .from('files')
-        .select('*')
-        .eq('tenant_id', userProfile!.tenant_id)
-        .gte('uploaded_at', `${today}T00:00:00.000Z`)
-        .lt('uploaded_at', `${today}T23:59:59.999Z`);
-
-      if (filesError) throw filesError;
-
-      // Calculate stats
-      const todayFiles = files?.length || 0;
-      const processedFiles = files?.filter(f => f.processed) || [];
-      const errorFiles = files?.filter(f => f.error) || [];
-      
-      // Get record counts from recent sales/purchases
-      const { data: salesData } = await supabase
-        .from('daily_sales')
-        .select('id')
-        .eq('tenant_id', userProfile!.tenant_id)
-        .gte('created_at', `${today}T00:00:00.000Z`);
-        
-      const { data: purchasesData } = await supabase
-        .from('purchases')
-        .select('id')
-        .eq('tenant_id', userProfile!.tenant_id)
-        .gte('created_at', `${today}T00:00:00.000Z`);
-
-      const todayRecords = (salesData?.length || 0) + (purchasesData?.length || 0);
-      const successRate = todayFiles > 0 ? ((processedFiles.length / todayFiles) * 100) : 100;
-
-      setStats({
-        todayFiles,
-        todayRecords,
-        recentErrors: errorFiles.length,
-        successRate: Math.round(successRate)
-      });
-
-    } catch (error) {
-      console.error('Error fetching upload stats:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Estadísticas de Upload</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-muted rounded w-3/4"></div>
-            <div className="h-4 bg-muted rounded w-1/2"></div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card>

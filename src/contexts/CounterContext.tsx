@@ -5,17 +5,22 @@ import { User, Session } from '@supabase/supabase-js';
 interface Tenant {
   id: string;
   name: string;
-  subdomain: string;
-  theme: any; // Json type from Supabase
+  subdomain?: string;
+  theme: any;
+  created_at: string;
+  tenant_id: string;
 }
 
 interface UserProfile {
   id: string;
   tenant_id: string;
   email: string;
-  name: string;
-  role: 'owner' | 'manager' | 'analyst' | 'staff';
-  store_scope: any; // Json type from Supabase
+  name?: string;
+  role?: 'owner' | 'manager' | 'analyst' | 'staff';
+  store_scope?: any;
+  created_at: string;
+  updated_at: string;
+  auth_user_id: string;
 }
 
 interface CounterContextType {
@@ -91,21 +96,31 @@ export const CounterProvider: React.FC<{ children: ReactNode }> = ({ children })
 
       setUserProfile(profile);
 
-      // Fetch tenant data
-      if (profile?.tenant_id) {
-        const { data: tenantData, error: tenantError } = await supabase
-          .from('tenants')
-          .select('*')
-          .eq('id', profile.tenant_id)
-          .single();
+        // Fetch tenant data
+        if (profile?.tenant_id) {
+          const { data: tenantData, error: tenantError } = await supabase
+            .from('tenants')
+            .select('*')
+            .eq('tenant_id', profile.tenant_id)
+            .single();
 
-        if (tenantError) {
-          console.error('Error fetching tenant:', tenantError);
-          return;
+          if (tenantError) {
+            console.error('Error fetching tenant:', tenantError);
+            return;
+          }
+
+          // Map tenant data to match interface
+          const mappedTenant: Tenant = {
+            id: tenantData.tenant_id,
+            name: tenantData.name,
+            subdomain: undefined,
+            theme: tenantData.theme,
+            created_at: tenantData.created_at,
+            tenant_id: tenantData.tenant_id,
+          };
+
+          setTenant(mappedTenant);
         }
-
-        setTenant(tenantData);
-      }
     } catch (error) {
       console.error('Error fetching user data:', error);
     }

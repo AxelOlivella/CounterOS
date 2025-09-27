@@ -5,16 +5,21 @@ import { User, Session } from '@supabase/supabase-js';
 interface Tenant {
   id: string;
   name: string;
-  subdomain: string;
-  theme: any; // Using any to handle Json type from Supabase
+  subdomain?: string;
+  theme: any;
+  tenant_id: string;
+  created_at: string;
 }
 
 interface UserProfile {
   id: string;
   tenant_id: string;
   email: string;
-  name: string;
-  role: 'owner' | 'manager' | 'analyst' | 'staff';
+  name?: string;
+  role?: 'owner' | 'manager' | 'analyst' | 'staff';
+  created_at: string;
+  updated_at: string;
+  auth_user_id: string;
 }
 
 interface TenantContextType {
@@ -96,13 +101,24 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       setUserProfile(profile);
 
       if (profile?.tenants) {
-        setTenant(profile.tenants);
+        // Map tenant data to match interface
+        const tenantData = profile.tenants;
+        const mappedTenant: Tenant = {
+          id: tenantData.tenant_id,
+          name: tenantData.name,
+          subdomain: undefined,
+          theme: tenantData.theme,
+          tenant_id: tenantData.tenant_id,
+          created_at: tenantData.created_at,
+        };
+        
+        setTenant(mappedTenant);
         
         // Also store in localStorage for quick access
         localStorage.setItem('tenant_info', JSON.stringify({
-          id: profile.tenants.id,
-          name: profile.tenants.name,
-          theme: profile.tenants.theme
+          id: tenantData.tenant_id,
+          name: tenantData.name,
+          theme: tenantData.theme
         }));
       }
     } catch (error) {
