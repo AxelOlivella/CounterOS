@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useCounter } from '@/contexts/CounterContext';
+import { useTenant } from '@/contexts/TenantContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -26,7 +26,7 @@ interface FoodCostData {
 }
 
 export const FoodCostAnalysisPage = () => {
-  const { userProfile } = useCounter();
+  const { userProfile } = useTenant();
   const { toast } = useToast();
   const [stores, setStores] = useState<Store[]>([]);
   const [selectedStore, setSelectedStore] = useState<string>('all');

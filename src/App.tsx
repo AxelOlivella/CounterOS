@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TenantProvider } from "@/contexts/TenantContext";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -15,6 +16,7 @@ import OnboardingPage from "./pages/OnboardingPage";
 import DatosPage from "./pages/DatosPage";
 import AlertasPage from "./pages/AlertasPage";
 import ResumenPage from "./pages/ResumenPage";
+import PlaceholderPage from "./pages/PlaceholderPage";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
@@ -38,7 +40,9 @@ const App = () => (
             } />
             <Route path="/dashboard" element={
               <ProtectedRoute>
-                <DashboardPage />
+                <AppLayout>
+                  <DashboardPage />
+                </AppLayout>
               </ProtectedRoute>
             } />
             <Route path="/resumen" element={
@@ -53,22 +57,43 @@ const App = () => (
             } />
             <Route path="/upload" element={
               <ProtectedRoute>
-                <UploadPage />
+                <AppLayout>
+                  <UploadPage />
+                </AppLayout>
               </ProtectedRoute>
             } />
             <Route path="/food-cost-analysis" element={
               <ProtectedRoute>
-                <FoodCostAnalysisPage />
+                <AppLayout>
+                  <FoodCostAnalysisPage />
+                </AppLayout>
               </ProtectedRoute>
             } />
             <Route path="/pnl-reports" element={
               <ProtectedRoute>
-                <PnLReportsPage />
+                <AppLayout>
+                  <PnLReportsPage />
+                </AppLayout>
               </ProtectedRoute>
             } />
             <Route path="/alertas" element={
               <ProtectedRoute>
                 <AlertasPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/stores" element={
+              <ProtectedRoute>
+                <PlaceholderPage title="Gestión de Tiendas" message="Administra todas tus ubicaciones desde un solo lugar" />
+              </ProtectedRoute>
+            } />
+            <Route path="/reports" element={
+              <ProtectedRoute>
+                <PlaceholderPage title="Centro de Reportes" message="Genera reportes personalizados y exporta tus datos" />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <PlaceholderPage title="Configuración" message="Personaliza tu experiencia y configuraciones del sistema" />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />

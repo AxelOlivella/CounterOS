@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { useCounter } from '@/contexts/CounterContext';
+import { useTenant } from '@/contexts/TenantContext';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   BarChart3,
   Upload,
@@ -15,25 +16,25 @@ import {
 
 interface SidebarProps {
   className?: string;
-  currentPage?: string;
-  onPageChange?: (page: string) => void;
 }
 
 const menuItems = [
-  { id: 'resumen', label: 'Resumen', icon: Home },
-  { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-  { id: 'datos', label: 'Cargar Datos', icon: Upload },
-  { id: 'food-cost', label: 'Food Cost', icon: PieChart },
-  { id: 'pnl', label: 'P&L', icon: DollarSign },
-  { id: 'alertas', label: 'Alertas', icon: AlertTriangle },
-  { id: 'upload', label: 'Subir Datos (Legacy)', icon: Upload },
-  { id: 'stores', label: 'Tiendas', icon: Store },
-  { id: 'reports', label: 'Reportes', icon: FileText },
-  { id: 'settings', label: 'Configuración', icon: Settings },
+  { id: 'resumen', label: 'Resumen', icon: Home, path: '/resumen' },
+  { id: 'dashboard', label: 'Dashboard', icon: BarChart3, path: '/dashboard' },
+  { id: 'datos', label: 'Cargar Datos', icon: Upload, path: '/datos' },
+  { id: 'food-cost', label: 'Food Cost', icon: PieChart, path: '/food-cost-analysis' },
+  { id: 'pnl', label: 'P&L', icon: DollarSign, path: '/pnl-reports' },
+  { id: 'alertas', label: 'Alertas', icon: AlertTriangle, path: '/alertas' },
+  { id: 'upload', label: 'Subir Datos (Legacy)', icon: Upload, path: '/upload' },
+  { id: 'stores', label: 'Tiendas', icon: Store, path: '/stores' },
+  { id: 'reports', label: 'Reportes', icon: FileText, path: '/reports' },
+  { id: 'settings', label: 'Configuración', icon: Settings, path: '/settings' },
 ];
 
-export const Sidebar = ({ className, currentPage = 'dashboard', onPageChange }: SidebarProps) => {
-  const { tenant } = useCounter();
+export const Sidebar = ({ className }: SidebarProps) => {
+  const { tenant } = useTenant();
+  const navigate = useNavigate();
+  const location = useLocation();
   
   const primaryColor = tenant?.theme?.primary || '#00C853';
 
@@ -53,7 +54,7 @@ export const Sidebar = ({ className, currentPage = 'dashboard', onPageChange }: 
       <nav className="flex-1 space-y-1 p-4">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = currentPage === item.id;
+          const isActive = location.pathname === item.path;
           
           return (
             <Button
@@ -66,7 +67,7 @@ export const Sidebar = ({ className, currentPage = 'dashboard', onPageChange }: 
               style={{
                 backgroundColor: isActive ? primaryColor : undefined,
               }}
-              onClick={() => onPageChange?.(item.id)}
+              onClick={() => navigate(item.path)}
             >
               <Icon className="mr-3 h-4 w-4" />
               {item.label}
