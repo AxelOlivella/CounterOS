@@ -15,7 +15,7 @@ import { Check, Sparkles, TrendingUp, Zap, Bell, Shield, Layers, ArrowRight } fr
 const productName = "CounterOS"; // Cambia a "foodOS.ai" si prefieres.
 const primaryCTA = {
   label: "Solicitar demo",
-  href: "https://calendly.com/tu-demo", // TODO: reemplazar
+  href: "/login", // Redirect to login instead of broken link
 };
 const secondaryCTA = {
   label: "Ver ejemplo de P&L",
@@ -269,7 +269,12 @@ function PricingCTA() {
           </div>
           <div className="flex flex-col items-start justify-center gap-3 md:items-end">
             <div className="w-full max-w-sm">
-              <Input placeholder="tu@empresa.com" className="bg-white/5"/>
+              <Input 
+                placeholder="tu@empresa.com" 
+                className="bg-white/5"
+                type="email"
+                onChange={(e) => console.log('Email subscription:', e.target.value)}
+              />
             </div>
             <Button asChild size="lg" className="gap-2">
               <a href={primaryCTA.href}>{primaryCTA.label} <ArrowRight className="h-5 w-5"/></a>
