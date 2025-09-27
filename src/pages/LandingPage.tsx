@@ -52,9 +52,7 @@ function Nav() {
           <a href="#funciona" className="text-sm text-zinc-300 hover:text-white">Cómo funciona</a>
           <a href="#features" className="text-sm text-zinc-300 hover:text-white">Funciones</a>
           <a href="#faq" className="text-sm text-zinc-300 hover:text-white">FAQ</a>
-          <Button asChild size="sm" variant="outline" className="border-white/20 text-white hover:bg-white/10">
-            <a href="/login">Iniciar sesión</a>
-          </Button>
+          <a href="/login" className="text-sm text-zinc-300 hover:text-white">Iniciar sesión</a>
           <Button asChild size="sm" className="gap-2">
             <a href={primaryCTA.href}>{primaryCTA.label} <ArrowRight className="h-4 w-4"/></a>
           </Button>
