@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { StoreSelector } from '@/components/ui/store-selector';
+import { useStoreSelection } from '@/hooks/useStoreSelection';
 import { 
   AlertTriangle, 
   TrendingUp, 
@@ -18,6 +20,7 @@ import {
 import { AppLayout } from '@/components/layout/AppLayout';
 
 const AlertasPage = () => {
+  const { selectedStore, isConsolidatedView } = useStoreSelection();
   const [alertRules, setAlertRules] = useState({
     foodCostHigh: {
       enabled: true,
@@ -101,12 +104,20 @@ const AlertasPage = () => {
       <div className="container mx-auto max-w-6xl py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Centro de Alertas
-          </h1>
-          <p className="text-muted-foreground">
-            Monitoreo automático de métricas clave que impactan tu rentabilidad
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Centro de Alertas
+              </h1>
+              <p className="text-muted-foreground">
+                {isConsolidatedView 
+                  ? 'Monitoreo automático de métricas clave que impactan tu rentabilidad'
+                  : `Alertas específicas para ${selectedStore?.name || 'tienda seleccionada'}`
+                }
+              </p>
+            </div>
+            <StoreSelector />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

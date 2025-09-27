@@ -1,6 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { StoreSelector } from '@/components/ui/store-selector';
+import { useStoreSelection } from '@/hooks/useStoreSelection';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -15,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 
 const ResumenPage = () => {
   const navigate = useNavigate();
+  const { selectedStore, isConsolidatedView } = useStoreSelection();
 
   // Mock data - in real app this would come from API
   const summaryData = {
@@ -65,12 +68,20 @@ const ResumenPage = () => {
       <div className="container mx-auto max-w-6xl py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Resumen Ejecutivo
-          </h1>
-          <p className="text-muted-foreground">
-            Vista consolidada de todas tus tiendas y oportunidades de mejora
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Resumen Ejecutivo
+              </h1>
+              <p className="text-muted-foreground">
+                {isConsolidatedView 
+                  ? 'Vista consolidada de todas tus tiendas y oportunidades de mejora'
+                  : `Análisis detallado de ${selectedStore?.name || 'tienda seleccionada'}`
+                }
+              </p>
+            </div>
+            <StoreSelector />
+          </div>
         </div>
 
         {/* Key Metrics */}

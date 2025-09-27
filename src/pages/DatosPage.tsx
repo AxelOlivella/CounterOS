@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { StoreSelector } from '@/components/ui/store-selector';
+import { useStoreSelection } from '@/hooks/useStoreSelection';
 import { 
   Upload, 
   FileText, 
@@ -18,6 +20,7 @@ import {
 import { AppLayout } from '@/components/layout/AppLayout';
 
 const DatosPage = () => {
+  const { selectedStore, isConsolidatedView } = useStoreSelection();
   const [uploadedFiles, setUploadedFiles] = useState({
     sales: null as File | null,
     expenses: false,
@@ -66,12 +69,20 @@ const DatosPage = () => {
       <div className="container mx-auto max-w-6xl py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Carga de Datos
-          </h1>
-          <p className="text-muted-foreground">
-            Centraliza toda la información que necesitas para generar tus reportes
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Carga de Datos
+              </h1>
+              <p className="text-muted-foreground">
+                {isConsolidatedView 
+                  ? 'Centraliza toda la información que necesitas para generar tus reportes'
+                  : `Carga de datos para ${selectedStore?.name || 'tienda seleccionada'}`
+                }
+              </p>
+            </div>
+            <StoreSelector />
+          </div>
         </div>
 
         {/* Status Checklist */}
