@@ -1,16 +1,49 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, TrendingUp, DollarSign, Package, Snowflake } from 'lucide-react';
+import { AlertCircle, TrendingUp, DollarSign, Package, Snowflake, Coffee, Fish, Utensils } from 'lucide-react';
 
 export const DashboardPage = () => {
   const [loading, setLoading] = useState(false);
-  const [currentTheme, setCurrentTheme] = useState('MoyoOS');
+  const [currentModule, setCurrentModule] = useState('FroyoOS');
+  const [currentTenant, setCurrentTenant] = useState('MoyoOS');
   
-  // Demo data for Moyo - Portal Centro
+  // CounterOS Modules Configuration
+  const modules = {
+    FroyoOS: {
+      icon: Snowflake,
+      color: 'purple',
+      bgGradient: 'from-purple-50 to-blue-50',
+      tenants: ['MoyoOS', 'NutrisaOS'],
+      stores: 755 // 92 + 663
+    },
+    CrepasOS: {
+      icon: Utensils,
+      color: 'amber',
+      bgGradient: 'from-amber-50 to-orange-50',
+      tenants: ['LaCrepeParisienneOS', 'LaDivinaCrepaOS'],
+      stores: 41
+    },
+    SushiOS: {
+      icon: Fish,
+      color: 'red',
+      bgGradient: 'from-red-50 to-pink-50',
+      tenants: ['SushiRollOS', 'SushiIttoOS'],
+      stores: 235 // 150 + 85
+    },
+    CoffeeOS: {
+      icon: Coffee,
+      color: 'brown',
+      bgGradient: 'from-yellow-50 to-amber-50',
+      tenants: ['CielitoQueridoOS'],
+      stores: 93
+    }
+  };
+
+  // Demo data for current tenant (Moyo)
   const metrics = {
     system: 'CounterOS',
-    subsystem: 'FroyoOS',
-    tenant: 'MoyoOS - Portal Centro',
+    module: currentModule,
+    tenant: 'Moyo - Portal Centro',
     foodCost: 36.9,
     sales: 485230,
     tickets: 1247,
@@ -18,52 +51,77 @@ export const DashboardPage = () => {
     wastage: 4.2
   };
 
-  // Theme colors for MoyoOS (frozen yogurt theme)
-  const themeColors = {
-    primary: 'purple',
-    alert: 'red',
-    success: 'green',
-    info: 'blue'
-  };
+  const currentModuleConfig = modules[currentModule];
+  const ModuleIcon = currentModuleConfig.icon;
+  const totalStores = Object.values(modules).reduce((sum, module) => sum + module.stores, 0);
 
   return (
-    <div className="p-6 space-y-6 bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
-      {/* Header with System Hierarchy */}
+    <div className={`p-6 space-y-6 bg-gradient-to-br ${currentModuleConfig.bgGradient} min-h-screen`}>
+      {/* Header with Module Selector */}
       <div className="bg-white rounded-lg shadow-lg p-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
-              <span className="font-semibold">CounterOS</span>
+        <div className="flex justify-between items-start">
+          <div className="flex-1">
+            {/* Breadcrumb Navigation */}
+            <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+              <span className="font-bold text-gray-700">CounterOS™</span>
               <span>›</span>
-              <span>FroyoOS</span>
+              <select 
+                value={currentModule}
+                onChange={(e) => setCurrentModule(e.target.value)}
+                className="font-semibold text-purple-600 bg-transparent border border-gray-200 rounded px-2 py-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="FroyoOS">FroyoOS</option>
+                <option value="CrepasOS">CrepasOS</option>
+                <option value="SushiOS">SushiOS</option>
+                <option value="CoffeeOS">CoffeeOS</option>
+              </select>
               <span>›</span>
-              <span className="text-purple-600">MoyoOS</span>
+              <select 
+                value={currentTenant}
+                onChange={(e) => setCurrentTenant(e.target.value)}
+                className="text-purple-700 bg-transparent border border-gray-200 rounded px-2 py-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                {currentModuleConfig.tenants.map(tenant => (
+                  <option key={tenant} value={tenant}>{tenant}</option>
+                ))}
+              </select>
             </div>
-            <h1 className="text-3xl font-bold flex items-center gap-2">
-              <Snowflake className="h-8 w-8 text-purple-500" />
-              Dashboard Operativo - Moyo
+            
+            {/* Main Title */}
+            <h1 className="text-3xl font-bold flex items-center gap-3">
+              <ModuleIcon className="h-8 w-8 text-purple-500" />
+              Dashboard Operativo - {currentModule}
             </h1>
-            <p className="text-gray-600 mt-1">Portal Centro, Hermosillo</p>
+            <p className="text-gray-600 mt-1">Portal Centro, Hermosillo • {currentTenant}</p>
           </div>
-          <div className="text-right">
-            <p className="text-sm text-gray-500">
-              {new Date().toLocaleDateString('es-MX', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
-            </p>
-            <p className="text-xs text-gray-400 mt-1">
-              Sistema: {metrics.system} v1.0
-            </p>
+          
+          {/* Module Quick Switcher */}
+          <div className="flex gap-2">
+            {Object.entries(modules).map(([moduleName, config]) => {
+              const Icon = config.icon;
+              return (
+                <button
+                  key={moduleName}
+                  onClick={() => setCurrentModule(moduleName)}
+                  className={`p-3 rounded-lg transition-all ${
+                    currentModule === moduleName 
+                      ? 'bg-purple-100 text-purple-700 shadow-md'
+                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                  }`}
+                  title={moduleName}
+                >
+                  <Icon className="h-5 w-5" />
+                  <div className="text-xs mt-1">{config.stores}</div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
+      {/* KPI Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-        {/* Food Cost Card - ALERT */}
+        {/* Food Cost - CRITICAL */}
         <Card className="border-red-500 border-2 bg-red-50">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center justify-between">
@@ -77,7 +135,7 @@ export const DashboardPage = () => {
           </CardContent>
         </Card>
 
-        {/* Sales Card */}
+        {/* Sales */}
         <Card className="bg-green-50">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center justify-between">
@@ -93,8 +151,8 @@ export const DashboardPage = () => {
           </CardContent>
         </Card>
 
-        {/* Tickets Card */}
-        <Card>
+        {/* Tickets */}
+        <Card className="bg-blue-50">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center justify-between">
               Tickets
@@ -103,16 +161,16 @@ export const DashboardPage = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">{metrics.tickets}</div>
-            <p className="text-xs text-gray-500">Ticket promedio: $389</p>
+            <p className="text-xs text-gray-500">Promedio: $389</p>
           </CardContent>
         </Card>
 
-        {/* Labor Cost Card */}
-        <Card>
+        {/* Labor Cost */}
+        <Card className="bg-green-50">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center justify-between">
               Labor Cost
-              <Package className="h-4 w-4 text-purple-500" />
+              <Package className="h-4 w-4 text-green-500" />
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -121,12 +179,12 @@ export const DashboardPage = () => {
           </CardContent>
         </Card>
 
-        {/* Wastage Card */}
-        <Card>
+        {/* Wastage */}
+        <Card className="bg-orange-50">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center justify-between">
               Merma
-              <Snowflake className="h-4 w-4 text-purple-500" />
+              <Snowflake className="h-4 w-4 text-orange-500" />
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -136,26 +194,33 @@ export const DashboardPage = () => {
         </Card>
       </div>
 
-      {/* Critical Alert Banner */}
+      {/* Critical Alert */}
       <div className="bg-red-100 border-l-4 border-red-500 p-4 rounded-lg shadow">
         <div className="flex">
-          <div className="flex-shrink-0">
-            <AlertCircle className="h-6 w-6 text-red-400" />
-          </div>
-          <div className="ml-3">
+          <AlertCircle className="h-6 w-6 text-red-400 mt-1 flex-shrink-0" />
+          <div className="ml-3 flex-1">
             <h3 className="text-lg font-bold text-red-800">
               ALERTA CRÍTICA: Food Cost fuera de control
             </h3>
-            <div className="mt-2 text-sm text-red-700">
-              <p>• Food Cost actual: {metrics.foodCost}% (Objetivo: 30%)</p>
-              <p>• Pérdida diaria estimada: ${Math.round(metrics.sales * 0.069).toLocaleString('es-MX')} MXN</p>
-              <p>• Pérdida mensual proyectada: ${Math.round(metrics.sales * 0.069 * 30).toLocaleString('es-MX')} MXN</p>
+            <div className="mt-2 text-sm text-red-700 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <p className="font-semibold">Actual vs Objetivo</p>
+                <p>{metrics.foodCost}% vs 30%</p>
+              </div>
+              <div>
+                <p className="font-semibold">Pérdida Diaria</p>
+                <p>${Math.round(metrics.sales * 0.069).toLocaleString('es-MX')}</p>
+              </div>
+              <div>
+                <p className="font-semibold">Pérdida Mensual Proyectada</p>
+                <p>${Math.round(metrics.sales * 0.069 * 30).toLocaleString('es-MX')}</p>
+              </div>
             </div>
             <div className="mt-4 flex gap-3">
-              <button className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700">
+              <button className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition-colors">
                 Ver análisis detallado
               </button>
-              <button className="px-3 py-1 border border-red-600 text-red-600 rounded text-sm hover:bg-red-50">
+              <button className="px-3 py-1 border border-red-600 text-red-600 rounded text-sm hover:bg-red-50 transition-colors">
                 Descargar reporte
               </button>
             </div>
@@ -163,52 +228,48 @@ export const DashboardPage = () => {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="hover:shadow-xl transition-shadow cursor-pointer bg-white">
-          <CardContent className="p-6 text-center">
-            <div className="bg-purple-100 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-              <Package className="h-8 w-8 text-purple-600" />
-            </div>
-            <h3 className="font-semibold">Subir Facturas</h3>
-            <p className="text-sm text-gray-600">XML / CSV</p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-xl transition-shadow cursor-pointer bg-white">
-          <CardContent className="p-6 text-center">
-            <div className="bg-blue-100 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-              <TrendingUp className="h-8 w-8 text-blue-600" />
-            </div>
-            <h3 className="font-semibold">Tendencias</h3>
-            <p className="text-sm text-gray-600">30 días</p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-xl transition-shadow cursor-pointer bg-white">
-          <CardContent className="p-6 text-center">
-            <div className="bg-green-100 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-              <DollarSign className="h-8 w-8 text-green-600" />
-            </div>
-            <h3 className="font-semibold">P&L Mensual</h3>
-            <p className="text-sm text-gray-600">Exportar</p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-xl transition-shadow cursor-pointer bg-white">
-          <CardContent className="p-6 text-center">
-            <div className="bg-orange-100 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-              <Snowflake className="h-8 w-8 text-orange-600" />
-            </div>
-            <h3 className="font-semibold">Cambiar a Nutrisa</h3>
-            <p className="text-sm text-gray-600">NutrisaOS</p>
-          </CardContent>
-        </Card>
+      {/* Module-Specific Actions */}
+      <div className="bg-white rounded-lg shadow p-4">
+        <h3 className="text-sm font-semibold text-gray-600 mb-3">Acciones Rápidas - {currentModule}</h3>
+        <div className="grid gap-3 md:grid-cols-5">
+          <button className="p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
+            <Package className="h-5 w-5 text-purple-600 mx-auto mb-1" />
+            <p className="text-xs">Subir Facturas</p>
+          </button>
+          <button className="p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+            <TrendingUp className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+            <p className="text-xs">Tendencias</p>
+          </button>
+          <button className="p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+            <DollarSign className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+            <p className="text-xs">P&L</p>
+          </button>
+          <button className="p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+            <ModuleIcon className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+            <p className="text-xs">Config {currentModule}</p>
+          </button>
+          <button className="p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+            <AlertCircle className="h-5 w-5 text-blue-600 mx-auto mb-1" />
+            <p className="text-xs">Alertas</p>
+          </button>
+        </div>
       </div>
 
-      {/* Footer with system info */}
-      <div className="text-center text-xs text-gray-500 mt-8">
-        CounterOS™ • FroyoOS Module • MoyoOS Theme Active • Portal Centro Branch
+      {/* System Stats Bar */}
+      <div className="bg-gray-800 text-white rounded-lg p-3 text-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+        <div className="flex flex-wrap gap-4">
+          <span className="font-semibold">CounterOS™ v1.0.0</span>
+          <span className="text-purple-400">{currentModule} Active</span>
+          <span>{currentTenant} • Portal Centro</span>
+        </div>
+        <div className="flex flex-wrap gap-4">
+          <span>{totalStores} tiendas totales</span>
+          <span>{Object.keys(modules).length} módulos activos</span>
+          <span className="text-green-400 flex items-center gap-1">
+            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+            Online
+          </span>
+        </div>
       </div>
     </div>
   );
