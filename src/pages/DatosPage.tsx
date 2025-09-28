@@ -1,382 +1,395 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StoreSelector } from '@/components/ui/store-selector';
 import { useStoreSelection } from '@/hooks/useStoreSelection';
 import { 
   Upload, 
-  FileText, 
-  Receipt, 
   CheckCircle, 
   AlertTriangle, 
-  FileSpreadsheet,
-  Calendar,
-  DollarSign
+  Copy,
+  FileText,
+  Info,
+  Calculator,
+  TrendingUp,
+  Lock
 } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { toast } from '@/hooks/use-toast';
+
+interface ExpenseRow {
+  category: string;
+  label: string;
+  value: string;
+  percentage: string;
+  isCalculated: boolean;
+  isEditable: boolean;
+  tooltip?: string;
+}
 
 const DatosPage = () => {
   const { selectedStore, isConsolidatedView } = useStoreSelection();
-  const [uploadedFiles, setUploadedFiles] = useState({
-    sales: null as File | null,
-    expenses: false,
-    cfdi: null as File | null
-  });
+  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
+  const [salesAmount, setSalesAmount] = useState('');
+  const [salesFile, setSalesFile] = useState<File | null>(null);
+  const [uploadMode, setUploadMode] = useState<'amount' | 'csv'>('amount');
+  const [isSaved, setIsSaved] = useState(false);
+  
+  // Expense rows configuration
+  const [expenseRows, setExpenseRows] = useState<ExpenseRow[]>([
+    { category: 'sales', label: 'Ventas Totales', value: '', percentage: '100.00', isCalculated: false, isEditable: true },
+    { category: 'cogs', label: 'Costo de Ventas (COGS)', value: '', percentage: '35.00', isCalculated: true, isEditable: false, tooltip: 'Calculado automáticamente basado en recetas y costos de ingredientes' },
+    { category: 'rent', label: 'Renta', value: '', percentage: '', isCalculated: false, isEditable: true },
+    { category: 'payroll', label: 'Nómina', value: '', percentage: '', isCalculated: false, isEditable: true },
+    { category: 'energy', label: 'Energía y Servicios', value: '', percentage: '', isCalculated: false, isEditable: true },
+    { category: 'other', label: 'Otros Gastos', value: '', percentage: '', isCalculated: false, isEditable: true },
+    { category: 'royalties', label: 'Regalías', value: '', percentage: '5.00', isCalculated: true, isEditable: false, tooltip: 'Calculado automáticamente como 5% de ventas' },
+    { category: 'marketing', label: 'Marketing', value: '', percentage: '3.00', isCalculated: true, isEditable: false, tooltip: 'Calculado automáticamente como 3% de ventas' },
+    { category: 'supervision', label: 'Supervisión', value: '8500', percentage: '', isCalculated: true, isEditable: false, tooltip: 'Costo fijo mensual de supervisión' }
+  ]);
 
-  const [expenseData, setExpenseData] = useState({
-    rent: '',
-    payroll: '',
-    energy: '',
-    marketing: '',
-    other: ''
-  });
+  // Calculate values when sales change
+  useEffect(() => {
+    const sales = parseFloat(salesAmount) || 0;
+    
+    setExpenseRows(prev => prev.map(row => {
+      let newValue = row.value;
+      let newPercentage = row.percentage;
+      
+      if (row.category === 'sales') {
+        newValue = sales.toString();
+        newPercentage = '100.00';
+      } else if (row.isCalculated && sales > 0) {
+        if (row.category === 'cogs') {
+          newValue = (sales * 0.35).toFixed(0);
+        } else if (row.category === 'royalties') {
+          newValue = (sales * 0.05).toFixed(0);
+        } else if (row.category === 'marketing') {
+          newValue = (sales * 0.03).toFixed(0);
+        }
+      }
 
-  const handleFileUpload = (type: 'sales' | 'cfdi', file: File | null) => {
-    setUploadedFiles(prev => ({
-      ...prev,
-      [type]: file
+      // Calculate percentage for fixed amounts
+      if (sales > 0 && row.value && !row.isCalculated && row.category !== 'sales') {
+        newPercentage = ((parseFloat(row.value) / sales) * 100).toFixed(2);
+      }
+
+      return { ...row, value: newValue, percentage: newPercentage };
+    }));
+  }, [salesAmount]);
+
+  const updateExpenseRow = (category: string, field: 'value' | 'percentage', newValue: string) => {
+    const sales = parseFloat(salesAmount) || 0;
+    
+    setExpenseRows(prev => prev.map(row => {
+      if (row.category === category && row.isEditable) {
+        const updatedRow = { ...row };
+        
+        if (field === 'value') {
+          updatedRow.value = newValue;
+          if (sales > 0) {
+            updatedRow.percentage = ((parseFloat(newValue) / sales) * 100).toFixed(2);
+          }
+        }
+        
+        return updatedRow;
+      }
+      return row;
     }));
   };
 
-  const handleExpenseSubmit = () => {
-    setUploadedFiles(prev => ({
-      ...prev,
-      expenses: true
+  const duplicateLastMonth = () => {
+    // Simulated data - in real app this would come from API
+    toast({
+      title: "Datos del mes anterior copiados",
+      description: "Se han prellenado los campos con los datos del mes anterior"
+    });
+    
+    setSalesAmount('125000');
+    setExpenseRows(prev => prev.map(row => {
+      if (row.category === 'rent') return { ...row, value: '25000' };
+      if (row.category === 'payroll') return { ...row, value: '35000' };
+      if (row.category === 'energy') return { ...row, value: '8500' };
+      if (row.category === 'other') return { ...row, value: '5000' };
+      return row;
     }));
   };
 
-  const getStatusColor = (status: boolean | File | null) => {
-    if (status) return 'text-green-600';
-    return 'text-orange-500';
+  const handleSave = () => {
+    setIsSaved(true);
+    toast({
+      title: "Datos guardados correctamente",
+      description: `Información del mes ${selectedMonth} guardada exitosamente`
+    });
   };
 
-  const getStatusIcon = (status: boolean | File | null) => {
-    if (status) return <CheckCircle className="h-4 w-4 text-green-600" />;
-    return <AlertTriangle className="h-4 w-4 text-orange-500" />;
+  const calculatePnL = () => {
+    const sales = parseFloat(salesAmount) || 0;
+    const cogs = parseFloat(expenseRows.find(r => r.category === 'cogs')?.value || '0');
+    const totalExpenses = expenseRows
+      .filter(r => r.category !== 'sales' && r.category !== 'cogs')
+      .reduce((sum, row) => sum + (parseFloat(row.value) || 0), 0);
+    
+    const grossProfit = sales - cogs;
+    const ebitda = sales - cogs - totalExpenses;
+    
+    return { sales, cogs, grossProfit, totalExpenses, ebitda };
   };
 
-  const getStatusText = (status: boolean | File | null) => {
-    if (status) return 'Completado';
-    return 'Pendiente';
-  };
+  const pnl = calculatePnL();
 
   return (
-    <AppLayout>
-      <div className="container mx-auto max-w-6xl py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+    <TooltipProvider>
+      <AppLayout>
+        <div className="container mx-auto max-w-5xl py-8 space-y-6">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">
-                Carga de Datos
-              </h1>
+              <h1 className="text-3xl font-bold tracking-tight">Cargar Datos</h1>
               <p className="text-muted-foreground">
                 {isConsolidatedView 
-                  ? 'Centraliza toda la información que necesitas para generar tus reportes'
-                  : `Carga de datos para ${selectedStore?.name || 'tienda seleccionada'}`
+                  ? 'Gestión operativa simplificada para gerentes de QSR'
+                  : `Datos operativos - ${selectedStore?.name}`
                 }
               </p>
             </div>
-            <StoreSelector />
-          </div>
-        </div>
-
-        {/* Status Checklist */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5" />
-              Estado del P&L
-            </CardTitle>
-            <CardDescription>
-              Verifica que tengas toda la información necesaria
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center gap-3 p-4 border rounded-lg">
-                {getStatusIcon(uploadedFiles.sales)}
-                <div>
-                  <p className="font-medium">Ventas</p>
-                  <p className={`text-sm ${getStatusColor(uploadedFiles.sales)}`}>
-                    {getStatusText(uploadedFiles.sales)}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-3 p-4 border rounded-lg">
-                {getStatusIcon(uploadedFiles.expenses)}
-                <div>
-                  <p className="font-medium">Gastos</p>
-                  <p className={`text-sm ${getStatusColor(uploadedFiles.expenses)}`}>
-                    {getStatusText(uploadedFiles.expenses)}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-3 p-4 border rounded-lg">
-                <div className="flex items-center">
-                  {uploadedFiles.sales && uploadedFiles.expenses ? (
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <AlertTriangle className="h-4 w-4 text-orange-500" />
-                  )}
-                </div>
-                <div>
-                  <p className="font-medium">P&L</p>
-                  <p className={`text-sm ${uploadedFiles.sales && uploadedFiles.expenses ? 'text-green-600' : 'text-orange-500'}`}>
-                    {uploadedFiles.sales && uploadedFiles.expenses ? 'Listo' : 'Faltan datos'}
-                  </p>
-                </div>
-              </div>
+            <div className="flex items-center gap-3">
+              <StoreSelector />
             </div>
-            
-            {uploadedFiles.sales && uploadedFiles.expenses && (
-              <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm font-medium text-green-800">
-                  ¡Perfecto! Ya puedes generar tu reporte P&L completo
-                </p>
-                <Button className="mt-2" size="sm">
-                  Ver P&L →
+          </div>
+
+          {/* Month & Actions */}
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="month">Período</Label>
+                  <Input
+                    id="month"
+                    type="month"
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    className="w-auto"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={duplicateLastMonth}>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Duplicar mes anterior
+                  </Button>
+                  <input
+                    type="file"
+                    accept=".csv"
+                    className="hidden"
+                    id="csv-upload"
+                    onChange={(e) => {
+                      setSalesFile(e.target.files?.[0] || null);
+                      if (e.target.files?.[0]) {
+                        toast({
+                          title: "CSV cargado",
+                          description: "Datos históricos procesados correctamente"
+                        });
+                      }
+                    }}
+                  />
+                  <Button variant="outline" onClick={() => document.getElementById('csv-upload')?.click()}>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Cargar CSV histórico
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Step 1: Sales */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold">1</span>
+                Ventas del Mes
+              </CardTitle>
+              <CardDescription>Captura las ventas totales del período seleccionado</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex gap-2">
+                <Button
+                  variant={uploadMode === 'amount' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setUploadMode('amount')}
+                >
+                  Monto total
+                </Button>
+                <Button
+                  variant={uploadMode === 'csv' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setUploadMode('csv')}
+                >
+                  Archivo CSV
                 </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
 
-        {/* Data Upload Tabs */}
-        <Tabs defaultValue="sales" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="sales">Ventas CSV</TabsTrigger>
-            <TabsTrigger value="expenses">Gastos</TabsTrigger>
-            <TabsTrigger value="cfdi">CFDI (Beta)</TabsTrigger>
-          </TabsList>
-
-          {/* Sales Upload */}
-          <TabsContent value="sales">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileSpreadsheet className="h-5 w-5" />
-                  Carga de Ventas
-                </CardTitle>
-                <CardDescription>
-                  Sube tu archivo CSV con las ventas del período
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
-                    <input
-                      type="file"
-                      accept=".csv"
-                      onChange={(e) => handleFileUpload('sales', e.target.files?.[0] || null)}
-                      className="hidden"
-                      id="sales-file"
-                    />
-                    <label htmlFor="sales-file" className="cursor-pointer">
-                      <div className="space-y-4">
-                        <Upload className="h-12 w-12 mx-auto text-muted-foreground" />
-                        <div>
-                          <p className="text-lg font-medium">
-                            {uploadedFiles.sales ? uploadedFiles.sales.name : 'Selecciona archivo CSV'}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Arrastra y suelta o haz clic para seleccionar
-                          </p>
-                        </div>
-                      </div>
-                    </label>
-                  </div>
-
-                  <div className="bg-muted/50 p-4 rounded-lg">
-                    <h4 className="font-medium mb-2">Formato esperado:</h4>
-                    <div className="space-y-1 text-sm text-muted-foreground">
-                      <p>• <code>fecha</code>: YYYY-MM-DD</p>
-                      <p>• <code>sku</code>: Código del producto</p>
-                      <p>• <code>cantidad</code>: Unidades vendidas</p>
-                      <p>• <code>precio_unitario</code>: Precio por unidad</p>
-                      <p>• <code>ticket_id</code>: ID de la venta</p>
-                    </div>
-                  </div>
-
-                  {uploadedFiles.sales && (
-                    <div className="flex items-center gap-2 text-green-600">
-                      <CheckCircle className="h-4 w-4" />
-                      <span className="text-sm font-medium">
-                        Archivo cargado correctamente
-                      </span>
-                    </div>
-                  )}
+              {uploadMode === 'amount' ? (
+                <div className="max-w-sm">
+                  <Label htmlFor="sales">Ventas totales (MXN)</Label>
+                  <Input
+                    id="sales"
+                    type="number"
+                    value={salesAmount}
+                    onChange={(e) => setSalesAmount(e.target.value)}
+                    placeholder="125,000"
+                    className="text-lg font-semibold"
+                  />
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              ) : (
+                <div className="border-2 border-dashed rounded-lg p-6 text-center">
+                  <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                  <p className="text-sm">
+                    {salesFile ? salesFile.name : 'Arrastra tu CSV de ventas aquí o haz clic para seleccionar'}
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-          {/* Expenses Form */}
-          <TabsContent value="expenses">
+          {/* Step 2: Expense Table */}
+          {salesAmount && (
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
-                  Gastos del Mes
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold">2</span>
+                  Estructura de Gastos
                 </CardTitle>
-                <CardDescription>
-                  Captura rápida de gastos fijos y variables
-                </CardDescription>
+                <CardDescription>Ajusta los gastos fijos y revisa los automáticos</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="rent">Renta mensual</Label>
-                      <Input
-                        id="rent"
-                        type="number"
-                        value={expenseData.rent}
-                        onChange={(e) => setExpenseData({...expenseData, rent: e.target.value})}
-                        placeholder="25,000"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="payroll">Nómina</Label>
-                      <Input
-                        id="payroll"
-                        type="number"
-                        value={expenseData.payroll}
-                        onChange={(e) => setExpenseData({...expenseData, payroll: e.target.value})}
-                        placeholder="35,000"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="energy">Energía y servicios</Label>
-                      <Input
-                        id="energy"
-                        type="number"
-                        value={expenseData.energy}
-                        onChange={(e) => setExpenseData({...expenseData, energy: e.target.value})}
-                        placeholder="8,000"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="marketing">Marketing (% de ventas)</Label>
-                      <Input
-                        id="marketing"
-                        type="number"
-                        value={expenseData.marketing}
-                        onChange={(e) => setExpenseData({...expenseData, marketing: e.target.value})}
-                        placeholder="3"
-                      />
-                    </div>
+                <div className="rounded-lg border">
+                  <div className="grid grid-cols-4 gap-4 p-4 bg-muted/50 border-b font-medium text-sm">
+                    <div>Categoría</div>
+                    <div className="text-right">Valor (MXN)</div>
+                    <div className="text-right">% Ventas</div>
+                    <div className="text-center">Estado</div>
                   </div>
                   
-                  <div>
-                    <Label htmlFor="other">Otros gastos</Label>
-                    <Input
-                      id="other"
-                      type="number"
-                      value={expenseData.other}
-                      onChange={(e) => setExpenseData({...expenseData, other: e.target.value})}
-                      placeholder="5,000"
-                    />
-                  </div>
-
-                  <Button onClick={handleExpenseSubmit} className="w-full">
-                    Guardar Gastos
-                  </Button>
-
-                  {uploadedFiles.expenses && (
-                    <div className="flex items-center gap-2 text-green-600">
-                      <CheckCircle className="h-4 w-4" />
-                      <span className="text-sm font-medium">
-                        Gastos guardados correctamente
-                      </span>
+                  {expenseRows.map((row) => (
+                    <div key={row.category} className={`grid grid-cols-4 gap-4 p-4 border-b last:border-b-0 items-center ${
+                      row.isCalculated ? 'bg-accent-light/30' : 'bg-background'
+                    }`}>
+                      <div className="flex items-center gap-2">
+                        <span className={`font-medium ${row.category === 'sales' ? 'text-primary font-semibold' : ''}`}>
+                          {row.label}
+                        </span>
+                        {row.tooltip && (
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Info className="h-4 w-4 text-muted-foreground" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="max-w-xs">{row.tooltip}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                        {row.isCalculated && <Lock className="h-3 w-3 text-muted-foreground" />}
+                      </div>
+                      
+                      <div className="text-right">
+                        {row.isEditable ? (
+                          <Input
+                            type="number"
+                            value={row.value}
+                            onChange={(e) => updateExpenseRow(row.category, 'value', e.target.value)}
+                            className="text-right"
+                            disabled={row.category === 'sales'}
+                          />
+                        ) : (
+                          <span className={`font-mono ${row.isCalculated ? 'text-muted-foreground' : 'font-semibold'}`}>
+                            ${row.value ? parseFloat(row.value).toLocaleString() : '0'}
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="text-right">
+                        <span className="font-mono text-sm">
+                          {row.percentage ? `${parseFloat(row.percentage).toFixed(1)}%` : '—'}
+                        </span>
+                      </div>
+                      
+                      <div className="text-center">
+                        {row.isCalculated ? (
+                          <Calculator className="h-4 w-4 text-success mx-auto" />
+                        ) : row.value ? (
+                          <CheckCircle className="h-4 w-4 text-success mx-auto" />
+                        ) : (
+                          <AlertTriangle className="h-4 w-4 text-warning mx-auto" />
+                        )}
+                      </div>
                     </div>
-                  )}
+                  ))}
+                </div>
+                
+                <div className="mt-6 flex justify-end">
+                  <Button onClick={handleSave} size="lg" className="px-8">
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Guardar Datos
+                  </Button>
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          )}
 
-          {/* CFDI Upload */}
-          <TabsContent value="cfdi">
-            <Card>
+          {/* Step 3: P&L Preview */}
+          {isSaved && pnl.sales > 0 && (
+            <Card className="border-success/50 bg-success/5">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Receipt className="h-5 w-5" />
-                  Facturas CFDI
-                  <Badge variant="secondary">Beta</Badge>
+                <CardTitle className="flex items-center gap-2 text-lg text-success">
+                  <TrendingUp className="h-5 w-5" />
+                  Vista Previa P&L
                 </CardTitle>
-                <CardDescription>
-                  Procesamiento automático de facturas (próximamente disponible)
-                </CardDescription>
+                <CardDescription>Resumen financiero del período</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center opacity-50">
-                    <Receipt className="h-12 w-12 mx-auto text-muted-foreground" />
-                    <div className="space-y-2 mt-4">
-                      <p className="text-lg font-medium">Carga de CFDI</p>
-                      <p className="text-sm text-muted-foreground">
-                        Esta funcionalidad estará disponible pronto
-                      </p>
-                    </div>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  <div className="text-center p-3 rounded-lg bg-background border">
+                    <p className="text-sm text-muted-foreground">Ventas</p>
+                    <p className="text-lg font-semibold">${pnl.sales.toLocaleString()}</p>
                   </div>
-
-                  <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-                    <h4 className="font-medium text-blue-800 mb-2">¿Qué podrás hacer?</h4>
-                    <ul className="space-y-1 text-sm text-blue-600">
-                      <li>• Carga automática de facturas XML</li>
-                      <li>• Extracción de datos de proveedores</li>
-                      <li>• Clasificación automática de gastos</li>
-                      <li>• Integración directa con el P&L</li>
-                    </ul>
+                  <div className="text-center p-3 rounded-lg bg-background border">
+                    <p className="text-sm text-muted-foreground">COGS</p>
+                    <p className="text-lg font-semibold text-orange-600">-${pnl.cogs.toLocaleString()}</p>
                   </div>
+                  <div className="text-center p-3 rounded-lg bg-background border">
+                    <p className="text-sm text-muted-foreground">Utilidad Bruta</p>
+                    <p className="text-lg font-semibold text-blue-600">${pnl.grossProfit.toLocaleString()}</p>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-background border">
+                    <p className="text-sm text-muted-foreground">OPEX Total</p>
+                    <p className="text-lg font-semibold text-orange-600">-${pnl.totalExpenses.toLocaleString()}</p>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-success/10 border border-success">
+                    <p className="text-sm text-success">EBITDA</p>
+                    <p className="text-xl font-bold text-success">
+                      ${pnl.ebitda.toLocaleString()}
+                    </p>
+                    <p className="text-xs text-success">
+                      {((pnl.ebitda / pnl.sales) * 100).toFixed(1)}%
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="mt-4 flex justify-center">
+                  <Button variant="outline">
+                    <FileText className="h-4 w-4 mr-2" />
+                    Ver P&L Completo
+                  </Button>
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
-
-        {/* Quick Actions */}
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>Acciones Rápidas</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Button variant="outline" className="h-auto p-4">
-                <div className="text-center">
-                  <FileText className="h-8 w-8 mx-auto mb-2" />
-                  <p className="font-medium">Ver Food Cost</p>
-                  <p className="text-xs text-muted-foreground">Análisis de costos</p>
-                </div>
-              </Button>
-              
-              <Button variant="outline" className="h-auto p-4">
-                <div className="text-center">
-                  <Receipt className="h-8 w-8 mx-auto mb-2" />
-                  <p className="font-medium">Generar P&L</p>
-                  <p className="text-xs text-muted-foreground">Reporte financiero</p>
-                </div>
-              </Button>
-              
-              <Button variant="outline" className="h-auto p-4">
-                <div className="text-center">
-                  <Calendar className="h-8 w-8 mx-auto mb-2" />
-                  <p className="font-medium">Configurar Alertas</p>
-                  <p className="text-xs text-muted-foreground">Automatización</p>
-                </div>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </AppLayout>
+          )}
+        </div>
+      </AppLayout>
+    </TooltipProvider>
   );
 };
 
