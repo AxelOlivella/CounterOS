@@ -61,7 +61,9 @@ const App = () => (
             
             <Route path="/tiendas/:storeSlug" element={
               <ProtectedRoute>
-                <StoreDashboardPage />
+                <AppLayout>
+                  <StoreDashboardPage />
+                </AppLayout>
               </ProtectedRoute>
             } />
             

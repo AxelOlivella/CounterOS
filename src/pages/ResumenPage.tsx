@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { StoreSelector } from '@/components/ui/store-selector';
 import { useStoreSelection } from '@/hooks/useStoreSelection';
 import { useSEO } from '@/hooks/useSEO';
+import { routes } from '@/routes';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -52,21 +53,21 @@ const ResumenPage = () => {
       description: 'Portal Centro necesita atención',
       icon: AlertTriangle,
       color: 'text-orange-500',
-      action: () => navigate('/food-cost-analysis')
+      action: () => navigate('/food-cost-analysis') // Keep as is - this is not a store route
     },
     {
       title: 'Ver P&L Completo',
       description: 'Análisis financiero detallado',
       icon: DollarSign,
       color: 'text-green-500',
-      action: () => navigate('/pnl-reports')
+      action: () => navigate('/pnl-reports') // Keep as is - this is not a store route
     },
     {
       title: 'Cargar Datos',
       description: 'Actualizar ventas y gastos',
       icon: TrendingUp,
       color: 'text-blue-500',
-      action: () => navigate('/cargar')
+      action: () => navigate(routes.upload)
     }
   ];
 
@@ -197,7 +198,7 @@ const ResumenPage = () => {
               <Button 
                 variant="outline" 
                 className="w-full border-green-600 text-green-600 hover:bg-green-50"
-                onClick={() => navigate('/tiendas/plaza-norte')}
+                onClick={() => navigate(routes.store('plaza-norte'))}
               >
                 Ver Detalles <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
@@ -249,7 +250,7 @@ const ResumenPage = () => {
 
               <Button 
                 className="w-full bg-orange-600 hover:bg-orange-700 text-white"
-                onClick={() => navigate('/tiendas/portal-centro')}
+                onClick={() => navigate(routes.store('portal-centro'))}
               >
                 Revisar Ahora <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
