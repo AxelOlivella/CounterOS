@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { TenantProvider } from "@/contexts/TenantContext";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { Navbar } from "@/components/Navbar";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 
@@ -13,10 +12,8 @@ import { UploadPage } from "./components/pages/UploadPage";
 import { FoodCostAnalysisPage } from "./components/pages/FoodCostAnalysisPage";
 import { PnLReportsPage } from "./components/pages/PnLReportsPage";
 import { SetupPage } from "./pages/SetupPage";
-import { OnboardingPage } from "./pages/onboarding";
-import { DatosPage } from "./pages/datos";
-import { FoodCostPage } from "./pages/foodcost";
-import { PnLPage } from "./pages/pnl";
+import OnboardingPage from "./pages/OnboardingPage";
+import DatosPage from "./pages/DatosPage";
 import StoreDashboardPage from "./pages/StoreDashboardPage";
 import TiendasPage from "./pages/TiendasPage";
 import AlertasPage from "./pages/AlertasPage";
@@ -34,18 +31,18 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Navbar />
           <Routes>
-            {/* MVP Routes */}
-            <Route path="/" element={<Navigate to="/foodcost" replace />} />
-            <Route path="/onboarding" element={<OnboardingPage />} />
-            <Route path="/datos" element={<DatosPage />} />
-            <Route path="/foodcost" element={<FoodCostPage />} />
-            <Route path="/pnl" element={<PnLPage />} />
-            
-            {/* Legacy Routes */}
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/setup" element={<SetupPage />} />
+            
+            {/* Protected Onboarding */}
+            <Route path="/onboarding" element={
+              <ProtectedRoute>
+                <OnboardingPage />
+              </ProtectedRoute>
+            } />
             
             {/* Main App Routes - OBLIGATORY: /resumen, /tiendas, /cargar, /alertas */}
             <Route path="/resumen" element={
@@ -100,8 +97,9 @@ const App = () => (
               </ProtectedRoute>
             } />
 
-            {/* Legacy Routes - Fix conflict */}
-            <Route path="/datos-legacy" element={<Navigate to="/cargar" replace />} />
+            {/* Legacy Routes - Maintain backward compatibility */}
+            <Route path="/dashboard" element={<Navigate to="/resumen" replace />} />
+            <Route path="/datos" element={<Navigate to="/cargar" replace />} />
             <Route path="/tienda/:storeId" element={<Navigate to="/tiendas/portal-centro" replace />} />
             <Route path="/settings" element={<Navigate to="/configuracion" replace />} />
             
