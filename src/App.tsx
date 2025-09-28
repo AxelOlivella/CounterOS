@@ -59,6 +59,27 @@ const App = () => (
                 </AppLayout>
               </ProtectedRoute>
             } />
+            <Route path="/food-cost-analysis" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <FoodCostAnalysisPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/pnl-reports" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <PnLReportsPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/upload" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <UploadPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
             <Route path="/alertas" element={
               <ProtectedRoute>
                 <AppLayout>
