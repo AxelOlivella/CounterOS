@@ -71,6 +71,90 @@ export type Database = {
           },
         ]
       }
+      finance_portal_centro_history: {
+        Row: {
+          amount_mxn: number
+          inserted_at: string | null
+          metric_code: string
+          metric_name: string
+          month: number
+          pct_of_sales: number | null
+          period_month: string
+          site_id: string
+          site_name: string
+          source_doc: string
+          year: number
+        }
+        Insert: {
+          amount_mxn: number
+          inserted_at?: string | null
+          metric_code: string
+          metric_name: string
+          month: number
+          pct_of_sales?: number | null
+          period_month: string
+          site_id: string
+          site_name: string
+          source_doc: string
+          year: number
+        }
+        Update: {
+          amount_mxn?: number
+          inserted_at?: string | null
+          metric_code?: string
+          metric_name?: string
+          month?: number
+          pct_of_sales?: number | null
+          period_month?: string
+          site_id?: string
+          site_name?: string
+          source_doc?: string
+          year?: number
+        }
+        Relationships: []
+      }
+      finance_portal_centro_opx_detail: {
+        Row: {
+          amount_mxn: number
+          inserted_at: string | null
+          month: number
+          opx_code: string
+          opx_name: string
+          pct_of_sales: number | null
+          period_month: string
+          site_id: string
+          site_name: string
+          source_doc: string
+          year: number
+        }
+        Insert: {
+          amount_mxn: number
+          inserted_at?: string | null
+          month: number
+          opx_code: string
+          opx_name: string
+          pct_of_sales?: number | null
+          period_month: string
+          site_id: string
+          site_name: string
+          source_doc: string
+          year: number
+        }
+        Update: {
+          amount_mxn?: number
+          inserted_at?: string | null
+          month?: number
+          opx_code?: string
+          opx_name?: string
+          pct_of_sales?: number | null
+          period_month?: string
+          site_id?: string
+          site_name?: string
+          source_doc?: string
+          year?: number
+        }
+        Relationships: []
+      }
       ingredients: {
         Row: {
           code: string
@@ -463,6 +547,18 @@ export type Database = {
             referencedColumns: ["tenant_id"]
           },
         ]
+      }
+      vw_portal_centro_pyg_mensual: {
+        Row: {
+          cogs: number | null
+          ebitda_operativo: number | null
+          opex_total: number | null
+          period_month: string | null
+          site_name: string | null
+          utilidad_bruta: number | null
+          ventas: number | null
+        }
+        Relationships: []
       }
       waste_analysis: {
         Row: {
