@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { useTranslation } from '@/lib/i18n';
-import { usePerformanceMonitor } from '@/lib/performance';
+import { PerformanceMonitor } from '@/lib/performance';
 import { useOfflineStatus } from '@/lib/offline';
 import { hasPermission, UserRole } from '@/lib/rbac';
 import { useTenant } from '@/contexts/TenantContext';

@@ -79,7 +79,7 @@ export class OfflineStorage {
     const index = store.index('synced');
     
     return new Promise((resolve, reject) => {
-      const request = index.getAll(false); // Get unsynced operations
+      const request = index.getAll(IDBKeyRange.only(false)); // Get unsynced operations
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
     });
@@ -245,16 +245,21 @@ export class SyncManager {
     // This would integrate with your Supabase client
     const { supabase } = await import('@/integrations/supabase/client');
 
-    switch (operation.operation) {
-      case 'CREATE':
-        await supabase.from(operation.tableName).insert(operation.data);
-        break;
-      case 'UPDATE':
-        await supabase.from(operation.tableName).update(operation.data).eq('id', operation.data.id);
-        break;
-      case 'DELETE':
-        await supabase.from(operation.tableName).delete().eq('id', operation.data.id);
-        break;
+    try {
+      switch (operation.operation) {
+        case 'CREATE':
+          await (supabase as any).from(operation.tableName).insert(operation.data);
+          break;
+        case 'UPDATE':
+          await (supabase as any).from(operation.tableName).update(operation.data).eq('id', operation.data.id);
+          break;
+        case 'DELETE':
+          await (supabase as any).from(operation.tableName).delete().eq('id', operation.data.id);
+          break;
+      }
+    } catch (error) {
+      console.error(`Failed to sync ${operation.operation} on ${operation.tableName}:`, error);
+      throw error;
     }
   }
 

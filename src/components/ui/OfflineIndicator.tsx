@@ -34,7 +34,7 @@ export function OfflineIndicator({ className, showDetails = false }: OfflineIndi
 
       {/* Pending Operations */}
       {status.pendingOperations > 0 && (
-        <Badge variant="warning" className="flex items-center gap-1">
+        <Badge variant="secondary" className="flex items-center gap-1 bg-warning/10 text-warning border-warning/20">
           {status.syncInProgress ? (
             <Loader2 className="h-3 w-3 animate-spin" />
           ) : (
