@@ -1,28 +1,51 @@
 import { ReactNode } from 'react';
-import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from './AppSidebar';
+import { MobileTabBar } from './MobileTabBar';
+import { StoreSwitcher } from '@/components/ui/store-switcher';
 
 interface AppLayoutProps {
-  children?: ReactNode;
+  children: ReactNode;
 }
 
-export const AppLayout = ({ children }: AppLayoutProps) => {
+export function AppLayout({ children }: AppLayoutProps) {
   return (
-    <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full">
-        <AppSidebar />
-        <SidebarInset>
-          <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-            <div className="flex h-14 items-center gap-4 px-4 lg:px-6">
-              <SidebarTrigger />
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        {/* Desktop Sidebar */}
+        <div className="hidden md:block">
+          <AppSidebar />
+        </div>
+
+        {/* Main Content */}
+        <main className="flex-1 flex flex-col min-w-0">
+          {/* Mobile Header */}
+          <header className="md:hidden bg-card border-b border-border p-4">
+            <div className="flex items-center justify-between">
+              <StoreSwitcher />
+              <SidebarTrigger className="md:hidden" />
             </div>
           </header>
-          
-          <main className="flex-1 p-4 lg:p-6">
+
+          {/* Desktop Header */}
+          <header className="hidden md:flex items-center h-14 border-b border-border px-4 bg-card">
+            <div className="flex items-center gap-4">
+              <SidebarTrigger />
+              <div className="flex-1">
+                <StoreSwitcher />
+              </div>
+            </div>
+          </header>
+
+          {/* Page Content */}
+          <div className="flex-1 mobile-container">
             {children}
-          </main>
-        </SidebarInset>
+          </div>
+        </main>
+
+        {/* Mobile Tab Bar */}
+        <MobileTabBar />
       </div>
     </SidebarProvider>
   );
-};
+}

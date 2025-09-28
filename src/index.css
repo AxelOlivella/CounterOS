@@ -2,109 +2,106 @@
 @tailwind components;
 @tailwind utilities;
 
-/* CounterOS Design System - Cost-obsessed operations platform */
+/* CounterOS Design System - Mobile-first, cost-obsessed operations platform */
 @layer base {
   :root {
-    /* Core Colors - Sophisticated Navy & Emerald Palette */
-    --background: 0 0% 96%;
-    --foreground: 0 0% 12%;
+    /* Core Colors - Professional Navy & Emerald Palette */
+    --background: 0 0% 98%;
+    --foreground: 214 100% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 12%;
+    --card-foreground: 214 100% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 12%;
+    --popover-foreground: 214 100% 12%;
 
-    /* Primary - Navy Blue (Structural Elements) */
-    --primary: 0 0% 12%;
-    --primary-foreground: 0 0% 96%;
-    --primary-dark: 0 0% 8%;
-    --primary-light: 0 0% 20%;
+    /* Primary - Deep Navy Blue (Structural, Professional) */
+    --primary: 214 100% 12%;
+    --primary-foreground: 0 0% 98%;
+    --primary-dark: 214 100% 8%;
+    --primary-light: 214 50% 20%;
 
-    /* Secondary - Emerald Green (CTA & Success) */
-    --secondary: 145 63% 49%;
+    /* Secondary - Emerald Green (Success, Savings, CTAs) */
+    --secondary: 158 64% 52%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-light: 145 63% 94%;
+    --secondary-light: 158 64% 95%;
+    --secondary-dark: 158 64% 40%;
 
-    /* Accent - Refined Emerald for Key Actions */
-    --accent: 145 63% 49%;
+    /* Accent - Strategic Emerald for Key Actions */
+    --accent: 158 64% 52%;
     --accent-foreground: 0 0% 100%;
-    --accent-light: 145 63% 94%;
+    --accent-light: 158 64% 95%;
+    --accent-hover: 158 64% 45%;
 
-    /* Status Colors */
-    --success: 145 63% 49%;
-    --warning: 45 93% 58%;
-    --danger: 0 84% 60%;
-    --info: 0 0% 20%;
+    /* Status Colors - Cost-focused */
+    --success: 158 64% 52%;      /* Savings, under budget */
+    --warning: 45 93% 58%;       /* Attention needed */
+    --danger: 0 84% 60%;         /* Over budget, losses */
+    --info: 214 50% 45%;         /* Information */
 
-    /* Neutral Colors - Light Grey Spectrum */
-    --muted: 0 0% 92%;
-    --muted-foreground: 0 0% 45%;
-    --border: 0 0% 88%;
-    --input: 0 0% 88%;
-    --ring: 0 0% 12%;
+    /* Neutral Colors - Clean Grey Spectrum */
+    --muted: 214 20% 95%;
+    --muted-foreground: 214 20% 45%;
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 214 100% 12%;
 
     /* Interactive States */
-    --hover: 0 0% 88%;
-    --active: 0 0% 8%;
+    --hover: 214 20% 90%;
+    --active: 214 100% 8%;
 
-    /* Gradients - Sophisticated Navy & Emerald */
-    --gradient-primary: linear-gradient(135deg, hsl(0 0% 12%), hsl(0 0% 8%));
-    --gradient-success: linear-gradient(135deg, hsl(145 63% 94%), hsl(145 63% 49%));
-    --gradient-accent: linear-gradient(135deg, hsl(145 63% 49%), hsl(145 63% 42%));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 96%), hsl(0 0% 92%));
+    /* Cost-focused Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(214 100% 12%), hsl(214 100% 8%));
+    --gradient-success: linear-gradient(135deg, hsl(158 64% 95%), hsl(158 64% 52%));
+    --gradient-savings: linear-gradient(135deg, hsl(158 64% 52%), hsl(158 64% 40%));
+    --gradient-cost: linear-gradient(135deg, hsl(0 84% 95%), hsl(0 84% 60%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 98%), hsl(214 20% 95%));
 
-    /* Shadows - Refined with Navy Tones */
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 12% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(0 0% 12% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 12% / 0.1);
-    --shadow-xl: 0 20px 25px -5px hsl(0 0% 12% / 0.25);
+    /* Shadows - Professional & Clean */
+    --shadow-sm: 0 1px 2px 0 hsl(214 100% 12% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(214 100% 12% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(214 100% 12% / 0.1);
+    --shadow-mobile: 0 2px 8px -2px hsl(214 100% 12% / 0.15);
 
-    /* Animations - Smooth & Professional */
+    /* Mobile-optimized Animations */
     --transition-fast: all 0.15s ease-out;
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-mobile: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
-    --radius: 0.75rem;
-
+    --radius: 0.5rem;
   }
 
-  /* Tenant Theme Overrides - Dynamic theming per brand */
-  .tenant-nutrisa {
-    --primary: 214 95% 93%;
-    --primary-dark: 214 84% 12%;
-    --secondary: 142 76% 36%;
-  }
-
-  .tenant-moyo {
-    --primary: 280 100% 70%;
-    --primary-dark: 280 100% 25%;
-    --secondary: 45 93% 58%;
-  }
-
+  /* Tenant Theme Overrides */
   .tenant-crepas {
-    --primary: 25 95% 53%;
-    --primary-dark: 25 95% 20%;
-    --secondary: 142 76% 36%;
+    --primary: 214 100% 12%;
+    --secondary: 158 64% 52%;
+    --accent: 158 64% 52%;
+  }
+
+  .tenant-portal-centro {
+    --primary: 214 100% 12%;
+    --secondary: 158 64% 52%;
+    --accent: 158 64% 52%;
   }
 
   .dark {
-    --background: 0 0% 8%;
-    --foreground: 0 0% 96%;
-    --card: 0 0% 12%;
-    --card-foreground: 0 0% 96%;
-    --popover: 0 0% 12%;
-    --popover-foreground: 0 0% 96%;
-    --primary: 0 0% 96%;
-    --primary-foreground: 0 0% 8%;
-    --secondary: 145 63% 49%;
+    --background: 214 100% 4%;
+    --foreground: 0 0% 98%;
+    --card: 214 100% 6%;
+    --card-foreground: 0 0% 98%;
+    --popover: 214 100% 6%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 214 100% 4%;
+    --secondary: 158 64% 52%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 145 63% 49%;
+    --muted: 214 50% 10%;
+    --muted-foreground: 214 20% 65%;
+    --accent: 158 64% 52%;
     --accent-foreground: 0 0% 100%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 145 63% 49%;
+    --border: 214 50% 15%;
+    --input: 214 50% 15%;
+    --ring: 158 64% 52%;
   }
 }
 
@@ -115,59 +112,125 @@
 
   body {
     @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 
 @layer components {
-  /* Dashboard Grid */
-  .dashboard-grid {
-    @apply grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4;
+  /* Mobile-first Components */
+  .mobile-container {
+    @apply px-4 pb-20; /* Bottom padding for tab bar */
   }
 
-  /* KPI Card */
-  .kpi-card {
-    @apply rounded-xl border bg-card p-6 shadow-sm transition-all duration-200 hover:shadow-md;
+  .mobile-card {
+    @apply bg-card border rounded-lg p-3 shadow-sm;
   }
 
-  /* Status Badges */
-  .status-success {
-    @apply bg-green-100 text-green-800 border border-green-200;
+  .mobile-input {
+    @apply border rounded-lg px-3 py-2 text-sm bg-background;
   }
 
-  .status-warning {
-    @apply bg-amber-100 text-amber-800 border border-amber-200;
+  .mobile-button {
+    @apply bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium transition-colors;
   }
 
-  .status-danger {
-    @apply bg-red-100 text-red-800 border border-red-200;
+  .mobile-cta {
+    @apply fixed bottom-16 left-4 right-4 z-40 bg-secondary text-secondary-foreground rounded-xl px-6 py-3 text-center font-semibold shadow-lg transition-all;
   }
 
-  /* Animations */
-  .fade-in {
-    animation: fadeIn 0.3s ease-out;
+  /* Cost-focused Status Indicators */
+  .status-saving {
+    @apply bg-success/10 text-success border border-success/20 rounded-full px-2 py-1 text-xs font-medium;
   }
 
-  .slide-up {
-    animation: slideUp 0.3s ease-out;
+  .status-over-budget {
+    @apply bg-danger/10 text-danger border border-danger/20 rounded-full px-2 py-1 text-xs font-medium;
+  }
+
+  .status-on-target {
+    @apply bg-info/10 text-info border border-info/20 rounded-full px-2 py-1 text-xs font-medium;
+  }
+
+  /* Tab Bar */
+  .tab-bar {
+    @apply fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border px-2 py-2 pb-3;
+  }
+
+  .tab-item {
+    @apply flex-1 flex flex-col items-center gap-1 py-1 px-2 rounded-lg transition-colors;
+  }
+
+  .tab-item.active {
+    @apply bg-primary/10 text-primary;
+  }
+
+  .tab-item.inactive {
+    @apply text-muted-foreground hover:text-foreground;
+  }
+
+  /* iOS-style List Items */
+  .ios-list {
+    @apply bg-card rounded-xl divide-y divide-border overflow-hidden;
+  }
+
+  .ios-list-item {
+    @apply flex items-center justify-between px-4 py-3 transition-colors hover:bg-muted/50;
+  }
+
+  .ios-list-header {
+    @apply px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider;
+  }
+
+  /* Cost Analytics Specific */
+  .cost-metric {
+    @apply text-center p-3 rounded-lg border;
+  }
+
+  .cost-saving {
+    @apply bg-success/5 border-success/20 text-success;
+  }
+
+  .cost-over {
+    @apply bg-danger/5 border-danger/20 text-danger;
+  }
+
+  .cost-neutral {
+    @apply bg-muted/50 border-border text-foreground;
   }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { 
+/* Mobile-optimized animations */
+@keyframes slideInFromBottom {
+  from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
-  to { 
+  to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-slide-in {
+  animation: slideInFromBottom 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
 }
