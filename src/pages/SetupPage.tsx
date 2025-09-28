@@ -1,183 +1,187 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AlertCircle, Store, User, Building } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 
-export const SetupPage = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
+export function SetupPage() {
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
   const { toast } = useToast();
 
-  const createDemoUsers = async () => {
-    setIsLoading(true);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    name: '',
+    companyName: '',
+    vertical: '',
+  });
+
+  const verticals = [
+    { value: 'froyo', label: 'Yogurt Helado / Froyo' },
+    { value: 'crepas', label: 'Crepería' },
+    { value: 'sushi', label: 'Sushi' },
+    { value: 'pizza', label: 'Pizzería' },
+    { value: 'cafe', label: 'Café / Cafetería' },
+    { value: 'other', label: 'Otro' }
+  ];
+
+  const handleNext = () => {
+    if (step < 2) setStep(step + 1);
+  };
+
+  const handleComplete = async () => {
+    setLoading(true);
+    setError('');
+
     try {
-      const { data, error } = await supabase.functions.invoke('create-demo-users', {
-        body: {}
+      const { error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+            company_name: formData.companyName,
+            vertical: formData.vertical
+          }
+        }
       });
 
-      if (error) throw error;
+      if (authError) {
+        setError(authError.message);
+        return;
+      }
 
-      setResults(data.results || []);
       toast({
-        title: "Setup completado",
-        description: "Los usuarios demo han sido configurados correctamente",
+        title: "¡Cuenta creada!",
+        description: "Tu demo está listo. Revisa tu email para confirmar tu cuenta.",
       });
-    } catch (error: any) {
-      console.error('Error creating demo users:', error);
-      toast({
-        title: "Error",
-        description: error.message || "No se pudieron crear los usuarios demo",
-        variant: "destructive"
-      });
+
+      navigate('/onboarding');
+    } catch (err) {
+      setError('Error al crear la cuenta. Intenta nuevamente.');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const manualInstructions = [
-    { brand: 'Moyo', email: 'moyo@demo.com', password: 'demo123', color: 'hsl(var(--primary))' },
-    { brand: 'Nutrisa', email: 'nutrisa@demo.com', password: 'demo123', color: 'hsl(var(--success))' },
-    { brand: 'Crepas', email: 'crepas@demo.com', password: 'demo123', color: 'hsl(var(--warning))' }
-  ];
-
   return (
-    <div className="min-h-screen bg-background py-12">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            Setup CounterOS Multi-Tenant
-          </h1>
-          <p className="text-lg text-gray-600">
-            Configuración inicial para el sistema multi-tenant con 3 marcas
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl flex items-center justify-center gap-2">
+            {step === 1 ? <User className="h-6 w-6" /> : <Building className="h-6 w-6" />}
+            Configurar CounterOS
+          </CardTitle>
+          <p className="text-muted-foreground">
+            Paso {step} de 2: {step === 1 ? 'Tu cuenta' : 'Tu empresa'}
           </p>
-        </div>
+        </CardHeader>
+        <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-        {/* Auto Setup */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Setup Automático</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 mb-4">
-              Ejecuta la función para crear automáticamente las cuentas de usuario demo:
-            </p>
-            <Button 
-              onClick={createDemoUsers}
-              disabled={isLoading}
-              className="mb-4"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creando usuarios...
-                </>
-              ) : (
-                'Crear Usuarios Demo'
-              )}
-            </Button>
-
-            {results.length > 0 && (
+          {step === 1 && (
+            <div className="space-y-4">
               <div className="space-y-2">
-                {results.map((result, index) => (
-                  <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                    {result.status === 'created' ? (
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                    ) : result.status === 'already_exists' ? (
-                      <CheckCircle className="h-4 w-4 text-blue-600" />
-                    ) : (
-                      <AlertCircle className="h-4 w-4 text-red-600" />
-                    )}
-                    <span className="text-sm">
-                      {result.email}: {result.status === 'created' ? 'Creado' : 
-                       result.status === 'already_exists' ? 'Ya existe' : 'Error'}
-                    </span>
-                  </div>
-                ))}
+                <Label htmlFor="name">Tu nombre</Label>
+                <Input
+                  id="name"
+                  placeholder="Nombre completo"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="tu@email.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Contraseña</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Mínimo 6 caracteres"
+                  value={formData.password}
+                  onChange={(e) => setFormData({...formData, password: e.target.value})}
+                />
+              </div>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="company">Nombre de tu empresa</Label>
+                <Input
+                  id="company"
+                  placeholder="Mi Restaurante S.A."
+                  value={formData.companyName}
+                  onChange={(e) => setFormData({...formData, companyName: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Tipo de negocio</Label>
+                <Select value={formData.vertical} onValueChange={(value) => setFormData({...formData, vertical: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona tu vertical" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {verticals.map((vertical) => (
+                      <SelectItem key={vertical.value} value={vertical.value}>
+                        {vertical.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+
+          <div className="flex gap-2 mt-6">
+            {step > 1 && (
+              <Button variant="outline" onClick={() => setStep(step - 1)} className="flex-1">
+                Anterior
+              </Button>
             )}
-          </CardContent>
-        </Card>
+            {step < 2 ? (
+              <Button onClick={handleNext} className="flex-1">
+                Siguiente
+              </Button>
+            ) : (
+              <Button onClick={handleComplete} disabled={loading} className="flex-1">
+                {loading ? 'Creando...' : 'Crear Demo'}
+              </Button>
+            )}
+          </div>
 
-        {/* Manual Instructions */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Setup Manual (Alternativo)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 mb-4">
-              Si el setup automático no funciona, puedes crear manualmente las cuentas en Supabase:
-            </p>
-            
-            <div className="grid gap-4 md:grid-cols-3">
-              {manualInstructions.map((brand, index) => (
-                <Card key={index} className="border-2" style={{ borderColor: brand.color }}>
-                  <CardContent className="p-4">
-                    <h3 className="font-bold text-lg mb-2" style={{ color: brand.color }}>
-                      {brand.brand}
-                    </h3>
-                    <div className="space-y-1 text-sm">
-                      <div><strong>Email:</strong> {brand.email}</div>
-                      <div><strong>Password:</strong> {brand.password}</div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-              <h4 className="font-medium text-blue-900 mb-2">Instrucciones:</h4>
-              <ol className="text-sm text-blue-800 space-y-1">
-                <li>1. Ve a tu dashboard de Supabase</li>
-                <li>2. Sección Authentication → Users</li>
-                <li>3. Click "Add user" para cada uno</li>
-                <li>4. Usa los emails y passwords de arriba</li>
-                <li>5. Marca "Auto Confirm User" para saltarte la verificación de email</li>
-              </ol>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Estado del Sistema</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <h4 className="font-medium mb-2">✅ Completado:</h4>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• Base de datos configurada</li>
-                  <li>• 3 tenants creados (Moyo, Nutrisa, Crepas)</li>
-                  <li>• Usuarios en tabla users</li>
-                  <li>• Tiendas demo creadas</li>
-                  <li>• Datos de ventas/compras demo</li>
-                  <li>• Sistema multi-tenant funcional</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-medium mb-2">🔄 Pendiente:</h4>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• Crear cuentas Auth de Supabase</li>
-                  <li>• Probar login con cada marca</li>
-                  <li>• Verificar theming por tenant</li>
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="text-center mt-8">
-          <a 
-            href="/" 
-            className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            Ir al Sistema →
-          </a>
-        </div>
-      </div>
+          <div className="text-center mt-4">
+            <Link to="/" className="text-sm text-muted-foreground hover:underline">
+              ← Volver al inicio
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
-};
+}
+
+export default SetupPage;

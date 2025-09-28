@@ -1,36 +1,26 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { ReactNode } from 'react';
+import { Navigate } from 'react-router-dom';
 import { useTenant } from '@/contexts/TenantContext';
 import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useTenant();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate('/login');
-    }
-  }, [user, loading, navigate]);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Cargando...</p>
-        </div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   if (!user) {
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;
-};
+}
