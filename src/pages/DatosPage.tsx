@@ -144,41 +144,44 @@ const DatosPage = () => {
   return (
     <TooltipProvider>
       <AppLayout>
-        <div className="container mx-auto max-w-5xl py-8 space-y-6">
+        <div className="container mx-auto max-w-5xl py-4 px-4 space-y-4">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Cargar Datos</h1>
-              <p className="text-muted-foreground">
-                {isConsolidatedView 
-                  ? 'Gestión operativa simplificada para gerentes de QSR'
-                  : `Datos operativos - ${selectedStore?.name}`
-                }
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <StoreSelector />
+          <div className="flex flex-col space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Cargar Datos</h1>
+                <p className="text-sm sm:text-base text-muted-foreground">
+                  {isConsolidatedView 
+                    ? 'Gestión operativa simplificada para gerentes de QSR'
+                    : `Datos operativos - ${selectedStore?.name}`
+                  }
+                </p>
+              </div>
+              <div className="w-full sm:w-auto">
+                <StoreSelector />
+              </div>
             </div>
           </div>
 
           {/* Month & Actions */}
           <Card>
-            <CardContent className="p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <CardContent className="p-4">
+              <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                 <div className="space-y-1">
-                  <Label htmlFor="month">Período</Label>
+                  <Label htmlFor="month" className="text-sm">Período</Label>
                   <Input
                     id="month"
                     type="month"
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(e.target.value)}
-                    className="w-auto"
+                    className="w-full sm:w-auto"
                   />
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={duplicateLastMonth}>
-                    <Copy className="h-4 w-4 mr-2" />
-                    Duplicar mes anterior
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Button variant="outline" size="sm" onClick={duplicateLastMonth} className="text-xs">
+                    <Copy className="h-3 w-3 mr-1" />
+                    <span className="hidden sm:inline">Duplicar mes anterior</span>
+                    <span className="sm:hidden">Duplicar mes</span>
                   </Button>
                   <input
                     type="file"
@@ -195,9 +198,10 @@ const DatosPage = () => {
                       }
                     }}
                   />
-                  <Button variant="outline" onClick={() => document.getElementById('csv-upload')?.click()}>
-                    <Upload className="h-4 w-4 mr-2" />
-                    Cargar CSV histórico
+                  <Button variant="outline" size="sm" onClick={() => document.getElementById('csv-upload')?.click()} className="text-xs">
+                    <Upload className="h-3 w-3 mr-1" />
+                    <span className="hidden sm:inline">Cargar CSV histórico</span>
+                    <span className="sm:hidden">CSV histórico</span>
                   </Button>
                 </div>
               </div>
@@ -206,19 +210,20 @@ const DatosPage = () => {
 
           {/* Step 1: Sales */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold">1</span>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-semibold">1</span>
                 Ventas del Mes
               </CardTitle>
-              <CardDescription>Captura las ventas totales del período seleccionado</CardDescription>
+              <CardDescription className="text-sm">Captura las ventas totales del período seleccionado</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 pt-0">
               <div className="flex gap-2">
                 <Button
                   variant={uploadMode === 'amount' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setUploadMode('amount')}
+                  className="text-xs"
                 >
                   Monto total
                 </Button>
@@ -226,28 +231,29 @@ const DatosPage = () => {
                   variant={uploadMode === 'csv' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setUploadMode('csv')}
+                  className="text-xs"
                 >
                   Archivo CSV
                 </Button>
               </div>
 
               {uploadMode === 'amount' ? (
-                <div className="max-w-sm">
-                  <Label htmlFor="sales">Ventas totales (MXN)</Label>
+                <div className="w-full max-w-sm">
+                  <Label htmlFor="sales" className="text-sm">Ventas totales (MXN)</Label>
                   <Input
                     id="sales"
                     type="number"
                     value={salesAmount}
                     onChange={(e) => setSalesAmount(e.target.value)}
                     placeholder="125,000"
-                    className="text-lg font-semibold"
+                    className="text-base font-semibold"
                   />
                 </div>
               ) : (
-                <div className="border-2 border-dashed rounded-lg p-6 text-center">
-                  <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                  <p className="text-sm">
-                    {salesFile ? salesFile.name : 'Arrastra tu CSV de ventas aquí o haz clic para seleccionar'}
+                <div className="border-2 border-dashed rounded-lg p-4 text-center">
+                  <Upload className="h-6 w-6 mx-auto text-muted-foreground mb-1" />
+                  <p className="text-xs sm:text-sm">
+                    {salesFile ? salesFile.name : 'Arrastra tu CSV de ventas aquí'}
                   </p>
                 </div>
               )}
@@ -257,16 +263,77 @@ const DatosPage = () => {
           {/* Step 2: Expense Table */}
           {salesAmount && (
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold">2</span>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-semibold">2</span>
                   Estructura de Gastos
                 </CardTitle>
-                <CardDescription>Ajusta los gastos fijos y revisa los automáticos</CardDescription>
+                <CardDescription className="text-sm">Ajusta los gastos fijos y revisa los automáticos</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="rounded-lg border">
-                  <div className="grid grid-cols-4 gap-4 p-4 bg-muted/50 border-b font-medium text-sm">
+              <CardContent className="pt-0">
+                {/* Mobile Layout */}
+                <div className="block sm:hidden space-y-2">
+                  {expenseRows.map((row) => (
+                    <div key={row.category} className={`border rounded-lg p-3 ${
+                      row.isCalculated ? 'bg-accent-light/30' : 'bg-background'
+                    }`}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-1">
+                          <span className={`text-sm font-medium ${row.category === 'sales' ? 'text-primary font-semibold' : ''}`}>
+                            {row.label}
+                          </span>
+                          {row.tooltip && (
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Info className="h-3 w-3 text-muted-foreground" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-xs text-xs">{row.tooltip}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
+                          {row.isCalculated && <Lock className="h-3 w-3 text-muted-foreground" />}
+                        </div>
+                        <div className="text-center">
+                          {row.isCalculated ? (
+                            <Calculator className="h-3 w-3 text-success" />
+                          ) : row.value ? (
+                            <CheckCircle className="h-3 w-3 text-success" />
+                          ) : (
+                            <AlertTriangle className="h-3 w-3 text-warning" />
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1 mr-2">
+                          {row.isEditable ? (
+                            <Input
+                              type="number"
+                              value={row.value}
+                              onChange={(e) => updateExpenseRow(row.category, 'value', e.target.value)}
+                              className="text-sm"
+                              disabled={row.category === 'sales'}
+                            />
+                          ) : (
+                            <span className={`text-sm font-mono ${row.isCalculated ? 'text-muted-foreground' : 'font-semibold'}`}>
+                              ${row.value ? parseFloat(row.value).toLocaleString() : '0'}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <span className="text-xs font-mono">
+                            {row.percentage ? `${parseFloat(row.percentage).toFixed(1)}%` : '—'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop Layout */}
+                <div className="hidden sm:block rounded-lg border">
+                  <div className="grid grid-cols-4 gap-4 p-3 bg-muted/50 border-b font-medium text-sm">
                     <div>Categoría</div>
                     <div className="text-right">Valor (MXN)</div>
                     <div className="text-right">% Ventas</div>
@@ -274,7 +341,7 @@ const DatosPage = () => {
                   </div>
                   
                   {expenseRows.map((row) => (
-                    <div key={row.category} className={`grid grid-cols-4 gap-4 p-4 border-b last:border-b-0 items-center ${
+                    <div key={row.category} className={`grid grid-cols-4 gap-4 p-3 border-b last:border-b-0 items-center ${
                       row.isCalculated ? 'bg-accent-light/30' : 'bg-background'
                     }`}>
                       <div className="flex items-center gap-2">
@@ -329,8 +396,8 @@ const DatosPage = () => {
                   ))}
                 </div>
                 
-                <div className="mt-6 flex justify-end">
-                  <Button onClick={handleSave} size="lg" className="px-8">
+                <div className="mt-4 flex justify-end">
+                  <Button onClick={handleSave} size="sm" className="px-6">
                     <CheckCircle className="h-4 w-4 mr-2" />
                     Guardar Datos
                   </Button>
@@ -342,34 +409,34 @@ const DatosPage = () => {
           {/* Step 3: P&L Preview */}
           {isSaved && pnl.sales > 0 && (
             <Card className="border-success/50 bg-success/5">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg text-success">
-                  <TrendingUp className="h-5 w-5" />
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base text-success">
+                  <TrendingUp className="h-4 w-4" />
                   Vista Previa P&L
                 </CardTitle>
-                <CardDescription>Resumen financiero del período</CardDescription>
+                <CardDescription className="text-sm">Resumen financiero del período</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  <div className="text-center p-3 rounded-lg bg-background border">
-                    <p className="text-sm text-muted-foreground">Ventas</p>
-                    <p className="text-lg font-semibold">${pnl.sales.toLocaleString()}</p>
+              <CardContent className="pt-0">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                  <div className="text-center p-2 rounded-lg bg-background border">
+                    <p className="text-xs text-muted-foreground">Ventas</p>
+                    <p className="text-sm sm:text-base font-semibold">${pnl.sales.toLocaleString()}</p>
                   </div>
-                  <div className="text-center p-3 rounded-lg bg-background border">
-                    <p className="text-sm text-muted-foreground">COGS</p>
-                    <p className="text-lg font-semibold text-orange-600">-${pnl.cogs.toLocaleString()}</p>
+                  <div className="text-center p-2 rounded-lg bg-background border">
+                    <p className="text-xs text-muted-foreground">COGS</p>
+                    <p className="text-sm sm:text-base font-semibold text-orange-600">-${pnl.cogs.toLocaleString()}</p>
                   </div>
-                  <div className="text-center p-3 rounded-lg bg-background border">
-                    <p className="text-sm text-muted-foreground">Utilidad Bruta</p>
-                    <p className="text-lg font-semibold text-blue-600">${pnl.grossProfit.toLocaleString()}</p>
+                  <div className="text-center p-2 rounded-lg bg-background border">
+                    <p className="text-xs text-muted-foreground">Utilidad Bruta</p>
+                    <p className="text-sm sm:text-base font-semibold text-blue-600">${pnl.grossProfit.toLocaleString()}</p>
                   </div>
-                  <div className="text-center p-3 rounded-lg bg-background border">
-                    <p className="text-sm text-muted-foreground">OPEX Total</p>
-                    <p className="text-lg font-semibold text-orange-600">-${pnl.totalExpenses.toLocaleString()}</p>
+                  <div className="text-center p-2 rounded-lg bg-background border">
+                    <p className="text-xs text-muted-foreground">OPEX Total</p>
+                    <p className="text-sm sm:text-base font-semibold text-orange-600">-${pnl.totalExpenses.toLocaleString()}</p>
                   </div>
-                  <div className="text-center p-3 rounded-lg bg-success/10 border border-success">
-                    <p className="text-sm text-success">EBITDA</p>
-                    <p className="text-xl font-bold text-success">
+                  <div className="text-center p-2 rounded-lg bg-success/10 border border-success col-span-2 sm:col-span-1">
+                    <p className="text-xs text-success">EBITDA</p>
+                    <p className="text-base sm:text-lg font-bold text-success">
                       ${pnl.ebitda.toLocaleString()}
                     </p>
                     <p className="text-xs text-success">
@@ -379,7 +446,7 @@ const DatosPage = () => {
                 </div>
                 
                 <div className="mt-4 flex justify-center">
-                  <Button variant="outline">
+                  <Button variant="outline" size="sm">
                     <FileText className="h-4 w-4 mr-2" />
                     Ver P&L Completo
                   </Button>

@@ -77,7 +77,7 @@ export function AppSidebar() {
           {!isCollapsed && (
             <div className="flex flex-col">
               <h2 className="text-lg font-semibold" style={{ color: primaryColor }}>
-                {tenant?.name || 'CounterOS'}
+                {tenant?.name ? `${tenant.name} OS` : 'Crepas OS'}
               </h2>
               <p className="text-xs text-muted-foreground">
                 Food Cost Analytics
@@ -188,7 +188,7 @@ export function AppSidebar() {
         {!isCollapsed && (
           <div className="px-3 py-2">
             <p className="text-xs text-muted-foreground text-center">
-              CounterOS v1.0
+              {tenant?.name ? `${tenant.name} OS` : 'Crepas OS'} v1.0
             </p>
           </div>
         )}
