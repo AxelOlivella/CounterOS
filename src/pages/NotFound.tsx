@@ -1,101 +1,69 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { AlertTriangle, Home, ArrowLeft } from "lucide-react";
+// 404 Not Found Page
+// Custom error page with clear navigation back to app
 
-const NotFound = () => {
-  const location = useLocation();
+import { useNavigate } from 'react-router-dom';
+import { Home, ArrowLeft, MapPin } from 'lucide-react';
+import { routes } from '@/routes';
+
+export default function NotFound() {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Log 404 for analytics - OBLIGATORY logging
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
-    
-    // Optional: Send to analytics service
-    // analytics.track('404_error', { path: location.pathname, timestamp: new Date().toISOString() });
-  }, [location.pathname]);
-
-  const handleGoHome = () => {
-    navigate('/resumen', { replace: true });
-  };
-
-  const handleGoBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/resumen', { replace: true });
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="max-w-md w-full border-border bg-card shadow-lg">
-        <CardContent className="p-8 text-center">
-          {/* Error Icon */}
-          <div className="error-state-icon mx-auto mb-6">
-            <AlertTriangle className="h-16 w-16 text-warning" />
-          </div>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="max-w-md w-full text-center">
+        {/* Illustration */}
+        <div className="w-24 h-24 bg-navy-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <MapPin className="h-12 w-12 text-navy-500" />
+        </div>
 
-          {/* Error Content */}
-          <h1 className="text-display font-bold text-foreground mb-4">
-            404
-          </h1>
-          
-          <h2 className="error-state-title mb-4">
-            Página no encontrada
-          </h2>
-          
-          <p className="error-state-description mb-8">
-            La página que buscas no existe o fue movida. 
-            Verifica la URL o regresa al panel principal.
+        {/* Error Code */}
+        <div className="text-6xl font-bold text-navy-600 mb-2">404</div>
+        
+        {/* Title */}
+        <h1 className="text-xl-custom font-semibold text-navy-700 mb-3">
+          Página no encontrada
+        </h1>
+
+        {/* Description */}
+        <p className="text-body text-gray-600 mb-8 leading-relaxed">
+          La página que buscas no existe o ha sido movida. 
+          Verifica la URL o regresa al panel principal.
+        </p>
+
+        {/* Actions */}
+        <div className="space-y-3">
+          {/* Primary Action */}
+          <button
+            onClick={() => navigate(routes.home)}
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-accent-500 text-white font-medium rounded-lg hover:bg-accent-600 transition-colors focus:outline-none focus:ring-4 focus:ring-accent-300"
+          >
+            <Home className="h-4 w-4" />
+            Volver al Resumen
+          </button>
+
+          {/* Secondary Action */}
+          <button
+            onClick={() => navigate(-1)}
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-4 focus:ring-gray-300"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Página anterior
+          </button>
+        </div>
+
+        {/* Help Text */}
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <p className="text-caption text-gray-500">
+            ¿Necesitas ayuda? Contacta soporte o{' '}
+            <button
+              onClick={() => navigate(routes.stores)}
+              className="text-accent-600 hover:text-accent-700 underline focus:outline-none"
+            >
+              explora tus tiendas
+            </button>
           </p>
-
-          {/* Debug Info - Only show pathname for context */}
-          <div className="mb-6 p-3 bg-muted/50 rounded-lg border border-border">
-            <p className="text-caption text-muted-foreground">
-              Ruta solicitada: <code className="font-mono text-foreground">{location.pathname}</code>
-            </p>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="space-y-3">
-            <Button 
-              onClick={handleGoHome}
-              className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground gap-2"
-              size="lg"
-            >
-              <Home className="h-4 w-4" />
-              Ir al Panel Principal
-            </Button>
-            
-            <Button 
-              onClick={handleGoBack}
-              variant="outline"
-              className="w-full border-border hover:bg-muted gap-2"
-              size="lg"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Regresar
-            </Button>
-          </div>
-
-          {/* Help Text */}
-          <div className="mt-6 pt-4 border-t border-border">
-            <p className="text-caption text-muted-foreground">
-              ¿Necesitas ayuda? Contacta a{" "}
-              <a 
-                href="mailto:soporte@counteros.com"
-                className="text-primary hover:text-primary/80 underline underline-offset-2"
-              >
-                soporte@counteros.com
-              </a>
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default NotFound;
+}
