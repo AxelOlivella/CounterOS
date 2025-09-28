@@ -15,6 +15,7 @@ import { SetupPage } from "./pages/SetupPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import DatosPage from "./pages/DatosPage";
 import StoreDashboardPage from "./pages/StoreDashboardPage";
+import TiendasPage from "./pages/TiendasPage";
 import AlertasPage from "./pages/AlertasPage";
 import ResumenPage from "./pages/ResumenPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
@@ -31,21 +32,18 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Landing & Auth */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/setup" element={<SetupPage />} />
+            
             <Route path="/onboarding" element={
               <ProtectedRoute>
                 <OnboardingPage />
               </ProtectedRoute>
             } />
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <DashboardPage />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
+            
+            {/* Main App Routes */}
             <Route path="/resumen" element={
               <ProtectedRoute>
                 <AppLayout>
@@ -53,39 +51,25 @@ const App = () => (
                 </AppLayout>
               </ProtectedRoute>
             } />
-            <Route path="/datos" element={
+            
+            <Route path="/tiendas" element={
               <ProtectedRoute>
-                <AppLayout>
-                  <DatosPage />
-                </AppLayout>
+                <TiendasPage />
               </ProtectedRoute>
             } />
-            <Route path="/tienda/:storeId" element={
+            
+            <Route path="/tiendas/:storeSlug" element={
               <ProtectedRoute>
                 <StoreDashboardPage />
               </ProtectedRoute>
             } />
-            <Route path="/food-cost-analysis" element={
+            
+            <Route path="/cargar" element={
               <ProtectedRoute>
-                <AppLayout>
-                  <FoodCostAnalysisPage />
-                </AppLayout>
+                <DatosPage />
               </ProtectedRoute>
             } />
-            <Route path="/pnl-reports" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <PnLReportsPage />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/upload" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <UploadPage />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
+            
             <Route path="/alertas" element={
               <ProtectedRoute>
                 <AppLayout>
@@ -93,6 +77,52 @@ const App = () => (
                 </AppLayout>
               </ProtectedRoute>
             } />
+
+            {/* Legacy/Additional Routes */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <DashboardPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/datos" element={
+              <ProtectedRoute>
+                <DatosPage />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/tienda/:storeId" element={
+              <ProtectedRoute>
+                <StoreDashboardPage />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/food-cost-analysis" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <FoodCostAnalysisPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/pnl-reports" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <PnLReportsPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/upload" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <UploadPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
             <Route path="/stores" element={
               <ProtectedRoute>
                 <AppLayout>
@@ -100,6 +130,7 @@ const App = () => (
                 </AppLayout>
               </ProtectedRoute>
             } />
+            
             <Route path="/reports" element={
               <ProtectedRoute>
                 <AppLayout>
@@ -107,6 +138,7 @@ const App = () => (
                 </AppLayout>
               </ProtectedRoute>
             } />
+            
             <Route path="/settings" element={
               <ProtectedRoute>
                 <AppLayout>
@@ -114,6 +146,7 @@ const App = () => (
                 </AppLayout>
               </ProtectedRoute>
             } />
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

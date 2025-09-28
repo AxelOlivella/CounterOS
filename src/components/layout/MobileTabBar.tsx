@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Upload, AlertTriangle, MoreHorizontal, BarChart3 } from 'lucide-react';
+import { Home, Upload, AlertTriangle, BarChart3 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -11,15 +11,15 @@ const tabItems = [
     icon: Home,
   },
   {
-    id: 'datos',
-    label: 'Datos',
-    path: '/datos', 
+    id: 'tiendas',
+    label: 'Tiendas', 
+    path: '/tiendas',
     icon: Upload,
   },
   {
-    id: 'analytics',
-    label: 'Analytics',
-    path: '/food-cost-analysis',
+    id: 'cargar',
+    label: 'Cargar',
+    path: '/cargar',
     icon: BarChart3,
   },
   {
@@ -29,21 +29,19 @@ const tabItems = [
     icon: AlertTriangle,
     badge: 3,
   },
-  {
-    id: 'mas',
-    label: 'Más',
-    path: '/settings',
-    icon: MoreHorizontal,
-  },
 ];
 
 export function MobileTabBar() {
   const location = useLocation();
   
   const isActive = (path: string) => {
-    // Special handling for analytics routes
-    if (path === '/food-cost-analysis') {
-      return location.pathname === '/food-cost-analysis' || location.pathname === '/pnl-reports';
+    // Special handling for tiendas routes
+    if (path === '/tiendas') {
+      return location.pathname === '/tiendas' || location.pathname.startsWith('/tiendas/');
+    }
+    // Special handling for cargar routes  
+    if (path === '/cargar') {
+      return location.pathname === '/cargar' || location.pathname === '/datos';
     }
     return location.pathname === path;
   };
