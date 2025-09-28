@@ -7,7 +7,7 @@ import { TenantProvider } from "@/contexts/TenantContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
-import { DashboardPage } from "./pages/DashboardPage";
+
 import { UploadPage } from "./components/pages/UploadPage";
 import { FoodCostAnalysisPage } from "./components/pages/FoodCostAnalysisPage";
 import { PnLReportsPage } from "./components/pages/PnLReportsPage";
@@ -55,7 +55,9 @@ const App = () => (
             
             <Route path="/tiendas" element={
               <ProtectedRoute>
-                <TiendasPage />
+                <AppLayout>
+                  <TiendasPage />
+                </AppLayout>
               </ProtectedRoute>
             } />
             
@@ -69,7 +71,9 @@ const App = () => (
             
             <Route path="/cargar" element={
               <ProtectedRoute>
-                <DatosPage />
+                <AppLayout>
+                  <DatosPage />
+                </AppLayout>
               </ProtectedRoute>
             } />
             
