@@ -46,7 +46,7 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email);
+        // Auth state changed - handled securely
         setSession(session);
         setUser(session?.user ?? null);
         
