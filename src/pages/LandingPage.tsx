@@ -96,7 +96,7 @@ function Hero() {
           <div className="aspect-[4/3] w-full rounded-3xl border border-border bg-gradient-to-br from-card to-muted p-3 shadow-xl">
             <div className="h-full w-full rounded-2xl bg-gradient-primary/10 p-6">
               <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
-                <span>MVP • Portal Centro</span>
+                <span>CounterOS • Portal Centro</span>
                 <span>Mar 2025</span>
               </div>
               <div className="grid h-full grid-rows-3 gap-4">
@@ -133,7 +133,7 @@ function LogoStrip() {
   return (
     <section className="border-y border-border bg-muted/50">
       <div className="mx-auto max-w-7xl px-6 py-6">
-        <p className="text-center text-xs text-muted-foreground mb-4">MVP probado con</p>
+        <p className="text-center text-xs text-muted-foreground mb-4">Sistema probado con</p>
         <div className="grid grid-cols-2 items-center gap-6 md:grid-cols-5">
           {[
             "QSR Centro",
@@ -233,7 +233,7 @@ function Features() {
     { icon: <Bell className="h-5 w-5"/>, title: "Data en tiempo real", desc: "Decisiones rápidas para ahorrar. Food cost, merma y P&L actualizados." },
     { icon: <Zap className="h-5 w-5"/>, title: "P&L automatizado", desc: "Por tienda y consolidado. De semanas de trabajo a un clic." },
     { icon: <Shield className="h-5 w-5"/>, title: "Alertas inteligentes", desc: "Solo lo importante. Cuando algo se sale de rango, lo sabes al día siguiente." },
-    { icon: <Layers className="h-5 w-5"/>, title: "MVP honesto", desc: "Empezamos simple, con foco absoluto en rentabilidad. Sin promesas vacías." },
+    { icon: <Layers className="h-5 w-5"/>, title: "Enfoque directo", desc: "Empezamos simple, con foco absoluto en rentabilidad. Sin promesas vacías." },
   ];
   return (
     <section id="features" className="mx-auto max-w-7xl px-6 py-16">
@@ -259,7 +259,7 @@ function Features() {
 function Screenshots() {
   return (
     <section className="mx-auto max-w-7xl px-6 py-10 bg-muted/30" id="ejemplo">
-      <h2 className="mb-2 text-center text-2xl font-semibold text-foreground">MVP en acción</h2>
+      <h2 className="mb-2 text-center text-2xl font-semibold text-foreground">Sistema en acción</h2>
       <p className="mx-auto mb-8 max-w-2xl text-center text-muted-foreground">
         Pantallas reales del sistema. Sin mockups bonitos, esto es lo que ves cuando empiezas a usar CounterOS.
       </p>
@@ -287,7 +287,7 @@ function PricingCTA() {
       <Card className="border-border bg-gradient-success/10">
         <CardContent className="grid gap-6 p-8 md:grid-cols-2">
           <div>
-            <h3 className="text-xl font-semibold text-foreground">CounterOS es un MVP hecho para probar algo</h3>
+            <h3 className="text-xl font-semibold text-foreground">CounterOS está hecho para probar algo</h3>
             <p className="mt-2 text-muted-foreground">Que el costo sí se puede controlar con tecnología. Empezamos simple, pero con foco absoluto en rentabilidad.</p>
             <p className="mt-3 text-sm text-muted-foreground">30 días gratis. Si no ves mejoras reales en food cost o P&L, no pagas nada.</p>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
@@ -319,7 +319,7 @@ function PricingCTA() {
 function Testimonials() {
   return (
     <section className="mx-auto max-w-7xl px-6 py-12">
-      <h2 className="mb-8 text-center text-2xl font-semibold text-foreground">Resultados reales del MVP</h2>
+      <h2 className="mb-8 text-center text-2xl font-semibold text-foreground">Resultados reales del sistema</h2>
       <div className="grid gap-6 md:grid-cols-3">
         {[
           {
@@ -362,7 +362,7 @@ function FAQ() {
       a: "Food cost real desde la primera semana. P&L completo desde el primer mes con datos suficientes.",
     },
     {
-      q: "¿Realmente funciona en MVP?",
+      q: "¿Realmente funciona siendo tan simple?",
       a: "Sí. Empezamos simple pero útil: reduces costos desde el día 1. Las integraciones avanzadas vienen después.",
     },
     {
