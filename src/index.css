@@ -1,302 +1,113 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* CounterOS Design System - Mobile-first, cost-obsessed operations platform */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+:root {
+  /* CounterOS Brand Colors - OBLIGATORY */
+  --primary: 214 100% 12%;     /* #0B1630 Navy Blue */
+  --primary-foreground: 0 0% 98%;
+  --secondary: 154 71% 44%;    /* #1FBF72 Green */
+  --secondary-foreground: 0 0% 98%;
+  --accent: 25 95% 53%;        /* #FF6A3D Orange */
+  --accent-foreground: 0 0% 98%;
+  --warning: 25 95% 53%;       /* Same as accent */
+  --warning-foreground: 0 0% 98%;
+  
+  /* Neutral Scale */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 214 100% 12%;
+  
+  /* Destructive */
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  
+  /* Radius */
+  --radius: 0.5rem;
+}
 
-@layer base {
-  :root {
-    /* Core Colors - Professional Navy & Emerald Palette - OBLIGATORY TOKENS */
-    --background: 0 0% 98%;            /* #FAFAFA */
-    --foreground: 214 100% 12%;        /* #0B1630 */
-
-    --card: 0 0% 100%;                 /* #FFFFFF */
-    --card-foreground: 214 100% 12%;   /* #0B1630 */
-
-    --popover: 0 0% 100%;              /* #FFFFFF */
-    --popover-foreground: 214 100% 12%; /* #0B1630 */
-
-    /* Primary - Deep Navy Blue #0B1630 */
-    --primary: 214 100% 12%;           /* #0B1630 */
-    --primary-foreground: 0 0% 98%;    /* #FAFAFA */
-    --primary-dark: 214 100% 8%;       /* Darker navy */
-    --primary-light: 214 50% 20%;      /* Lighter navy */
-
-    /* Secondary/Accent - Emerald Green #1FBF72 */
-    --secondary: 154 71% 44%;          /* #1FBF72 */
-    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
-    --secondary-light: 154 71% 95%;    /* Light emerald */
-    --secondary-dark: 154 71% 35%;     /* Dark emerald */
-
-    --accent: 154 71% 44%;             /* #1FBF72 */
-    --accent-foreground: 0 0% 100%;    /* #FFFFFF */
-    --accent-light: 154 71% 95%;       /* Light emerald */
-    --accent-hover: 154 71% 35%;       /* Dark emerald */
-
-    /* Status Colors - Cost-focused */
-    --success: 154 71% 44%;            /* #1FBF72 - Savings, under budget */
-    --warning: 25 95% 53%;             /* #FF6A3D - Attention needed */
-    --danger: 0 84% 60%;               /* Over budget, losses */
-    --info: 214 50% 45%;               /* Information */
-
-    /* Neutral Colors - Clean Grey Spectrum OBLIGATORY */
-    --muted: 220 14% 96%;              /* #F6F7F9 */
-    --muted-foreground: 215 16% 47%;   /* #6B7280 */
-    --border: 220 13% 91%;             /* #E6E8EC */
-    --input: 220 13% 91%;              /* #E6E8EC */
-    --ring: 214 100% 12%;              /* #0B1630 */
-
-    /* Interactive States */
-    --hover: 220 14% 94%;              /* #F1F2F4 */
-    --active: 214 100% 8%;             /* Darker navy */
-
-    /* Cost-focused Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(214 100% 12%), hsl(214 100% 8%));
-    --gradient-success: linear-gradient(135deg, hsl(154 71% 95%), hsl(154 71% 44%));
-    --gradient-savings: linear-gradient(135deg, hsl(154 71% 44%), hsl(154 71% 35%));
-    --gradient-cost: linear-gradient(135deg, hsl(0 84% 95%), hsl(0 84% 60%));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 98%), hsl(220 14% 96%));
-
-    /* Shadows - Professional & Clean */
-    --shadow-sm: 0 1px 2px 0 hsl(214 100% 12% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(214 100% 12% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(214 100% 12% / 0.1);
-    --shadow-mobile: 0 2px 8px -2px hsl(214 100% 12% / 0.15);
-
-    /* Mobile-optimized Animations */
-    --transition-fast: all 0.15s ease-out;
-    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-mobile: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-    /* Border Radius - OBLIGATORY: 6/10/14/18 */
-    --radius: 10px;
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 14px;
-    --radius-xl: 18px;
-  }
-
-  .dark {
-    --background: 214 100% 4%;
-    --foreground: 0 0% 98%;
-    --card: 214 100% 6%;
-    --card-foreground: 0 0% 98%;
-    --popover: 214 100% 6%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 214 100% 4%;
-    --secondary: 154 71% 44%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 214 50% 10%;
-    --muted-foreground: 214 20% 65%;
-    --accent: 154 71% 44%;
-    --accent-foreground: 0 0% 100%;
-    --border: 214 50% 15%;
-    --input: 214 50% 15%;
-    --ring: 154 71% 44%;
-  }
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+  --primary: 154 71% 44%;
+  --primary-foreground: 222.2 84% 4.9%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
 }
 
 @layer base {
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 16px; /* body */
-    line-height: 1.5;
-  }
-
-/* CounterOS Design System Utilities */
-@layer utilities {
-  .pb-safe {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  
-  .pt-safe {
-    padding-top: env(safe-area-inset-top);
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   }
 }
 
-  /* OBLIGATORY Typography Hierarchy */
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
-
-  .text-display { font-size: 34px; line-height: 1.2; } /* display 34 */
-  .text-xl-custom { font-size: 22px; line-height: 1.3; } /* xl 22 */
-  .text-body { font-size: 16px; line-height: 1.5; } /* body 16 */
-  .text-caption { font-size: 14px; line-height: 1.4; } /* caption 14 */
+/* OBLIGATORY Typography Scale */
+.text-display { 
+  font-size: 34px;
+  line-height: 1.1;
+  font-weight: 700;
 }
 
-@layer components {
-  /* Mobile-first Components - OBLIGATORY minimum touch targets ≥44px */
+.text-xl-custom { 
+  font-size: 22px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.text-body { 
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.text-caption { 
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+/* Mobile-first container */
+.mobile-container {
+  @apply px-4 py-6;
+}
+
+@media (min-width: 768px) {
   .mobile-container {
-    @apply px-4 pb-20; /* Bottom padding for tab bar */
-  }
-
-  .mobile-card {
-    @apply bg-card border border-border rounded-lg p-4 shadow-sm;
-    min-height: 44px; /* Minimum touch target */
-  }
-
-  .mobile-input {
-    @apply border border-border rounded-lg px-4 py-3 text-body bg-background;
-    min-height: 44px; /* WCAG AA minimum */
-  }
-
-  .mobile-button {
-    @apply bg-primary text-primary-foreground rounded-lg px-6 py-3 text-body font-medium transition-colors;
-    min-height: 44px; /* WCAG AA minimum */
-  }
-
-  .mobile-cta {
-    @apply fixed bottom-16 left-4 right-4 z-40 bg-secondary text-secondary-foreground rounded-xl px-6 py-4 text-center font-semibold shadow-lg transition-all;
-    min-height: 52px; /* Enhanced touch target for primary action */
-  }
-
-  /* Cost-focused Status Indicators with WCAG AA Contrast */
-  .status-saving {
-    @apply bg-success/10 text-success border border-success/20 rounded-full px-3 py-1 text-caption font-medium;
-  }
-
-  .status-over-budget {
-    @apply bg-warning/10 text-warning border border-warning/20 rounded-full px-3 py-1 text-caption font-medium;
-  }
-
-  .status-on-target {
-    @apply bg-info/10 text-info border border-info/20 rounded-full px-3 py-1 text-caption font-medium;
-  }
-
-  /* Tab Bar - Accessible Navigation */
-  .tab-bar {
-    @apply fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border px-2 py-3 pb-6;
-    /* Safe area padding for mobile devices */
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
-  }
-
-  .tab-item {
-    @apply flex-1 flex flex-col items-center gap-1 py-2 px-2 rounded-lg transition-colors;
-    min-height: 44px; /* WCAG AA minimum */
-    min-width: 44px;
-  }
-
-  .tab-item.active {
-    @apply bg-primary/10 text-primary;
-  }
-
-  .tab-item.inactive {
-    @apply text-muted-foreground hover:text-foreground;
-  }
-
-  /* iOS-style List Items - Enhanced Accessibility */
-  .ios-list {
-    @apply bg-card rounded-xl divide-y divide-border overflow-hidden shadow-sm;
-  }
-
-  .ios-list-item {
-    @apply flex items-center justify-between px-4 py-4 transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
-    min-height: 44px; /* WCAG AA minimum */
-  }
-
-  .ios-list-header {
-    @apply px-4 py-3 text-caption font-medium text-muted-foreground uppercase tracking-wider;
-  }
-
-  /* Cost Analytics Specific - Semantic Color Usage */
-  .cost-metric {
-    @apply text-center p-4 rounded-lg border;
-  }
-
-  .cost-saving {
-    @apply bg-success/5 border-success/20 text-success;
-  }
-
-  .cost-over {
-    @apply bg-warning/5 border-warning/20 text-warning;
-  }
-
-  .cost-neutral {
-    @apply bg-muted/50 border-border text-foreground;
-  }
-
-  /* Empty States */
-  .empty-state {
-    @apply flex flex-col items-center justify-center p-8 text-center;
-  }
-
-  .empty-state-icon {
-    @apply h-12 w-12 text-muted-foreground mb-4;
-  }
-
-  .empty-state-title {
-    @apply text-xl-custom font-semibold text-foreground mb-2;
-  }
-
-  .empty-state-description {
-    @apply text-body text-muted-foreground mb-6 max-w-md;
-  }
-
-  /* Loading States */
-  .loading-skeleton {
-    @apply animate-pulse bg-muted rounded;
-  }
-
-  .loading-spinner {
-    @apply animate-spin rounded-full border-2 border-muted border-t-primary;
-  }
-
-  /* Error States */
-  .error-state {
-    @apply flex flex-col items-center justify-center p-8 text-center;
-  }
-
-  .error-state-icon {
-    @apply h-12 w-12 text-warning mb-4;
-  }
-
-  .error-state-title {
-    @apply text-xl-custom font-semibold text-foreground mb-2;
-  }
-
-  .error-state-description {
-    @apply text-body text-muted-foreground mb-6 max-w-md;
+    @apply px-6 py-8;
   }
 }
 
-/* Mobile-optimized animations */
-@keyframes slideInFromBottom {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Accessibility - Touch targets */
+.mobile-button {
+  min-height: 44px;
+  min-width: 44px;
 }
 
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.animate-slide-in {
-  animation: slideInFromBottom 0.3s ease-out;
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.2s ease-out;
+/* Focus states */
+.focus-visible:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary;
 }

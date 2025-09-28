@@ -128,6 +128,23 @@ const App = () => (
               </ProtectedRoute>
             } />
             
+            {/* New Routes - Safe additions */}
+            <Route path="/foodcost" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <FoodCostAnalysisPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/pnl" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <PnLReportsPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
             {/* Placeholder Routes - Keep for development */}
             <Route path="/stores" element={
               <ProtectedRoute>
