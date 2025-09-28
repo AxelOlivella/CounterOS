@@ -235,7 +235,10 @@ const ResumenPage = () => {
                 </p>
               </div>
 
-              <Button className="w-full bg-orange-600 hover:bg-orange-700">
+              <Button 
+                className="w-full bg-orange-600 hover:bg-orange-700"
+                onClick={() => navigate('/tienda/portal-centro')}
+              >
                 Revisar Ahora <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </div>

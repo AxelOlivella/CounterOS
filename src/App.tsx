@@ -14,6 +14,7 @@ import { PnLReportsPage } from "./components/pages/PnLReportsPage";
 import { SetupPage } from "./pages/SetupPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import DatosPage from "./pages/DatosPage";
+import StoreDashboardPage from "./pages/StoreDashboardPage";
 import AlertasPage from "./pages/AlertasPage";
 import ResumenPage from "./pages/ResumenPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
@@ -57,6 +58,11 @@ const App = () => (
                 <AppLayout>
                   <DatosPage />
                 </AppLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/tienda/:storeId" element={
+              <ProtectedRoute>
+                <StoreDashboardPage />
               </ProtectedRoute>
             } />
             <Route path="/food-cost-analysis" element={
