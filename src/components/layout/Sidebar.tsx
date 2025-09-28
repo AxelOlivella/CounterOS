@@ -36,15 +36,14 @@ export const Sidebar = ({ className }: SidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const primaryColor = tenant?.theme?.primary || '#00C853';
+  const primaryColor = tenant?.theme?.primary || 'hsl(var(--primary))';
 
   return (
     <div className={cn('flex h-screen flex-col border-r bg-card', className)}>
       {/* Logo/Brand */}
       <div className="flex h-16 items-center justify-center border-b">
         <h2 
-          className="text-lg font-bold"
-          style={{ color: primaryColor }}
+          className="text-lg font-bold text-primary"
         >
           {tenant?.name || 'CounterOS'}
         </h2>

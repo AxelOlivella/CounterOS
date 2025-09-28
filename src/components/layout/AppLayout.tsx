@@ -3,6 +3,7 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from './AppSidebar';
 import { MobileTabBar } from './MobileTabBar';
 import { StoreSwitcher } from '@/components/ui/store-switcher';
+import { AppBreadcrumbs } from '@/components/ui/breadcrumbs/AppBreadcrumbs';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -39,6 +40,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
           {/* Page Content */}
           <div className="flex-1 mobile-container">
+            <AppBreadcrumbs />
             {children}
           </div>
         </main>

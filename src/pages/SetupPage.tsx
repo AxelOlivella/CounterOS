@@ -37,16 +37,16 @@ export const SetupPage = () => {
   };
 
   const manualInstructions = [
-    { brand: 'Moyo', email: 'moyo@demo.com', password: 'demo123', color: '#8B5CF6' },
-    { brand: 'Nutrisa', email: 'nutrisa@demo.com', password: 'demo123', color: '#00C853' },
-    { brand: 'Crepas', email: 'crepas@demo.com', password: 'demo123', color: '#F59E0B' }
+    { brand: 'Moyo', email: 'moyo@demo.com', password: 'demo123', color: 'hsl(var(--primary))' },
+    { brand: 'Nutrisa', email: 'nutrisa@demo.com', password: 'demo123', color: 'hsl(var(--success))' },
+    { brand: 'Crepas', email: 'crepas@demo.com', password: 'demo123', color: 'hsl(var(--warning))' }
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-background py-12">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
             Setup CounterOS Multi-Tenant
           </h1>
           <p className="text-lg text-gray-600">

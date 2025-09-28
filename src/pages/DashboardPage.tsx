@@ -17,7 +17,7 @@ export const DashboardPage = () => {
   const [foodCost, setFoodCost] = useState('Cargando...');
   const [transacciones, setTransacciones] = useState('Cargando...');
   const [ticketPromedio, setTicketPromedio] = useState('Cargando...');
-  const [colorFood, setColorFood] = useState('#22c55e');
+  const [colorFood, setColorFood] = useState('hsl(var(--success))');
   const [currentSection, setCurrentSection] = useState('dashboard');
 
   useEffect(() => {
@@ -72,9 +72,9 @@ export const DashboardPage = () => {
         
         // Cambiar color si está alto
         if (parseFloat(foodCostCalc) > 30) {
-          setColorFood('#ef4444');
+          setColorFood('hsl(var(--warning))');
         } else {
-          setColorFood('#22c55e');
+          setColorFood('hsl(var(--success))');
         }
       } else {
         // Valor de demo por marca
@@ -113,21 +113,21 @@ export const DashboardPage = () => {
         transacciones: '185',
         ticket: '$154',
         foodCost: '32.4%',
-        foodCostColor: '#ef4444'
+        foodCostColor: 'hsl(var(--warning))'
       },
       'Nutrisa': {
         ventas: '$22,800',
         transacciones: '142',
         ticket: '$160',
         foodCost: '28.2%',
-        foodCostColor: '#22c55e'
+        foodCostColor: 'hsl(var(--success))'
       },
       'Crepas': {
         ventas: '$31,200',
         transacciones: '201',
         ticket: '$155',
         foodCost: '29.8%',
-        foodCostColor: '#22c55e'
+        foodCostColor: 'hsl(var(--success))'
       }
     };
     

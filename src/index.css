@@ -3,59 +3,60 @@
 @tailwind utilities;
 
 /* CounterOS Design System - Mobile-first, cost-obsessed operations platform */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @layer base {
   :root {
-    /* Core Colors - Professional Navy & Emerald Palette */
-    --background: 0 0% 98%;
-    --foreground: 214 100% 12%;
+    /* Core Colors - Professional Navy & Emerald Palette - OBLIGATORY TOKENS */
+    --background: 0 0% 98%;            /* #FAFAFA */
+    --foreground: 214 100% 12%;        /* #0B1630 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 214 100% 12%;
+    --card: 0 0% 100%;                 /* #FFFFFF */
+    --card-foreground: 214 100% 12%;   /* #0B1630 */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 214 100% 12%;
+    --popover: 0 0% 100%;              /* #FFFFFF */
+    --popover-foreground: 214 100% 12%; /* #0B1630 */
 
-    /* Primary - Deep Navy Blue (Structural, Professional) */
-    --primary: 214 100% 12%;
-    --primary-foreground: 0 0% 98%;
-    --primary-dark: 214 100% 8%;
-    --primary-light: 214 50% 20%;
+    /* Primary - Deep Navy Blue #0B1630 */
+    --primary: 214 100% 12%;           /* #0B1630 */
+    --primary-foreground: 0 0% 98%;    /* #FAFAFA */
+    --primary-dark: 214 100% 8%;       /* Darker navy */
+    --primary-light: 214 50% 20%;      /* Lighter navy */
 
-    /* Secondary - Emerald Green (Success, Savings, CTAs) */
-    --secondary: 158 64% 52%;
-    --secondary-foreground: 0 0% 100%;
-    --secondary-light: 158 64% 95%;
-    --secondary-dark: 158 64% 40%;
+    /* Secondary/Accent - Emerald Green #1FBF72 */
+    --secondary: 154 71% 44%;          /* #1FBF72 */
+    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
+    --secondary-light: 154 71% 95%;    /* Light emerald */
+    --secondary-dark: 154 71% 35%;     /* Dark emerald */
 
-    /* Accent - Strategic Emerald for Key Actions */
-    --accent: 158 64% 52%;
-    --accent-foreground: 0 0% 100%;
-    --accent-light: 158 64% 95%;
-    --accent-hover: 158 64% 45%;
+    --accent: 154 71% 44%;             /* #1FBF72 */
+    --accent-foreground: 0 0% 100%;    /* #FFFFFF */
+    --accent-light: 154 71% 95%;       /* Light emerald */
+    --accent-hover: 154 71% 35%;       /* Dark emerald */
 
     /* Status Colors - Cost-focused */
-    --success: 158 64% 52%;      /* Savings, under budget */
-    --warning: 45 93% 58%;       /* Attention needed */
-    --danger: 0 84% 60%;         /* Over budget, losses */
-    --info: 214 50% 45%;         /* Information */
+    --success: 154 71% 44%;            /* #1FBF72 - Savings, under budget */
+    --warning: 25 95% 53%;             /* #FF6A3D - Attention needed */
+    --danger: 0 84% 60%;               /* Over budget, losses */
+    --info: 214 50% 45%;               /* Information */
 
-    /* Neutral Colors - Clean Grey Spectrum */
-    --muted: 214 20% 95%;
-    --muted-foreground: 214 20% 45%;
-    --border: 214 20% 88%;
-    --input: 214 20% 88%;
-    --ring: 214 100% 12%;
+    /* Neutral Colors - Clean Grey Spectrum OBLIGATORY */
+    --muted: 220 14% 96%;              /* #F6F7F9 */
+    --muted-foreground: 215 16% 47%;   /* #6B7280 */
+    --border: 220 13% 91%;             /* #E6E8EC */
+    --input: 220 13% 91%;              /* #E6E8EC */
+    --ring: 214 100% 12%;              /* #0B1630 */
 
     /* Interactive States */
-    --hover: 214 20% 90%;
-    --active: 214 100% 8%;
+    --hover: 220 14% 94%;              /* #F1F2F4 */
+    --active: 214 100% 8%;             /* Darker navy */
 
     /* Cost-focused Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(214 100% 12%), hsl(214 100% 8%));
-    --gradient-success: linear-gradient(135deg, hsl(158 64% 95%), hsl(158 64% 52%));
-    --gradient-savings: linear-gradient(135deg, hsl(158 64% 52%), hsl(158 64% 40%));
+    --gradient-success: linear-gradient(135deg, hsl(154 71% 95%), hsl(154 71% 44%));
+    --gradient-savings: linear-gradient(135deg, hsl(154 71% 44%), hsl(154 71% 35%));
     --gradient-cost: linear-gradient(135deg, hsl(0 84% 95%), hsl(0 84% 60%));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 98%), hsl(214 20% 95%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 98%), hsl(220 14% 96%));
 
     /* Shadows - Professional & Clean */
     --shadow-sm: 0 1px 2px 0 hsl(214 100% 12% / 0.05);
@@ -68,20 +69,12 @@
     --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-mobile: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
-    --radius: 0.5rem;
-  }
-
-  /* Tenant Theme Overrides */
-  .tenant-crepas {
-    --primary: 214 100% 12%;
-    --secondary: 158 64% 52%;
-    --accent: 158 64% 52%;
-  }
-
-  .tenant-portal-centro {
-    --primary: 214 100% 12%;
-    --secondary: 158 64% 52%;
-    --accent: 158 64% 52%;
+    /* Border Radius - OBLIGATORY: 6/10/14/18 */
+    --radius: 10px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 18px;
   }
 
   .dark {
@@ -93,15 +86,15 @@
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
     --primary-foreground: 214 100% 4%;
-    --secondary: 158 64% 52%;
+    --secondary: 154 71% 44%;
     --secondary-foreground: 0 0% 100%;
     --muted: 214 50% 10%;
     --muted-foreground: 214 20% 65%;
-    --accent: 158 64% 52%;
+    --accent: 154 71% 44%;
     --accent-foreground: 0 0% 100%;
     --border: 214 50% 15%;
     --input: 214 50% 15%;
-    --ring: 158 64% 52%;
+    --ring: 154 71% 44%;
   }
 }
 
@@ -111,58 +104,74 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px; /* body */
+    line-height: 1.5;
   }
 
+  /* OBLIGATORY Typography Hierarchy */
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
+
+  .text-display { font-size: 34px; line-height: 1.2; } /* display 34 */
+  .text-xl-custom { font-size: 22px; line-height: 1.3; } /* xl 22 */
+  .text-body { font-size: 16px; line-height: 1.5; } /* body 16 */
+  .text-caption { font-size: 14px; line-height: 1.4; } /* caption 14 */
 }
 
 @layer components {
-  /* Mobile-first Components */
+  /* Mobile-first Components - OBLIGATORY minimum touch targets ≥44px */
   .mobile-container {
     @apply px-4 pb-20; /* Bottom padding for tab bar */
   }
 
   .mobile-card {
-    @apply bg-card border rounded-lg p-3 shadow-sm;
+    @apply bg-card border border-border rounded-lg p-4 shadow-sm;
+    min-height: 44px; /* Minimum touch target */
   }
 
   .mobile-input {
-    @apply border rounded-lg px-3 py-2 text-sm bg-background;
+    @apply border border-border rounded-lg px-4 py-3 text-body bg-background;
+    min-height: 44px; /* WCAG AA minimum */
   }
 
   .mobile-button {
-    @apply bg-primary text-primary-foreground rounded-lg px-4 py-2 text-sm font-medium transition-colors;
+    @apply bg-primary text-primary-foreground rounded-lg px-6 py-3 text-body font-medium transition-colors;
+    min-height: 44px; /* WCAG AA minimum */
   }
 
   .mobile-cta {
-    @apply fixed bottom-16 left-4 right-4 z-40 bg-secondary text-secondary-foreground rounded-xl px-6 py-3 text-center font-semibold shadow-lg transition-all;
+    @apply fixed bottom-16 left-4 right-4 z-40 bg-secondary text-secondary-foreground rounded-xl px-6 py-4 text-center font-semibold shadow-lg transition-all;
+    min-height: 52px; /* Enhanced touch target for primary action */
   }
 
-  /* Cost-focused Status Indicators */
+  /* Cost-focused Status Indicators with WCAG AA Contrast */
   .status-saving {
-    @apply bg-success/10 text-success border border-success/20 rounded-full px-2 py-1 text-xs font-medium;
+    @apply bg-success/10 text-success border border-success/20 rounded-full px-3 py-1 text-caption font-medium;
   }
 
   .status-over-budget {
-    @apply bg-danger/10 text-danger border border-danger/20 rounded-full px-2 py-1 text-xs font-medium;
+    @apply bg-warning/10 text-warning border border-warning/20 rounded-full px-3 py-1 text-caption font-medium;
   }
 
   .status-on-target {
-    @apply bg-info/10 text-info border border-info/20 rounded-full px-2 py-1 text-xs font-medium;
+    @apply bg-info/10 text-info border border-info/20 rounded-full px-3 py-1 text-caption font-medium;
   }
 
-  /* Tab Bar */
+  /* Tab Bar - Accessible Navigation */
   .tab-bar {
-    @apply fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border px-2 py-2 pb-3;
+    @apply fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border px-2 py-3 pb-6;
+    /* Safe area padding for mobile devices */
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
 
   .tab-item {
-    @apply flex-1 flex flex-col items-center gap-1 py-1 px-2 rounded-lg transition-colors;
+    @apply flex-1 flex flex-col items-center gap-1 py-2 px-2 rounded-lg transition-colors;
+    min-height: 44px; /* WCAG AA minimum */
+    min-width: 44px;
   }
 
   .tab-item.active {
@@ -173,22 +182,23 @@
     @apply text-muted-foreground hover:text-foreground;
   }
 
-  /* iOS-style List Items */
+  /* iOS-style List Items - Enhanced Accessibility */
   .ios-list {
-    @apply bg-card rounded-xl divide-y divide-border overflow-hidden;
+    @apply bg-card rounded-xl divide-y divide-border overflow-hidden shadow-sm;
   }
 
   .ios-list-item {
-    @apply flex items-center justify-between px-4 py-3 transition-colors hover:bg-muted/50;
+    @apply flex items-center justify-between px-4 py-4 transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
+    min-height: 44px; /* WCAG AA minimum */
   }
 
   .ios-list-header {
-    @apply px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider;
+    @apply px-4 py-3 text-caption font-medium text-muted-foreground uppercase tracking-wider;
   }
 
-  /* Cost Analytics Specific */
+  /* Cost Analytics Specific - Semantic Color Usage */
   .cost-metric {
-    @apply text-center p-3 rounded-lg border;
+    @apply text-center p-4 rounded-lg border;
   }
 
   .cost-saving {
@@ -196,11 +206,54 @@
   }
 
   .cost-over {
-    @apply bg-danger/5 border-danger/20 text-danger;
+    @apply bg-warning/5 border-warning/20 text-warning;
   }
 
   .cost-neutral {
     @apply bg-muted/50 border-border text-foreground;
+  }
+
+  /* Empty States */
+  .empty-state {
+    @apply flex flex-col items-center justify-center p-8 text-center;
+  }
+
+  .empty-state-icon {
+    @apply h-12 w-12 text-muted-foreground mb-4;
+  }
+
+  .empty-state-title {
+    @apply text-xl-custom font-semibold text-foreground mb-2;
+  }
+
+  .empty-state-description {
+    @apply text-body text-muted-foreground mb-6 max-w-md;
+  }
+
+  /* Loading States */
+  .loading-skeleton {
+    @apply animate-pulse bg-muted rounded;
+  }
+
+  .loading-spinner {
+    @apply animate-spin rounded-full border-2 border-muted border-t-primary;
+  }
+
+  /* Error States */
+  .error-state {
+    @apply flex flex-col items-center justify-center p-8 text-center;
+  }
+
+  .error-state-icon {
+    @apply h-12 w-12 text-warning mb-4;
+  }
+
+  .error-state-title {
+    @apply text-xl-custom font-semibold text-foreground mb-2;
+  }
+
+  .error-state-description {
+    @apply text-body text-muted-foreground mb-6 max-w-md;
   }
 }
 

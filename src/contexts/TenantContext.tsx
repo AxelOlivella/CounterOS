@@ -133,7 +133,7 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   // Compute brand-specific values
   const brandName = tenant?.name ? `${tenant.name}OS` : 'CounterOS';
-  const primaryColor = tenant?.theme?.primary || '#8B5CF6';
+  const primaryColor = tenant?.theme?.primary || 'hsl(var(--primary))';
 
   return (
     <TenantContext.Provider value={{

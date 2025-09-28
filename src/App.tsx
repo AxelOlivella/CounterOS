@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { TenantProvider } from "@/contexts/TenantContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LandingPage } from "./pages/LandingPage";
@@ -32,18 +32,19 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* Landing & Auth */}
+            {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/setup" element={<SetupPage />} />
             
+            {/* Protected Onboarding */}
             <Route path="/onboarding" element={
               <ProtectedRoute>
                 <OnboardingPage />
               </ProtectedRoute>
             } />
             
-            {/* Main App Routes */}
+            {/* Main App Routes - OBLIGATORY: /resumen, /tiendas, /cargar, /alertas */}
             <Route path="/resumen" element={
               <ProtectedRoute>
                 <AppLayout>
@@ -78,27 +79,25 @@ const App = () => (
               </ProtectedRoute>
             } />
 
-            {/* Legacy/Additional Routes */}
-            <Route path="/dashboard" element={
+            {/* Configuration Route */}
+            <Route path="/configuracion" element={
               <ProtectedRoute>
                 <AppLayout>
-                  <DashboardPage />
+                  <PlaceholderPage 
+                    title="Configuración" 
+                    message="Personaliza tu experiencia CounterOS y configuraciones del sistema" 
+                  />
                 </AppLayout>
               </ProtectedRoute>
             } />
+
+            {/* Legacy Routes - Maintain backward compatibility */}
+            <Route path="/dashboard" element={<Navigate to="/resumen" replace />} />
+            <Route path="/datos" element={<Navigate to="/cargar" replace />} />
+            <Route path="/tienda/:storeId" element={<Navigate to="/tiendas/portal-centro" replace />} />
+            <Route path="/settings" element={<Navigate to="/configuracion" replace />} />
             
-            <Route path="/datos" element={
-              <ProtectedRoute>
-                <DatosPage />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/tienda/:storeId" element={
-              <ProtectedRoute>
-                <StoreDashboardPage />
-              </ProtectedRoute>
-            } />
-            
+            {/* Additional Analysis Routes */}
             <Route path="/food-cost-analysis" element={
               <ProtectedRoute>
                 <AppLayout>
@@ -123,10 +122,14 @@ const App = () => (
               </ProtectedRoute>
             } />
             
+            {/* Placeholder Routes - Keep for development */}
             <Route path="/stores" element={
               <ProtectedRoute>
                 <AppLayout>
-                  <PlaceholderPage title="Gestión de Tiendas" message="Administra todas tus ubicaciones desde un solo lugar" />
+                  <PlaceholderPage 
+                    title="Gestión de Tiendas" 
+                    message="Administra todas tus ubicaciones desde un solo lugar" 
+                  />
                 </AppLayout>
               </ProtectedRoute>
             } />
@@ -134,19 +137,15 @@ const App = () => (
             <Route path="/reports" element={
               <ProtectedRoute>
                 <AppLayout>
-                  <PlaceholderPage title="Centro de Reportes" message="Genera reportes personalizados y exporta tus datos" />
+                  <PlaceholderPage 
+                    title="Centro de Reportes" 
+                    message="Genera reportes personalizados y exporta tus datos" 
+                  />
                 </AppLayout>
               </ProtectedRoute>
             } />
             
-            <Route path="/settings" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <PlaceholderPage title="Configuración" message="Personaliza tu experiencia y configuraciones del sistema" />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            
+            {/* 404 Handler - OBLIGATORY custom page */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
