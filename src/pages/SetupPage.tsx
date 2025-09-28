@@ -172,7 +172,7 @@ export const SetupPage = () => {
         <div className="text-center mt-8">
           <a 
             href="/" 
-            className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
           >
             Ir al Sistema →
           </a>

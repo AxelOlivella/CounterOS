@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { StoreSelector } from '@/components/ui/store-selector';
 import { useStoreSelection } from '@/hooks/useStoreSelection';
+import { useSEO } from '@/hooks/useSEO';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -17,6 +18,13 @@ import { useNavigate } from 'react-router-dom';
 const ResumenPage = () => {
   const navigate = useNavigate();
   const { selectedStore, isConsolidatedView } = useStoreSelection();
+
+  // SEO Configuration
+  useSEO({
+    title: 'Resumen Ejecutivo - Control de Costos en Tiempo Real',
+    description: 'Dashboard consolidado con métricas clave de rentabilidad. Identifica oportunidades de ahorro y optimiza el food cost de todas tus tiendas.',
+    keywords: ['resumen ejecutivo restaurante', 'dashboard costos', 'food cost consolidado']
+  });
 
   // Mock data - in real app this would come from API
   const summaryData = {
@@ -58,7 +66,7 @@ const ResumenPage = () => {
       description: 'Actualizar ventas y gastos',
       icon: TrendingUp,
       color: 'text-blue-500',
-      action: () => navigate('/datos')
+      action: () => navigate('/cargar')
     }
   ];
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { AlertCircle, TrendingUp, DollarSign, Package, Snowflake, Coffee, Fish, Utensils } from 'lucide-react';
 
 export const DashboardPage = () => {
@@ -217,12 +218,12 @@ export const DashboardPage = () => {
               </div>
             </div>
             <div className="mt-4 flex gap-3">
-              <button className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition-colors">
+              <Button variant="destructive" size="sm">
                 Ver análisis detallado
-              </button>
-              <button className="px-3 py-1 border border-red-600 text-red-600 rounded text-sm hover:bg-red-50 transition-colors">
+              </Button>
+              <Button variant="outline" size="sm" className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground">
                 Descargar reporte
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -256,7 +257,7 @@ export const DashboardPage = () => {
       </div>
 
       {/* System Stats Bar */}
-      <div className="bg-gray-800 text-white rounded-lg p-3 text-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+      <div className="bg-primary text-primary-foreground rounded-lg p-3 text-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
         <div className="flex flex-wrap gap-4">
           <span className="font-semibold">CounterOS™ v1.0.0</span>
           <span className="text-purple-400">{currentModule} Active</span>

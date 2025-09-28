@@ -257,8 +257,7 @@ export const DashboardPage = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header 
-        className="text-white p-6 shadow-lg"
-        style={{ backgroundColor: primaryColor }}
+        className="text-primary-foreground p-6 shadow-lg bg-primary"
       >
         <div className="flex items-center justify-between">
           <div>
@@ -277,7 +276,7 @@ export const DashboardPage = () => {
             variant="ghost" 
             size="icon"
             onClick={signOut}
-            className="text-white hover:bg-white/20"
+            className="text-primary-foreground hover:bg-primary-foreground/20"
           >
             <LogOut className="h-5 w-5" />
           </Button>
@@ -288,7 +287,7 @@ export const DashboardPage = () => {
           <Button
             variant={currentSection === 'dashboard' ? 'secondary' : 'ghost'}
             onClick={() => setCurrentSection('dashboard')}
-            className={currentSection === 'dashboard' ? '' : 'text-white hover:bg-white/20'}
+            className={currentSection === 'dashboard' ? 'bg-primary-foreground/20' : 'text-primary-foreground hover:bg-primary-foreground/20'}
           >
             <BarChart3 className="h-4 w-4 mr-2" />
             Dashboard
@@ -296,7 +295,7 @@ export const DashboardPage = () => {
           <Button
             variant={currentSection === 'upload' ? 'secondary' : 'ghost'}
             onClick={() => setCurrentSection('upload')}
-            className={currentSection === 'upload' ? '' : 'text-white hover:bg-white/20'}
+            className={currentSection === 'upload' ? 'bg-primary-foreground/20' : 'text-primary-foreground hover:bg-primary-foreground/20'}
           >
             <Upload className="h-4 w-4 mr-2" />
             Upload
@@ -304,7 +303,7 @@ export const DashboardPage = () => {
           <Button
             variant={currentSection === 'pnl' ? 'secondary' : 'ghost'}
             onClick={() => setCurrentSection('pnl')}
-            className={currentSection === 'pnl' ? '' : 'text-white hover:bg-white/20'}
+            className={currentSection === 'pnl' ? 'bg-primary-foreground/20' : 'text-primary-foreground hover:bg-primary-foreground/20'}
           >
             <PieChart className="h-4 w-4 mr-2" />
             P&L
@@ -321,8 +320,7 @@ export const DashboardPage = () => {
             <Button 
               onClick={cargarDatos}
               size="lg"
-              style={{ backgroundColor: primaryColor }}
-              className="text-white hover:opacity-90"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
               🔄 Actualizar Datos
             </Button>

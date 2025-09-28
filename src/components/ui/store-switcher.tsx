@@ -41,8 +41,7 @@ export function StoreSwitcher() {
         >
           <div className="flex items-center gap-2">
             <div 
-              className="flex h-6 w-6 items-center justify-center rounded text-xs font-bold text-white"
-              style={{ backgroundColor: 'hsl(var(--primary))' }}
+              className="flex h-6 w-6 items-center justify-center rounded text-xs font-bold text-primary-foreground bg-primary"
             >
               {tenant?.name?.charAt(0) || 'C'}
             </div>

@@ -48,7 +48,7 @@ export function ErrorState({
         <Button
           onClick={onRetry}
           variant="outline"
-          className="border-warning text-warning hover:bg-warning hover:text-white gap-2"
+          className="border-warning text-warning hover:bg-warning hover:text-warning-foreground gap-2"
         >
           <RefreshCw className="h-4 w-4" />
           {retryLabel}

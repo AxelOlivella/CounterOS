@@ -69,8 +69,7 @@ export function AppSidebar() {
       <SidebarHeader className="border-b">
         <div className="flex items-center gap-3 px-2 py-1">
           <div 
-            className="flex h-8 w-8 items-center justify-center rounded-lg font-bold text-white text-sm"
-            style={{ backgroundColor: primaryColor }}
+            className="flex h-8 w-8 items-center justify-center rounded-lg font-bold text-primary-foreground text-sm bg-primary"
           >
             {tenant?.name?.charAt(0) || 'C'}
           </div>

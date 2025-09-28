@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { StoreSwitcher } from '@/components/ui/store-switcher';
 import { useStoreSelection } from '@/hooks/useStoreSelection';
+import { useSEO } from '@/hooks/useSEO';
 import { 
   Upload, 
   CheckCircle, 
@@ -31,6 +32,13 @@ const DatosPage = () => {
   const [uploadMode, setUploadMode] = useState<'amount' | 'csv'>('amount');
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // SEO Configuration
+  useSEO({
+    title: 'Cargar Datos - Captura Operativa en 60 Segundos',
+    description: 'Captura rápida de ventas y gastos operativos. Genera automáticamente tu P&L mensual con métricas de food cost.',
+    keywords: ['cargar datos restaurante', 'pnl automático', 'captura ventas', 'gastos operativos']
+  });
   
   // Fixed costs state
   const [fixedCosts, setFixedCosts] = useState({

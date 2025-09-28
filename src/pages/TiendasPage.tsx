@@ -6,6 +6,7 @@ import { AlertItem } from '@/components/mobile/AlertItem';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useSEO } from '@/hooks/useSEO';
 import { 
   Store, 
   Search, 
@@ -22,6 +23,13 @@ const TiendasPage = () => {
   const navigate = useNavigate();
   const { stores } = useStoreSelection();
   const [searchTerm, setSearchTerm] = useState('');
+
+  // SEO Configuration
+  useSEO({
+    title: 'Gestión de Tiendas - Monitoreo Multi-Ubicación',
+    description: 'Administra todas tus ubicaciones desde un panel central. Control de food cost, alertas y métricas por tienda en tiempo real.',
+    keywords: ['gestión tiendas restaurante', 'multi ubicación', 'control por tienda', 'food cost tiendas']
+  });
 
   // Mock data for stores - in real app this would come from API
   const storesData = [
@@ -178,7 +186,7 @@ const TiendasPage = () => {
                   />
                 </div>
                 
-                <Button variant="outline">
+                <Button variant="outline" disabled>
                   <Plus className="h-4 w-4 mr-2" />
                   Nueva Tienda
                 </Button>
