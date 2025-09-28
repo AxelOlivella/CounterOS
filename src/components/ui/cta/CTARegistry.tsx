@@ -93,7 +93,6 @@ export const CTARegistry: Record<string, CTAAction> = {
     description: 'Procesa y guarda los datos del período',
     action: (navigate) => {
       // Custom save logic would go here
-      console.log('Saving data...');
       // Then navigate or show success state
     },
     isEnabled: true,
@@ -134,7 +133,6 @@ export const CTARegistry: Record<string, CTAAction> = {
     id: 'exportar-datos',
     label: 'Exportar Datos',
     action: () => {
-      console.log('Exporting data...');
       // Export logic would go here
     },
     isEnabled: false,
@@ -156,7 +154,6 @@ export const CTARegistry: Record<string, CTAAction> = {
     label: 'Descargar Plantilla',
     action: () => {
       // Download CSV template logic
-      console.log('Downloading CSV template...');
     },
     isEnabled: true,
     variant: 'ghost'

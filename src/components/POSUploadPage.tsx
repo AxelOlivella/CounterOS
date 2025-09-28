@@ -67,7 +67,6 @@ export const POSUploadPage = () => {
     setDragActive(false);
     
     const droppedFiles = Array.from(e.dataTransfer.files);
-    console.log("Files dropped:", droppedFiles);
     // Handle file upload logic here
   };
 

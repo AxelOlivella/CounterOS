@@ -302,7 +302,7 @@ function PricingCTA() {
                 placeholder="tu@empresa.com" 
                 className="bg-background"
                 type="email"
-                onChange={(e) => console.log("Email subscription:", e.target.value)}
+                onChange={(e) => {/* Email subscription handler */}}
               />
             </div>
             <Button asChild size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground gap-2">
