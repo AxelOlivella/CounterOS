@@ -56,14 +56,11 @@ export const FoodCostAnalysisPage = () => {
   const fetchStores = async () => {
     try {
       const { data: storesData, error } = await supabase
-        .from('stores')
-        .select('store_id, name')
-        .eq('active', true)
-        .order('name');
+        .rpc('get_stores_data');
 
       if (error) throw error;
       
-      const mappedStores = storesData?.map(store => ({
+      const mappedStores = storesData?.filter(store => store.active).map(store => ({
         id: store.store_id,
         name: store.name
       })) || [];
@@ -83,17 +80,27 @@ export const FoodCostAnalysisPage = () => {
     
     setLoading(true);
     try {
-      let query = supabase
-        .from('daily_food_cost_view')
-        .select('*')
-        .gte('day', format(dateRange.from, 'yyyy-MM-dd'))
-        .lte('day', format(dateRange.to, 'yyyy-MM-dd'));
+      const { data: allData, error } = await supabase
+        .rpc('get_daily_food_cost_data');
+
+      if (error) throw error;
+
+      // Filter data by date range and store on client side
+      let filteredData = allData?.filter(item => {
+        const itemDate = new Date(item.day);
+        const fromDate = dateRange.from;
+        const toDate = dateRange.to;
+        return itemDate >= fromDate && itemDate <= toDate;
+      }) || [];
 
       if (selectedStore !== 'all') {
-        query = query.eq('store_id', selectedStore);
+        filteredData = filteredData.filter(item => item.store_id === selectedStore);
       }
 
-      const { data, error } = await query.order('day');
+      // Sort by day
+      filteredData.sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime());
+      
+      const data = filteredData;
 
       if (error) throw error;
 

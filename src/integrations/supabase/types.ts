@@ -516,6 +516,18 @@ export type Database = {
           tenant_id: string
         }[]
       }
+      get_stores_data: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          active: boolean
+          city: string
+          code: string
+          created_at: string
+          name: string
+          store_id: string
+          tenant_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

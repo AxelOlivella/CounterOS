@@ -52,14 +52,11 @@ export const PnLReportsPage = () => {
   const fetchStores = async () => {
     try {
       const { data: storesData, error } = await supabase
-        .from('stores')
-        .select('store_id, name')
-        .eq('active', true)
-        .order('name');
+        .rpc('get_stores_data');
 
       if (error) throw error;
       
-      const mappedStores = storesData?.map(store => ({
+      const mappedStores = storesData?.filter(store => store.active).map(store => ({
         id: store.store_id,
         name: store.name
       })) || [];
@@ -81,17 +78,27 @@ export const PnLReportsPage = () => {
       const startDate = format(startOfMonth(subMonths(new Date(), 6)), 'yyyy-MM-dd');
       const endDate = format(endOfMonth(new Date()), 'yyyy-MM-dd');
 
-      let query = supabase
-        .from('pnl_monthly_view')
-        .select('*')
-        .gte('period', startDate)
-        .lte('period', endDate);
+      const { data: allData, error } = await supabase
+        .rpc('get_pnl_monthly_data');
+
+      if (error) throw error;
+
+      // Filter data by date range and store on client side
+      let filteredData = allData?.filter(item => {
+        const itemDate = new Date(item.period);
+        const fromDate = new Date(startDate);
+        const toDate = new Date(endDate);
+        return itemDate >= fromDate && itemDate <= toDate;
+      }) || [];
 
       if (selectedStore !== 'all') {
-        query = query.eq('store_id', selectedStore);
+        filteredData = filteredData.filter(item => item.store_id === selectedStore);
       }
 
-      const { data, error } = await query.order('period');
+      // Sort by period
+      filteredData.sort((a, b) => new Date(a.period).getTime() - new Date(b.period).getTime());
+      
+      const data = filteredData;
 
       if (error) throw error;
 
