@@ -53,7 +53,7 @@ function Nav() {
           <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Beneficios</a>
           <a href="#faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
           <a href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Iniciar sesión</a>
-          <Button asChild size="sm" className="gap-2">
+          <Button asChild size="sm" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground gap-2">
             <a href={primaryCTA.href}>{primaryCTA.label} <ArrowRight className="h-4 w-4"/></a>
           </Button>
         </div>
@@ -65,23 +65,23 @@ function Nav() {
 function Hero() {
   return (
     <section className="relative overflow-hidden bg-gradient-subtle">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(700px_200px_at_50%_-20%,hsl(var(--primary-dark)/0.15),transparent)]"/>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(700px_200px_at_50%_-20%,hsl(var(--primary)/0.08),transparent)]"/>
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 py-20 md:grid-cols-2">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-            El sistema operativo <span className="text-primary-dark">obsesionado</span> con tus costos.
+          <h1 className="text-4xl font-bold tracking-tight text-primary md:text-5xl">
+            El sistema operativo <span className="text-secondary">obsesionado</span> con tus costos.
           </h1>
           <p className="mt-4 max-w-xl text-lg text-muted-foreground">
-            Una herramienta simple que conecta tus operaciones y te ayuda a <span className="text-foreground font-medium">gastar menos desde el primer día</span>.
+            Una herramienta simple que conecta tus operaciones y te ayuda a <span className="text-primary font-medium">gastar menos desde el primer día</span>.
           </p>
           <p className="mt-3 max-w-xl text-muted-foreground">
-            No somos un POS más. Somos la capa que da <span className="text-foreground font-medium">visibilidad y control práctico</span> para reducir mermas y mejorar márgenes.
+            No somos un POS más. Somos la capa que da <span className="text-primary font-medium">visibilidad y control práctico</span> para reducir mermas y mejorar márgenes.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Button asChild size="lg" className="gap-2">
+            <Button asChild size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground gap-2">
               <a href={primaryCTA.href}>{primaryCTA.label} <ArrowRight className="h-5 w-5"/></a>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button asChild size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
               <a href={secondaryCTA.href}>{secondaryCTA.label}</a>
             </Button>
           </div>
@@ -305,7 +305,7 @@ function PricingCTA() {
                 onChange={(e) => console.log("Email subscription:", e.target.value)}
               />
             </div>
-            <Button asChild size="lg" className="gap-2">
+            <Button asChild size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground gap-2">
               <a href={primaryCTA.href}>Probar gratis <ArrowRight className="h-5 w-5"/></a>
             </Button>
             <p className="text-xs text-muted-foreground">Luego $1,500 MXN/tienda/mes</p>

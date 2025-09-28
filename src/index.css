@@ -2,65 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
-/* FroyoOS Design System - Multi-tenant restaurant management */
+/* CounterOS Design System - Cost-obsessed operations platform */
 @layer base {
   :root {
-    /* Core Colors */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core Colors - Sophisticated Navy & Emerald Palette */
+    --background: 0 0% 96%;
+    --foreground: 0 0% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 12%;
 
-    /* Primary Brand Colors - Professional Blue */
-    --primary: 214 95% 93%;
-    --primary-foreground: 214 84% 12%;
-    --primary-dark: 214 84% 12%;
-    --primary-light: 214 95% 97%;
+    /* Primary - Navy Blue (Structural Elements) */
+    --primary: 0 0% 12%;
+    --primary-foreground: 0 0% 96%;
+    --primary-dark: 0 0% 8%;
+    --primary-light: 0 0% 20%;
 
-    /* Secondary Colors - Success Green */
-    --secondary: 142 76% 36%;
+    /* Secondary - Emerald Green (CTA & Success) */
+    --secondary: 145 63% 49%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-light: 142 76% 94%;
+    --secondary-light: 145 63% 94%;
 
-    /* Accent Colors - Warning Orange */
-    --accent: 25 95% 53%;
+    /* Accent - Refined Emerald for Key Actions */
+    --accent: 145 63% 49%;
     --accent-foreground: 0 0% 100%;
-    --accent-light: 25 95% 95%;
+    --accent-light: 145 63% 94%;
 
     /* Status Colors */
-    --success: 142 76% 36%;
+    --success: 145 63% 49%;
     --warning: 45 93% 58%;
     --danger: 0 84% 60%;
-    --info: 214 95% 93%;
+    --info: 0 0% 20%;
 
-    /* Neutral Colors */
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 47%;
-    --border: 214.3 32% 91%;
-    --input: 214.3 32% 91%;
-    --ring: 214 84% 12%;
+    /* Neutral Colors - Light Grey Spectrum */
+    --muted: 0 0% 92%;
+    --muted-foreground: 0 0% 45%;
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 0 0% 12%;
 
     /* Interactive States */
-    --hover: 214 95% 90%;
-    --active: 214 84% 15%;
+    --hover: 0 0% 88%;
+    --active: 0 0% 8%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(214 95% 93%), hsl(214 84% 12%));
-    --gradient-success: linear-gradient(135deg, hsl(142 76% 94%), hsl(142 76% 36%));
-    --gradient-warning: linear-gradient(135deg, hsl(25 95% 95%), hsl(25 95% 53%));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(214 95% 98%));
+    /* Gradients - Sophisticated Navy & Emerald */
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 12%), hsl(0 0% 8%));
+    --gradient-success: linear-gradient(135deg, hsl(145 63% 94%), hsl(145 63% 49%));
+    --gradient-accent: linear-gradient(135deg, hsl(145 63% 49%), hsl(145 63% 42%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 96%), hsl(0 0% 92%));
 
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(214 84% 12% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(214 84% 12% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(214 84% 12% / 0.1);
-    --shadow-xl: 0 20px 25px -5px hsl(214 84% 12% / 0.25);
+    /* Shadows - Refined with Navy Tones */
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 12% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 12% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 12% / 0.1);
+    --shadow-xl: 0 20px 25px -5px hsl(0 0% 12% / 0.25);
 
-    /* Animations */
+    /* Animations - Smooth & Professional */
     --transition-fast: all 0.15s ease-out;
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -88,23 +88,23 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --background: 0 0% 8%;
+    --foreground: 0 0% 96%;
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 96%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 0 0% 96%;
+    --primary-foreground: 0 0% 8%;
+    --secondary: 145 63% 49%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 145 63% 49%;
+    --accent-foreground: 0 0% 100%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 145 63% 49%;
   }
 }
 
