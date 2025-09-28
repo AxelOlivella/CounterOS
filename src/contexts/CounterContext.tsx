@@ -16,7 +16,7 @@ interface UserProfile {
   tenant_id: string;
   email: string;
   name?: string;
-  role?: 'owner' | 'manager' | 'analyst' | 'staff';
+  role?: 'admin' | 'supervisor' | 'operator';
   store_scope?: any;
   created_at: string;
   updated_at: string;
@@ -94,7 +94,10 @@ export const CounterProvider: React.FC<{ children: ReactNode }> = ({ children })
         return;
       }
 
-      setUserProfile(profile);
+      setUserProfile({
+        ...profile,
+        role: profile.role as 'admin' | 'supervisor' | 'operator'
+      });
 
         // Fetch tenant data
         if (profile?.tenant_id) {
