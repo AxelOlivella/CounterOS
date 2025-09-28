@@ -1,11 +1,11 @@
-import { useCounter } from '@/contexts/CounterContext';
+import { useTenant } from '@/contexts/TenantContext';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { DashboardPage } from '@/components/pages/DashboardPage';
 import { Loader2 } from 'lucide-react';
 
 const Index = () => {
-  const { user, loading } = useCounter();
+  const { user, loading } = useTenant();
 
   if (loading) {
     return (

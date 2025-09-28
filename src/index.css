@@ -111,3 +111,87 @@
 .focus-visible:focus-visible {
   @apply outline-2 outline-offset-2 outline-primary;
 }
+
+/* Mobile Tab Bar Styles */
+.tab-bar {
+  @apply fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tab-item {
+  @apply flex flex-col items-center justify-center px-2 py-2 min-h-[60px] text-muted-foreground transition-colors;
+}
+
+.tab-item.active {
+  @apply text-primary;
+}
+
+.tab-item.inactive:hover {
+  @apply text-foreground;
+}
+
+/* Mobile Card Styles */
+.mobile-card {
+  @apply bg-card border border-border rounded-lg p-4 shadow-sm;
+}
+
+.mobile-card-header {
+  @apply flex items-center justify-between mb-3;
+}
+
+.mobile-card-title {
+  @apply font-semibold text-foreground;
+}
+
+.mobile-card-subtitle {
+  @apply text-sm text-muted-foreground;
+}
+
+/* iOS List Styles */
+.ios-list {
+  @apply bg-card rounded-lg overflow-hidden border border-border;
+}
+
+.ios-list-item {
+  @apply flex items-center justify-between px-4 py-3 border-b border-border last:border-b-0;
+}
+
+.ios-list-item:active {
+  @apply bg-muted;
+}
+
+.ios-list-label {
+  @apply text-foreground font-medium;
+}
+
+.ios-list-value {
+  @apply text-muted-foreground;
+}
+
+/* Cost Metric States */
+.cost-metric {
+  @apply text-foreground font-semibold;
+}
+
+.cost-neutral {
+  @apply text-muted-foreground;
+}
+
+.cost-over {
+  color: hsl(var(--destructive));
+}
+
+.cost-saving {
+  color: hsl(var(--secondary));
+}
+
+/* Mobile CTA Styles */
+.mobile-cta {
+  @apply fixed bottom-0 left-0 right-0 z-50 m-4 rounded-lg font-semibold transition-all duration-200;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Safe area support */
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
