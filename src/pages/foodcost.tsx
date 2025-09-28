@@ -9,9 +9,9 @@ import { VarianceAnalysisChart } from "@/components/food-cost/VarianceAnalysisCh
 import { Loader2, AlertTriangle, TrendingUp } from "lucide-react";
 
 export function FoodCostPage() {
-  const [selectedStore, setSelectedStore] = useState("");
+  const [selectedStore, setSelectedStore] = useState("all");
   const { data: stores, loading: storesLoading } = useStores();
-  const { rows: foodCostData, loading: foodCostLoading, error } = useDailyFoodCost(selectedStore || undefined);
+  const { rows: foodCostData, loading: foodCostLoading, error } = useDailyFoodCost(selectedStore === "all" ? undefined : selectedStore);
 
   const analysisData = useMemo(() => {
     if (!foodCostData.length) return null;
@@ -88,7 +88,7 @@ export function FoodCostPage() {
                     <SelectValue placeholder="Todas las tiendas" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Consolidado</SelectItem>
+                    <SelectItem value="all">Consolidado</SelectItem>
                     {stores.map((store) => (
                       <SelectItem key={store.store_id} value={store.store_id}>
                         {store.name} ({store.code})

@@ -8,9 +8,9 @@ import { useStores, useMonthlyPnL } from "@/hooks/useFoodCost";
 import { Loader2, Download, Printer, AlertTriangle, BarChart3 } from "lucide-react";
 
 export function PnLPage() {
-  const [selectedStore, setSelectedStore] = useState("");
+  const [selectedStore, setSelectedStore] = useState("all");
   const { data: stores, loading: storesLoading } = useStores();
-  const { rows: pnlData, loading: pnlLoading, error } = useMonthlyPnL(selectedStore || undefined);
+  const { rows: pnlData, loading: pnlLoading, error } = useMonthlyPnL(selectedStore === "all" ? undefined : selectedStore);
 
   const summary = useMemo(() => {
     if (!pnlData.length) return null;
@@ -117,7 +117,7 @@ export function PnLPage() {
                     <SelectValue placeholder="Todas las tiendas" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Consolidado</SelectItem>
+                    <SelectItem value="all">Consolidado</SelectItem>
                     {stores.map((store) => (
                       <SelectItem key={store.store_id} value={store.store_id}>
                         {store.name} ({store.code})
@@ -222,7 +222,7 @@ export function PnLPage() {
             <CardHeader>
               <CardTitle>Estado de Resultados</CardTitle>
               <CardDescription>
-                Detalle mensual por {selectedStore ? stores.find(s => s.store_id === selectedStore)?.name : "todas las tiendas"}
+                Detalle mensual por {selectedStore !== "all" ? stores.find(s => s.store_id === selectedStore)?.name : "todas las tiendas"}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -258,7 +258,7 @@ export function PnLPage() {
                               month: 'long'
                             })}
                           </TableCell>
-                          {!selectedStore && (
+                          {selectedStore === "all" && (
                             <TableCell>
                               {stores.find(s => s.store_id === row.store_id)?.name || "N/A"}
                             </TableCell>
