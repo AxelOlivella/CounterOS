@@ -464,9 +464,58 @@ export type Database = {
           },
         ]
       }
+      waste_analysis: {
+        Row: {
+          consumo_con_merma_5pct: number | null
+          consumo_esperado: number | null
+          costo_teorico: number | null
+          ingrediente: string | null
+          merma_estimada_dinero: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      get_daily_food_cost_data: {
+        Args: { user_tenant_id?: string }
+        Returns: {
+          cogs: number
+          day: string
+          food_cost_pct: number
+          revenue: number
+          store_id: string
+          tenant_id: string
+        }[]
+      }
+      get_daily_sales_data: {
+        Args: { user_tenant_id?: string }
+        Returns: {
+          day: string
+          product_id: string
+          qty_sold: number
+          revenue: number
+          sku: string
+          store_id: string
+          tenant_id: string
+        }[]
+      }
+      get_pnl_monthly_data: {
+        Args: { user_tenant_id?: string }
+        Returns: {
+          cogs: number
+          ebitda: number
+          energy: number
+          marketing: number
+          other: number
+          payroll: number
+          period: string
+          rent: number
+          revenue: number
+          royalties: number
+          store_id: string
+          tenant_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
