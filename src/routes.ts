@@ -13,8 +13,8 @@ export const routes = {
 // Store slugs for consistent naming
 export const STORES = [
   { name: 'Portal Centro', slug: 'portal-centro' },
+  { name: 'Plaza Norte', slug: 'plaza-norte' },
   { name: 'Crepas OS', slug: 'crepas-os' },
-  { name: 'Sucursal Norte', slug: 'sucursal-norte' },
 ] as const;
 
 export type StoreSlug = typeof STORES[number]['slug'];

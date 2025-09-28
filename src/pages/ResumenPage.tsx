@@ -194,7 +194,11 @@ const ResumenPage = () => {
                 </p>
               </div>
 
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full border-green-600 text-green-600 hover:bg-green-50"
+                onClick={() => navigate('/tiendas/plaza-norte')}
+              >
                 Ver Detalles <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </div>
@@ -244,7 +248,7 @@ const ResumenPage = () => {
               </div>
 
               <Button 
-                className="w-full bg-orange-600 hover:bg-orange-700"
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white"
                 onClick={() => navigate('/tiendas/portal-centro')}
               >
                 Revisar Ahora <ArrowRight className="h-4 w-4 ml-2" />
