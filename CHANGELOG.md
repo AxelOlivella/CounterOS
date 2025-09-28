@@ -1,5 +1,25 @@
 # Changelog - CounterOS Development
 
+## 2024-12-28 - Auditoría Funcional y Componentes de Seguridad
+### Added - Componentes de Seguridad (Modo Incremental)
+- ✅ `src/components/SafeBoundary.tsx` - Error boundary con UI de recuperación
+- ✅ `src/components/EnvGuard.tsx` - Validación de variables de entorno
+- ✅ `src/utils/validateCsv.ts` - Utilidad para validación completa de archivos CSV
+- ✅ `src/utils/exportCsv.ts` - Utilidad para exportación de datos a CSV
+
+### Added - Páginas Stub de Auditoría
+- ✅ `src/pages/hoy.tsx` - Página stub para dashboard diario
+- ✅ `src/pages/tiendas.tsx` - Página stub para gestión de tiendas  
+- ✅ `src/pages/pnl.tsx` - Página stub para análisis P&L
+- ✅ `src/pages/datos.tsx` - Página stub para gestión de datos
+
+### Notas de Implementación
+- ✅ Todos los componentes siguen diseño no disruptivo
+- ✅ No se modificaron archivos existentes ni rutas principales
+- ✅ Páginas stub creadas solo como referencia de auditoría
+- ✅ Utilidades CSV incluyen validación específica para CounterOS
+- ✅ Componentes de seguridad listos para integración gradual
+
 ## 2024-12-28 - Complete Foundation
 ### Added - Core Pages and Components
 - ✅ `src/pages/LandingPage.tsx` - Main landing with features and CTAs

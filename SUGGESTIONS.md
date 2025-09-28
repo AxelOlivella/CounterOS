@@ -46,5 +46,50 @@ The following components are referenced in App.tsx but don't exist:
 - Add error boundaries for better UX
 - Include loading states and empty states consistently
 
+## Recomendaciones Post-Auditoría 2024-12-28
+
+### 1. Integración de Componentes de Seguridad
+**SafeBoundary**: Agregar como wrapper en componentes críticos:
+```tsx
+import { SafeBoundary } from '@/components/SafeBoundary';
+// Envolver páginas de datos sensibles con <SafeBoundary>
+```
+
+**EnvGuard**: Integrar en App.tsx para validación temprana:
+```tsx
+import { EnvGuard } from '@/components/EnvGuard';
+// Envolver la aplicación para verificar configuración
+```
+
+### 2. Utilidades CSV - Integración Sugerida
+**En páginas de carga de datos existentes:**
+- Usar `validateCsv()` antes de procesamiento
+- Mostrar preview de 5 filas antes de importar
+- Implementar validación específica con `validateCounterOSCsv()`
+
+**En páginas de reportes P&L:**
+- Agregar botón "Exportar CSV" usando `exportCounterOSData()`
+- No requiere cambios de layout, solo handler adicional
+
+### 3. Mejoras de UX Identificadas (Requieren Validación)
+- **Loading states**: Faltan en algunos fetch de datos
+- **Empty states**: Algunos componentes no manejan datos vacíos
+- **Error handling**: Mejorar feedback de errores de red
+
+### 4. Navegación Interna
+- Algunos botones/enlaces podrían necesitar handlers de navegación
+- Verificar que todos los enlaces usen `Link` de react-router-dom
+- Estados activos en navegación móvil funcionan correctamente
+
+### 5. Páginas Stub Creadas
+Las siguientes páginas son solo referencia de auditoría:
+- `src/pages/hoy.tsx`
+- `src/pages/tiendas.tsx` 
+- `src/pages/pnl.tsx`
+- `src/pages/datos.tsx`
+
+**NO están enlazadas al navbar principal** - solo para testing/referencia.
+
 ## No Breaking Changes
 All suggestions above are additive - existing functionality will be preserved.
+New components and utilities can be integrated gradually without disrupting current UX.
