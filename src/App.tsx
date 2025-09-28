@@ -47,53 +47,44 @@ const App = () => (
             } />
             <Route path="/resumen" element={
               <ProtectedRoute>
-                <ResumenPage />
+                <AppLayout>
+                  <ResumenPage />
+                </AppLayout>
               </ProtectedRoute>
             } />
             <Route path="/datos" element={
               <ProtectedRoute>
-                <DatosPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/upload" element={
-              <ProtectedRoute>
                 <AppLayout>
-                  <UploadPage />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/food-cost-analysis" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <FoodCostAnalysisPage />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/pnl-reports" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <PnLReportsPage />
+                  <DatosPage />
                 </AppLayout>
               </ProtectedRoute>
             } />
             <Route path="/alertas" element={
               <ProtectedRoute>
-                <AlertasPage />
+                <AppLayout>
+                  <AlertasPage />
+                </AppLayout>
               </ProtectedRoute>
             } />
             <Route path="/stores" element={
               <ProtectedRoute>
-                <PlaceholderPage title="Gestión de Tiendas" message="Administra todas tus ubicaciones desde un solo lugar" />
+                <AppLayout>
+                  <PlaceholderPage title="Gestión de Tiendas" message="Administra todas tus ubicaciones desde un solo lugar" />
+                </AppLayout>
               </ProtectedRoute>
             } />
             <Route path="/reports" element={
               <ProtectedRoute>
-                <PlaceholderPage title="Centro de Reportes" message="Genera reportes personalizados y exporta tus datos" />
+                <AppLayout>
+                  <PlaceholderPage title="Centro de Reportes" message="Genera reportes personalizados y exporta tus datos" />
+                </AppLayout>
               </ProtectedRoute>
             } />
             <Route path="/settings" element={
               <ProtectedRoute>
-                <PlaceholderPage title="Configuración" message="Personaliza tu experiencia y configuraciones del sistema" />
+                <AppLayout>
+                  <PlaceholderPage title="Configuración" message="Personaliza tu experiencia y configuraciones del sistema" />
+                </AppLayout>
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />
