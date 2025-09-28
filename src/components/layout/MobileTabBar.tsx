@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Upload, AlertTriangle, BarChart3 } from 'lucide-react';
+import { Home, Store, Upload, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -14,13 +14,13 @@ const tabItems = [
     id: 'tiendas',
     label: 'Tiendas', 
     path: '/tiendas',
-    icon: Upload,
+    icon: Store,
   },
   {
     id: 'cargar',
     label: 'Cargar',
     path: '/cargar',
-    icon: BarChart3,
+    icon: Upload,
   },
   {
     id: 'alertas',

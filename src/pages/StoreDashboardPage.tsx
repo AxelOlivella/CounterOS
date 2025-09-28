@@ -22,13 +22,16 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
 const StoreDashboardPage = () => {
-  const { storeId } = useParams();
+  const { storeSlug, storeId } = useParams();
   const navigate = useNavigate();
 
-  // Mock data - in real app this would come from API based on storeId
+  // Support both storeSlug (new route) and storeId (legacy route)
+  const currentStoreId = storeSlug || storeId;
+
+  // Mock data - in real app this would come from API based on storeSlug/storeId
   const storeData = {
-    name: 'Portal Centro',
-    id: storeId || 'portal-centro',
+    name: currentStoreId === 'portal-centro' ? 'Portal Centro' : 'Plaza Norte',
+    id: currentStoreId || 'portal-centro',
     currentMonth: {
       sales: 98000,
       foodCostPercent: 34.2,

@@ -25,7 +25,7 @@ export function ListFormRow({
     <div
       className={cn(
         'ios-list-item cursor-pointer',
-        isCalculated && 'bg-accent-light/10',
+        isCalculated && 'bg-accent/5',
         className
       )}
       onClick={onClick}
