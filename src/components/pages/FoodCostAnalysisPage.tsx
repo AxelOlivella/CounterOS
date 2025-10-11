@@ -5,13 +5,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePickerWithRange } from '@/components/ui/date-picker-range';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { FoodCostTrendChart } from '@/components/food-cost/FoodCostTrendChart';
 import { CategoryBreakdownChart } from '@/components/food-cost/CategoryBreakdownChart';
 import { VarianceAnalysisChart } from '@/components/food-cost/VarianceAnalysisChart';
-import { Loader2, TrendingUp, AlertTriangle, Target } from 'lucide-react';
+import { Loader2, TrendingUp, AlertTriangle, Target, AlertCircle } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { DateRange } from 'react-day-picker';
+import { generateAlerts, formatImpact, getAlertBadgeVariant, type Alert as AlertType } from '@/lib/alerts';
+import type { VarianceRow, TopVarianceIngredient } from '@/lib/types_variance';
 
 interface Store {
   id: string;
@@ -36,12 +40,17 @@ export const FoodCostAnalysisPage = () => {
   });
   const [loading, setLoading] = useState(false);
   const [foodCostData, setFoodCostData] = useState<FoodCostData[]>([]);
+  const [varianceData, setVarianceData] = useState<VarianceRow[]>([]);
+  const [topVariances, setTopVariances] = useState<TopVarianceIngredient[]>([]);
+  const [alerts, setAlerts] = useState<AlertType[]>([]);
   const [summary, setSummary] = useState({
     avgFoodCost: 0,
     totalRevenue: 0,
     totalCogs: 0,
     variance: 0,
   });
+
+  const TARGET_FOOD_COST = 30;
 
   useEffect(() => {
     fetchStores();
@@ -127,6 +136,28 @@ export const FoodCostAnalysisPage = () => {
         variance,
       });
 
+      // Fetch variance data
+      await fetchVarianceData();
+      
+      // Generate alerts
+      const generatedAlerts = generateAlerts({
+        foodCostData: processedData.map(d => ({
+          day: d.date,
+          foodCostPct: d.foodCostPct,
+          revenue: d.revenue,
+          cogs: d.cogs,
+        })),
+        varianceData: varianceData.map(v => ({
+          ingredient_name: v.ingredient_name,
+          variance_pct: v.variance_pct,
+          cost_impact_mxn: v.cost_impact_mxn,
+          theoretical_qty: v.theoretical_qty,
+          actual_qty: v.actual_qty,
+        })),
+        targetFoodCost: TARGET_FOOD_COST,
+      });
+      setAlerts(generatedAlerts);
+
     } catch (error) {
       console.error('Error fetching food cost data:', error);
       toast({
@@ -136,6 +167,37 @@ export const FoodCostAnalysisPage = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchVarianceData = async () => {
+    try {
+      // Get variance data from last 30 days
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 30);
+      
+      const { data: variance, error: varianceError } = await supabase.rpc('get_variance_data', {
+        p_store_id: selectedStore === 'all' ? null : selectedStore,
+        p_start_date: startDate.toISOString().split('T')[0],
+        p_end_date: new Date().toISOString().split('T')[0],
+        p_limit: 20,
+      });
+
+      if (varianceError) throw varianceError;
+      setVarianceData(variance || []);
+
+      // Get top variances
+      const { data: topVar, error: topError } = await supabase.rpc('get_top_variance_ingredients', {
+        p_store_id: selectedStore === 'all' ? null : selectedStore,
+        p_days: 30,
+        p_limit: 10,
+      });
+
+      if (topError) throw topError;
+      setTopVariances(topVar || []);
+
+    } catch (error) {
+      console.error('Error fetching variance data:', error);
     }
   };
 
@@ -202,6 +264,33 @@ export const FoodCostAnalysisPage = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Alerts Banner */}
+      {alerts.length > 0 && (
+        <div className="space-y-2">
+          {alerts.slice(0, 3).map((alert) => (
+            <Alert key={alert.id} variant={alert.severity === 'critical' ? 'destructive' : 'default'}>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <p className="font-medium">{alert.title}</p>
+                    <p className="text-sm mt-1">{alert.message}</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      <strong>Acción:</strong> {alert.action}
+                    </p>
+                  </div>
+                  {alert.impact_mxn && (
+                    <Badge variant={getAlertBadgeVariant(alert.severity)}>
+                      {formatImpact(alert.impact_mxn)}
+                    </Badge>
+                  )}
+                </div>
+              </AlertDescription>
+            </Alert>
+          ))}
+        </div>
+      )}
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
@@ -299,27 +388,106 @@ export const FoodCostAnalysisPage = () => {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Análisis de Varianza Semanal</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {mockVarianceData.map((item, index) => (
-              <div key={index} className="flex justify-between items-center p-2 border rounded">
-                <span className="text-sm font-medium">{item.week}</span>
-                <div className="flex items-center gap-4">
-                  <span className="text-sm">Actual: {item.actual}%</span>
-                  <span className="text-sm">Target: {item.target}%</span>
-                  <span className={`text-sm font-bold ${item.variance > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                    Var: {item.variance > 0 ? '+' : ''}{item.variance}%
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Variance Analysis Chart */}
+      <VarianceAnalysisChart 
+        current={summary.avgFoodCost}
+        target={TARGET_FOOD_COST}
+        variance={summary.variance}
+      />
+
+      {/* Top Variance Ingredients */}
+      {topVariances.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5" />
+              Top 10 Ingredientes con Mayor Variancia
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {topVariances.map((item, index) => {
+                const isNegative = item.total_cost_impact < 0;
+                const absImpact = Math.abs(item.total_cost_impact);
+                
+                return (
+                  <div key={item.ingredient_id} className="flex items-center justify-between border-b pb-3 last:border-0">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-medium">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="font-medium">{item.ingredient_name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {item.days_with_variance} días con variancia
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <Badge 
+                        variant={Math.abs(item.avg_variance_pct) > 15 ? 'destructive' : 'secondary'}
+                        className="mb-1"
+                      >
+                        {item.avg_variance_pct > 0 ? '+' : ''}{item.avg_variance_pct.toFixed(1)}%
+                      </Badge>
+                      <p className={`text-sm font-medium ${isNegative ? 'text-green-600' : 'text-red-600'}`}>
+                        {isNegative ? '-' : '+'}{formatImpact(absImpact)}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Recent Variance Details */}
+      {varianceData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Variancia Detallada (Últimos 30 días)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {varianceData.slice(0, 15).map((variance) => {
+                const isOverage = variance.variance_pct > 0;
+                const severity = Math.abs(variance.variance_pct) > 20 ? 'critical' : 
+                                Math.abs(variance.variance_pct) > 10 ? 'warning' : 'info';
+                
+                return (
+                  <div key={`${variance.ingredient_id}-${variance.day}`} className="flex items-start justify-between border-b pb-2 last:border-0">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium">{variance.ingredient_name}</p>
+                        <Badge variant={severity === 'critical' ? 'destructive' : 'secondary'} className="text-xs">
+                          {variance.variance_pct > 0 ? '+' : ''}{variance.variance_pct.toFixed(1)}%
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {new Date(variance.day).toLocaleDateString('es-MX', { 
+                          day: 'numeric', 
+                          month: 'short', 
+                          year: 'numeric' 
+                        })}
+                        {' • '}
+                        Teórico: {variance.theoretical_qty.toFixed(1)} {variance.unit}
+                        {' • '}
+                        Real: {variance.actual_qty.toFixed(1)} {variance.unit}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className={`text-sm font-medium ${isOverage ? 'text-red-600' : 'text-green-600'}`}>
+                        {isOverage ? '+' : ''}{formatImpact(Math.abs(variance.cost_impact_mxn))}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

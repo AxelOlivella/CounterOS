@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      cfdi_ingredient_mapping: {
+        Row: {
+          cfdi_description: string | null
+          cfdi_sku: string
+          confidence_score: number | null
+          created_at: string | null
+          ingredient_id: string
+          mapping_id: string
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          cfdi_description?: string | null
+          cfdi_sku: string
+          confidence_score?: number | null
+          created_at?: string | null
+          ingredient_id: string
+          mapping_id?: string
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          cfdi_description?: string | null
+          cfdi_sku?: string
+          confidence_score?: number | null
+          created_at?: string | null
+          ingredient_id?: string
+          mapping_id?: string
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cfdi_ingredient_mapping_ingredient_id_fkey"
+            columns: ["ingredient_id"]
+            isOneToOne: false
+            referencedRelation: "ingredients"
+            referencedColumns: ["ingredient_id"]
+          },
+          {
+            foreignKeyName: "cfdi_ingredient_mapping_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
+      }
       expenses: {
         Row: {
           created_at: string | null
@@ -221,6 +269,118 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "products_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
+      }
+      purchase_items: {
+        Row: {
+          amount: number
+          cfdi_description: string | null
+          cfdi_sku: string
+          created_at: string | null
+          ingredient_id: string | null
+          item_id: string
+          purchase_id: string
+          qty: number
+          tenant_id: string
+          unit: string | null
+          unit_price: number
+        }
+        Insert: {
+          amount: number
+          cfdi_description?: string | null
+          cfdi_sku: string
+          created_at?: string | null
+          ingredient_id?: string | null
+          item_id?: string
+          purchase_id: string
+          qty: number
+          tenant_id: string
+          unit?: string | null
+          unit_price: number
+        }
+        Update: {
+          amount?: number
+          cfdi_description?: string | null
+          cfdi_sku?: string
+          created_at?: string | null
+          ingredient_id?: string | null
+          item_id?: string
+          purchase_id?: string
+          qty?: number
+          tenant_id?: string
+          unit?: string | null
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_items_ingredient_id_fkey"
+            columns: ["ingredient_id"]
+            isOneToOne: false
+            referencedRelation: "ingredients"
+            referencedColumns: ["ingredient_id"]
+          },
+          {
+            foreignKeyName: "purchase_items_purchase_id_fkey"
+            columns: ["purchase_id"]
+            isOneToOne: false
+            referencedRelation: "purchases"
+            referencedColumns: ["purchase_id"]
+          },
+          {
+            foreignKeyName: "purchase_items_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
+      }
+      purchases: {
+        Row: {
+          cfdi_uuid: string
+          created_at: string | null
+          issue_date: string
+          purchase_id: string
+          store_id: string | null
+          supplier_name: string | null
+          tenant_id: string
+          total_amount: number
+        }
+        Insert: {
+          cfdi_uuid: string
+          created_at?: string | null
+          issue_date: string
+          purchase_id?: string
+          store_id?: string | null
+          supplier_name?: string | null
+          tenant_id: string
+          total_amount?: number
+        }
+        Update: {
+          cfdi_uuid?: string
+          created_at?: string | null
+          issue_date?: string
+          purchase_id?: string
+          store_id?: string | null
+          supplier_name?: string | null
+          tenant_id?: string
+          total_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchases_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "purchases_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -583,6 +743,46 @@ export type Database = {
           },
         ]
       }
+      v_variance_analysis: {
+        Row: {
+          actual_qty: number | null
+          cost_impact_mxn: number | null
+          cost_per_unit: number | null
+          day: string | null
+          ingredient_code: string | null
+          ingredient_id: string | null
+          ingredient_name: string | null
+          store_id: string | null
+          tenant_id: string | null
+          theoretical_qty: number | null
+          unit: string | null
+          variance_pct: number | null
+          variance_qty: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipe_components_ingredient_id_fkey"
+            columns: ["ingredient_id"]
+            isOneToOne: false
+            referencedRelation: "ingredients"
+            referencedColumns: ["ingredient_id"]
+          },
+          {
+            foreignKeyName: "sales_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "sales_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
+      }
       vw_portal_centro_pyg_mensual: {
         Row: {
           cogs: number | null
@@ -657,6 +857,38 @@ export type Database = {
           name: string
           store_id: string
           tenant_id: string
+        }[]
+      }
+      get_top_variance_ingredients: {
+        Args: { p_days?: number; p_limit?: number; p_store_id?: string }
+        Returns: {
+          avg_variance_pct: number
+          days_with_variance: number
+          ingredient_id: string
+          ingredient_name: string
+          total_cost_impact: number
+        }[]
+      }
+      get_variance_data: {
+        Args: {
+          p_end_date?: string
+          p_limit?: number
+          p_start_date?: string
+          p_store_id?: string
+        }
+        Returns: {
+          actual_qty: number
+          cost_impact_mxn: number
+          cost_per_unit: number
+          day: string
+          ingredient_code: string
+          ingredient_id: string
+          ingredient_name: string
+          store_id: string
+          theoretical_qty: number
+          unit: string
+          variance_pct: number
+          variance_qty: number
         }[]
       }
       has_role: {
