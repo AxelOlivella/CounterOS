@@ -81,10 +81,10 @@ serve(async (req) => {
     // Step 3: Check for duplicate UUID
     const { data: existingPurchase } = await supabaseClient
       .from('purchases')
-      .select('id')
-      .eq('invoice_uuid', cfdiData.uuid)
+      .select('purchase_id')
+      .eq('cfdi_uuid', cfdiData.uuid)
       .eq('tenant_id', tenantId)
-      .single();
+      .maybeSingle();
 
     if (existingPurchase) {
       return new Response(
@@ -103,21 +103,10 @@ serve(async (req) => {
       .insert({
         tenant_id: tenantId,
         store_id: targetStoreId,
-        invoice_uuid: cfdiData.uuid,
-        supplier_rfc: cfdiData.supplier_rfc,
+        cfdi_uuid: cfdiData.uuid,
+        issue_date: cfdiData.issue_date.split('T')[0],
         supplier_name: cfdiData.supplier_name,
-        issue_date: cfdiData.issue_date.split('T')[0], // Extract date part
-        subtotal: cfdiData.subtotal,
-        tax: cfdiData.tax,
-        total: cfdiData.total,
-        xml_metadata: {
-          currency: cfdiData.currency,
-          payment_method: cfdiData.payment_method,
-          payment_conditions: cfdiData.payment_conditions,
-          items_count: cfdiData.items.length,
-          processed_via_api: true,
-          processed_at: new Date().toISOString()
-        }
+        total_amount: cfdiData.total
       })
       .select()
       .single();
@@ -127,18 +116,64 @@ serve(async (req) => {
       throw new Error(`Failed to save purchase: ${purchaseError.message}`);
     }
 
-    // Step 5: Insert purchase items
-    const purchaseItems = cfdiData.items.map(item => ({
-      tenant_id: tenantId,
-      purchase_id: purchase.id,
-      sku: item.sku,
-      description: item.description.substring(0, 500), // Limit description length
-      qty: item.qty,
-      unit: item.unit,
-      unit_price: item.unit_price,
-      line_total: item.line_total,
-      category: categorizeCFDIItem(item.description, item.sku)
-    }));
+    // Step 5: Get tenant ingredients for matching
+    const { data: ingredients } = await supabaseClient
+      .from('ingredients')
+      .select('ingredient_id, code, name')
+      .eq('tenant_id', tenantId);
+
+    // Step 6: Get existing mappings
+    const { data: existingMappings } = await supabaseClient
+      .from('cfdi_ingredient_mapping')
+      .select('cfdi_sku, ingredient_id')
+      .eq('tenant_id', tenantId);
+
+    const mappingDict = new Map(
+      existingMappings?.map(m => [m.cfdi_sku, m.ingredient_id]) || []
+    );
+
+    // Step 7: Insert purchase items with intelligent mapping
+    const purchaseItems = await Promise.all(
+      cfdiData.items.map(async (item) => {
+        // Check if we have an existing mapping
+        let ingredientId = mappingDict.get(item.sku);
+
+        // If no mapping, try to find a match
+        if (!ingredientId && ingredients) {
+          const match = findBestIngredientMatch(item, ingredients);
+          if (match) {
+            ingredientId = match.ingredient_id;
+            
+            // Create new mapping for future use
+            await supabaseClient
+              .from('cfdi_ingredient_mapping')
+              .insert({
+                tenant_id: tenantId,
+                cfdi_sku: item.sku,
+                cfdi_description: item.description.substring(0, 500),
+                ingredient_id: match.ingredient_id,
+                confidence_score: match.confidence
+              })
+              .select()
+              .single();
+            
+            console.log(`Auto-mapped ${item.sku} to ${match.name} (confidence: ${match.confidence})`);
+          }
+        }
+
+        return {
+          tenant_id: tenantId,
+          purchase_id: purchase.purchase_id,
+          cfdi_sku: item.sku,
+          cfdi_description: item.description.substring(0, 500),
+          ingredient_id: ingredientId || null,
+          qty: item.qty,
+          unit: item.unit,
+          unit_price: item.unit_price,
+          amount: item.line_total
+        };
+      })
+    );
 
     const { error: itemsError } = await supabaseClient
       .from('purchase_items')
@@ -146,20 +181,26 @@ serve(async (req) => {
 
     if (itemsError) {
       console.error('Error inserting purchase items:', itemsError);
-      // Don't fail the whole operation for items error, just log it
+      throw new Error(`Failed to save purchase items: ${itemsError.message}`);
     }
 
-    console.log(`CFDI processed successfully: ${cfdiData.items.length} items saved`);
+    const mappedCount = purchaseItems.filter(i => i.ingredient_id !== null).length;
+    console.log(`CFDI processed: ${cfdiData.items.length} items, ${mappedCount} auto-mapped`);
+
+    const mappedCount = purchaseItems.filter(i => i.ingredient_id !== null).length;
+    const unmappedCount = purchaseItems.length - mappedCount;
 
     return new Response(
       JSON.stringify({
         success: true,
         data: {
-          purchaseId: purchase.id,
+          purchaseId: purchase.purchase_id,
           uuid: cfdiData.uuid,
           supplier: cfdiData.supplier_name,
           total: cfdiData.total,
           itemsCount: cfdiData.items.length,
+          mappedCount,
+          unmappedCount,
           processedAt: new Date().toISOString()
         }
       }),
@@ -263,38 +304,69 @@ function transformApiResponseToCFDI(apiResult: any): CFDIData {
   };
 }
 
-function categorizeCFDIItem(description: string, sku: string): string {
-  const desc = description.toLowerCase();
-  const skuLower = sku.toLowerCase();
+interface IngredientMatch {
+  ingredient_id: string;
+  name: string;
+  confidence: number;
+}
+
+function findBestIngredientMatch(
+  cfdiItem: CFDIItem,
+  ingredients: Array<{ ingredient_id: string; code: string; name: string }>
+): IngredientMatch | null {
+  const itemSku = cfdiItem.sku.toLowerCase().trim();
+  const itemDesc = cfdiItem.description.toLowerCase().trim();
   
-  // Food ingredients
-  if (desc.includes('harina') || desc.includes('azucar') || desc.includes('leche') || 
-      desc.includes('huevo') || desc.includes('mantequilla') || desc.includes('aceite') ||
-      desc.includes('sal') || desc.includes('polvo') || desc.includes('vainilla') ||
-      desc.includes('chocolate') || desc.includes('fruta') || desc.includes('carne') ||
-      desc.includes('pollo') || desc.includes('verdura') || desc.includes('vegetal')) {
-    return 'ingrediente';
+  let bestMatch: IngredientMatch | null = null;
+  let highestScore = 0;
+
+  for (const ingredient of ingredients) {
+    const ingCode = ingredient.code.toLowerCase().trim();
+    const ingName = ingredient.name.toLowerCase().trim();
+    
+    let score = 0;
+
+    // Exact SKU match (highest confidence)
+    if (itemSku === ingCode) {
+      score = 1.0;
+    }
+    // SKU contains ingredient code or vice versa
+    else if (itemSku.includes(ingCode) || ingCode.includes(itemSku)) {
+      score = 0.9;
+    }
+    // Exact name match
+    else if (itemDesc === ingName) {
+      score = 0.85;
+    }
+    // Description contains ingredient name
+    else if (itemDesc.includes(ingName) && ingName.length > 3) {
+      score = 0.7;
+    }
+    // Ingredient name contains part of description
+    else if (ingName.includes(itemDesc) && itemDesc.length > 3) {
+      score = 0.65;
+    }
+    // Word overlap (for multi-word ingredients)
+    else {
+      const itemWords = itemDesc.split(/\s+/).filter(w => w.length > 3);
+      const ingWords = ingName.split(/\s+/).filter(w => w.length > 3);
+      const overlap = itemWords.filter(w => ingWords.some(iw => iw.includes(w) || w.includes(iw)));
+      
+      if (overlap.length > 0) {
+        score = 0.5 + (overlap.length / Math.max(itemWords.length, ingWords.length)) * 0.3;
+      }
+    }
+
+    // Only consider matches with confidence >= 0.6
+    if (score > highestScore && score >= 0.6) {
+      highestScore = score;
+      bestMatch = {
+        ingredient_id: ingredient.ingredient_id,
+        name: ingredient.name,
+        confidence: score
+      };
+    }
   }
-  
-  // Packaging
-  if (desc.includes('bolsa') || desc.includes('envase') || desc.includes('tapa') || 
-      desc.includes('vaso') || desc.includes('servilleta') || desc.includes('empaque') ||
-      desc.includes('caja') || desc.includes('papel')) {
-    return 'empaque';
-  }
-  
-  // Cleaning supplies
-  if (desc.includes('detergente') || desc.includes('jabon') || desc.includes('limpiador') ||
-      desc.includes('desinfectante') || desc.includes('cloro') || desc.includes('toalla')) {
-    return 'limpieza';
-  }
-  
-  // Equipment/maintenance
-  if (desc.includes('equipo') || desc.includes('maquina') || desc.includes('herramienta') ||
-      desc.includes('repuesto') || desc.includes('mantenimiento') || desc.includes('reparacion')) {
-    return 'equipo';
-  }
-  
-  // Default to ingredients for food businesses
-  return 'ingrediente';
+
+  return bestMatch;
 }
