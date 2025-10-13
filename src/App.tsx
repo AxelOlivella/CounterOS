@@ -24,6 +24,7 @@ const WelcomePage = lazy(() => import("./pages/onboarding/WelcomePage"));
 const StoresPage = lazy(() => import("./pages/onboarding/StoresPage"));
 const OnboardingUploadPage = lazy(() => import("./pages/onboarding/UploadPage"));
 const ProcessingPage = lazy(() => import("./pages/onboarding/ProcessingPage"));
+const SuccessPage = lazy(() => import("./pages/onboarding/SuccessPage"));
 const ResumenPage = lazy(() => import("./pages/ResumenPage"));
 const TiendasPage = lazy(() => import("./pages/TiendasPage"));
 const StoreDashboardPage = lazy(() => import("./pages/StoreDashboardPage"));
@@ -93,6 +94,12 @@ const App = () => (
             <Route path="/onboarding/processing" element={
               <ProtectedRoute>
                 <ProcessingPage />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/onboarding/success" element={
+              <ProtectedRoute>
+                <SuccessPage />
               </ProtectedRoute>
             } />
             
