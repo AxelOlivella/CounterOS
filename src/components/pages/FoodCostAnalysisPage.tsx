@@ -10,12 +10,14 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { FoodCostTrendChart } from '@/components/food-cost/FoodCostTrendChart';
 import { CategoryBreakdownChart } from '@/components/food-cost/CategoryBreakdownChart';
 import { VarianceAnalysisChart } from '@/components/food-cost/VarianceAnalysisChart';
-import { Loader2, TrendingUp, AlertTriangle, Target, AlertCircle } from 'lucide-react';
+import { Loader2, TrendingUp, AlertTriangle, Target, AlertCircle, ClipboardCheck } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { DateRange } from 'react-day-picker';
 import { generateAlerts, formatImpact, getAlertBadgeVariant, type Alert as AlertType } from '@/lib/alerts';
 import type { VarianceRow, TopVarianceIngredient } from '@/lib/types_variance';
+import type { RealVarianceRow } from '@/lib/types_inventory';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Store {
   id: string;
@@ -41,6 +43,7 @@ export const FoodCostAnalysisPage = () => {
   const [loading, setLoading] = useState(false);
   const [foodCostData, setFoodCostData] = useState<FoodCostData[]>([]);
   const [varianceData, setVarianceData] = useState<VarianceRow[]>([]);
+  const [realVarianceData, setRealVarianceData] = useState<RealVarianceRow[]>([]);
   const [topVariances, setTopVariances] = useState<TopVarianceIngredient[]>([]);
   const [alerts, setAlerts] = useState<AlertType[]>([]);
   const [summary, setSummary] = useState({
@@ -59,6 +62,7 @@ export const FoodCostAnalysisPage = () => {
   useEffect(() => {
     if (dateRange?.from && dateRange?.to) {
       fetchFoodCostData();
+      fetchRealVarianceData();
     }
   }, [selectedStore, dateRange]);
 
@@ -198,6 +202,27 @@ export const FoodCostAnalysisPage = () => {
 
     } catch (error) {
       console.error('Error fetching variance data:', error);
+    }
+  };
+
+  const fetchRealVarianceData = async () => {
+    if (!dateRange?.from || !dateRange?.to) return;
+
+    try {
+      const storeFilter = selectedStore !== 'all' ? selectedStore : null;
+      
+      const { data, error } = await supabase.rpc('get_real_variance_data', {
+        p_store_id: storeFilter,
+        p_start_date: format(dateRange.from, 'yyyy-MM-dd'),
+        p_end_date: format(dateRange.to, 'yyyy-MM-dd'),
+        p_limit: 50
+      } as any);
+
+      if (error) throw error;
+
+      setRealVarianceData(data || []);
+    } catch (error) {
+      console.error('Error fetching real variance data:', error);
     }
   };
 
@@ -442,52 +467,128 @@ export const FoodCostAnalysisPage = () => {
         </Card>
       )}
 
-      {/* Recent Variance Details */}
-      {varianceData.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Variancia Detallada (Últimos 30 días)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {varianceData.slice(0, 15).map((variance) => {
-                const isOverage = variance.variance_pct > 0;
-                const severity = Math.abs(variance.variance_pct) > 20 ? 'critical' : 
-                                Math.abs(variance.variance_pct) > 10 ? 'warning' : 'info';
-                
-                return (
-                  <div key={`${variance.ingredient_id}-${variance.day}`} className="flex items-start justify-between border-b pb-2 last:border-0">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium">{variance.ingredient_name}</p>
-                        <Badge variant={severity === 'critical' ? 'destructive' : 'secondary'} className="text-xs">
-                          {variance.variance_pct > 0 ? '+' : ''}{variance.variance_pct.toFixed(1)}%
-                        </Badge>
+      {/* Variance Analysis with Tabs */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Análisis de Variancia</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="theoretical" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="theoretical">Variancia Teórica</TabsTrigger>
+              <TabsTrigger value="real">
+                <ClipboardCheck className="mr-2 h-4 w-4" />
+                Variancia Real
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="theoretical" className="space-y-4">
+              {varianceData.length > 0 ? (
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    Variancia calculada automáticamente basada en recetas y ventas
+                  </p>
+                  {varianceData.slice(0, 15).map((variance) => {
+                    const isOverage = variance.variance_pct > 0;
+                    const severity = Math.abs(variance.variance_pct) > 20 ? 'critical' : 
+                                    Math.abs(variance.variance_pct) > 10 ? 'warning' : 'info';
+                    
+                    return (
+                      <div key={`${variance.ingredient_id}-${variance.day}`} className="flex items-start justify-between border-b pb-2 last:border-0">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium">{variance.ingredient_name}</p>
+                            <Badge variant={severity === 'critical' ? 'destructive' : 'secondary'} className="text-xs">
+                              {variance.variance_pct > 0 ? '+' : ''}{variance.variance_pct.toFixed(1)}%
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {new Date(variance.day).toLocaleDateString('es-MX', { 
+                              day: 'numeric', 
+                              month: 'short', 
+                              year: 'numeric' 
+                            })}
+                            {' • '}
+                            Teórico: {variance.theoretical_qty.toFixed(1)} {variance.unit}
+                            {' • '}
+                            Sistema: {variance.actual_qty.toFixed(1)} {variance.unit}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className={`text-sm font-medium ${isOverage ? 'text-red-600' : 'text-green-600'}`}>
+                            {isOverage ? '+' : ''}{formatImpact(Math.abs(variance.cost_impact_mxn))}
+                          </p>
+                        </div>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {new Date(variance.day).toLocaleDateString('es-MX', { 
-                          day: 'numeric', 
-                          month: 'short', 
-                          year: 'numeric' 
-                        })}
-                        {' • '}
-                        Teórico: {variance.theoretical_qty.toFixed(1)} {variance.unit}
-                        {' • '}
-                        Real: {variance.actual_qty.toFixed(1)} {variance.unit}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className={`text-sm font-medium ${isOverage ? 'text-red-600' : 'text-green-600'}`}>
-                        {isOverage ? '+' : ''}{formatImpact(Math.abs(variance.cost_impact_mxn))}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-center py-8">No hay datos de variancia teórica</p>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="real" className="space-y-4">
+              {realVarianceData.length > 0 ? (
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    Variancia basada en conteos físicos de inventario vs teórico
+                  </p>
+                  {realVarianceData.map((variance) => {
+                    const isOverage = variance.variance_pct && variance.variance_pct > 0;
+                    const severity = variance.variance_pct && Math.abs(variance.variance_pct) > 20 ? 'critical' : 
+                                    variance.variance_pct && Math.abs(variance.variance_pct) > 10 ? 'warning' : 'info';
+                    
+                    return (
+                      <div key={`${variance.ingredient_id}-${variance.day}`} className="flex items-start justify-between border-b pb-2 last:border-0">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium">{variance.ingredient_name}</p>
+                            {variance.variance_pct && (
+                              <Badge variant={severity === 'critical' ? 'destructive' : 'secondary'} className="text-xs">
+                                {variance.variance_pct > 0 ? '+' : ''}{variance.variance_pct.toFixed(1)}%
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {new Date(variance.day).toLocaleDateString('es-MX', { 
+                              day: 'numeric', 
+                              month: 'short', 
+                              year: 'numeric' 
+                            })}
+                            {' • '}
+                            Teórico: {variance.theoretical_qty.toFixed(1)} {variance.unit}
+                            {' • '}
+                            Físico: {variance.actual_qty.toFixed(1)} {variance.unit}
+                          </p>
+                          {variance.notes && (
+                            <p className="text-xs text-muted-foreground mt-1 italic">
+                              Nota: {variance.notes}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <p className={`text-sm font-medium ${isOverage ? 'text-red-600' : 'text-green-600'}`}>
+                            {isOverage ? '+' : ''}{formatImpact(Math.abs(variance.cost_impact_mxn))}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <ClipboardCheck className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground mb-2">No hay conteos de inventario registrados</p>
+                  <Button variant="outline" onClick={() => window.location.href = '/inventory-count'}>
+                    Realizar Conteo de Inventario
+                  </Button>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 };

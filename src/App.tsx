@@ -14,6 +14,7 @@ import { PnLReportsPage } from "./components/pages/PnLReportsPage";
 import { MenuEngineeringPage } from "./components/pages/MenuEngineeringPage";
 import { SupplierManagementPage } from "./components/pages/SupplierManagementPage";
 import { ProductMixPage } from "./components/pages/ProductMixPage";
+import InventoryCountPage from "./components/pages/InventoryCountPage";
 import { SetupPage } from "./pages/SetupPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import DatosPage from "./pages/DatosPage";
@@ -152,6 +153,14 @@ const App = () => (
               <ProtectedRoute>
                 <AppLayout>
                   <ProductMixPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/inventory-count" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <InventoryCountPage />
                 </AppLayout>
               </ProtectedRoute>
             } />

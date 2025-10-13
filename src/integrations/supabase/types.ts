@@ -241,6 +241,48 @@ export type Database = {
           },
         ]
       }
+      inventory_counts: {
+        Row: {
+          count_date: string
+          count_id: string
+          counted_by: string | null
+          created_at: string
+          ingredient_id: string
+          notes: string | null
+          physical_qty: number
+          store_id: string
+          tenant_id: string
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          count_date: string
+          count_id?: string
+          counted_by?: string | null
+          created_at?: string
+          ingredient_id: string
+          notes?: string | null
+          physical_qty: number
+          store_id: string
+          tenant_id: string
+          unit: string
+          updated_at?: string
+        }
+        Update: {
+          count_date?: string
+          count_id?: string
+          counted_by?: string | null
+          created_at?: string
+          ingredient_id?: string
+          notes?: string | null
+          physical_qty?: number
+          store_id?: string
+          tenant_id?: string
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           active: boolean | null
@@ -684,6 +726,26 @@ export type Database = {
           },
         ]
       }
+      v_real_variance_analysis: {
+        Row: {
+          actual_qty: number | null
+          cost_impact_mxn: number | null
+          cost_per_unit: number | null
+          counted_by: string | null
+          day: string | null
+          ingredient_code: string | null
+          ingredient_id: string | null
+          ingredient_name: string | null
+          notes: string | null
+          store_id: string | null
+          tenant_id: string | null
+          theoretical_qty: number | null
+          unit: string | null
+          variance_pct: number | null
+          variance_qty: number | null
+        }
+        Relationships: []
+      }
       v_sales_daily: {
         Row: {
           day: string | null
@@ -845,6 +907,30 @@ export type Database = {
           royalties: number
           store_id: string
           tenant_id: string
+        }[]
+      }
+      get_real_variance_data: {
+        Args: {
+          p_end_date?: string
+          p_limit?: number
+          p_start_date?: string
+          p_store_id?: string
+        }
+        Returns: {
+          actual_qty: number
+          cost_impact_mxn: number
+          cost_per_unit: number
+          counted_by: string
+          day: string
+          ingredient_code: string
+          ingredient_id: string
+          ingredient_name: string
+          notes: string
+          store_id: string
+          theoretical_qty: number
+          unit: string
+          variance_pct: number
+          variance_qty: number
         }[]
       }
       get_stores_data: {

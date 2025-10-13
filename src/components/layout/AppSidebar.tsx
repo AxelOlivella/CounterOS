@@ -16,7 +16,8 @@ import {
   ChefHat,
   TrendingUp,
   Truck,
-  LayoutGrid
+  LayoutGrid,
+  ClipboardCheck
 } from 'lucide-react';
 import {
   Sidebar,
@@ -47,6 +48,7 @@ const menuItems = [
 const analysisItems = [
   { id: 'menu-engineering', label: 'Menu Engineering', icon: ChefHat, path: '/menu-engineering' },
   { id: 'variance', label: 'Análisis Variancia', icon: TrendingUp, path: '/variance-analysis' },
+  { id: 'inventory-count', label: 'Conteo Inventario', icon: ClipboardCheck, path: '/inventory-count' },
   { id: 'suppliers', label: 'Proveedores', icon: Truck, path: '/supplier-management' },
   { id: 'product-mix', label: 'Product Mix', icon: LayoutGrid, path: '/product-mix' },
 ];
