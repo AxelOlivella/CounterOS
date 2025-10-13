@@ -1,5 +1,36 @@
 # Changelog - CounterOS Development
 
+## 2025-10-13 - Polish Visual v1.0 - Sistema de Design Tokens
+### Archivos Agregados (Modo Incremental)
+- ✅ `src/styles/tokens.css` - Design tokens profesionales (radius, shadows, surfaces, semantic colors)
+- ✅ `src/styles/focus.css` - Estados de focus mejorados para accesibilidad
+
+### Componentes UI Nuevos (11 componentes)
+- ✅ `src/components/ui/GlassCard.tsx` - Card con efecto glassmorphism
+- ✅ `src/components/ui/Section.tsx` - Wrapper para spacing consistente
+- ✅ `src/components/ui/AutoGrid.tsx` - Grid auto-responsive sin breakpoints manuales
+- ✅ `src/components/ui/TableWrap.tsx` - Wrapper para tablas con sticky headers
+- ✅ `src/components/ui/ChartCard.tsx` - Card especializado para gráficas
+- ✅ `src/components/ui/LegendDots.tsx` - Leyendas interactivas con dots
+- ✅ `src/components/ui/Pill.tsx` - Píldoras de estado con semantic colors
+- ✅ `src/components/ui/KpiSkeleton.tsx` - Loading skeleton para KPIs
+- ✅ `src/components/ui/ChartSkeleton.tsx` - Loading skeleton para charts
+- ✅ `src/components/ui/Toolbar.tsx` - Layout para filtros y acciones
+- ✅ `src/components/ui/Segmented.tsx` - Segmented control iOS-style
+
+### Modificaciones
+- ✅ Agregados imports en `src/index.css` para activar tokens
+
+### Impacto del Cambio
+- ✅ **CERO cambios en funcionalidad existente**
+- ✅ **CERO cambios en textos o copy**
+- ✅ **CERO cambios en rutas o navegación**
+- ✅ Componentes disponibles para uso opcional futuro
+- ✅ Estilos globales sutiles: backgrounds radiales, scrollbar custom, focus states
+- ✅ Sistema listo para implementación gradual (ver SUGGESTIONS.md)
+
+### Estado: ✅ Build sin errores, app funciona idéntica
+
 ## 2025-10-13 - Optimizaciones Finales de Seguridad
 ### Mejoras de Código Implementadas
 - ✅ Validación mejorada de contraseñas en AuthPage (minLength=8)

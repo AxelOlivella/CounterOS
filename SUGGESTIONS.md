@@ -1,129 +1,216 @@
-# Sugerencias de Mejora - CounterOS
+# Sugerencias de Implementación (NO aplicadas)
 
-## Componentes y Utilidades Disponibles (2025-01-13)
-
-### ✅ Componentes UI Listos para Usar
-Los siguientes componentes están disponibles y pueden integrarse en cualquier página:
-
-1. **PageHeader** (`src/components/common/PageHeader.tsx`)
-   - Header consistente con título, descripción, breadcrumbs y acciones
-   - Uso recomendado en todas las páginas principales
-
-2. **Estados de Carga y Error**
-   - `LoadingState` - Estado de carga con spinner y mensaje
-   - `ErrorState` - Manejo de errores con opción de retry
-   - `EmptyState` - Estado vacío con llamado a la acción
-   - `LoadingSkeleton` - Skeleton loaders para contenido
-
-3. **Componentes de Feedback**
-   - `StatusPill` - Píldoras de estado con variantes (success, warning, danger, info, neutral)
-   - `TooltipHelp` - Ícono de ayuda con tooltip explicativo
-   - `EnvGuard` - Validación de variables de entorno
-
-4. **Exportación de Datos**
-   - `exportCounterOSData()` - Exportar datos a CSV con formato CounterOS
-   - Ya integrado en P&L reports
+Estas mejoras visuales requieren modificar archivos existentes.
+Se documentan aquí para implementación futura opcional.
 
 ---
 
-## Oportunidades de Mejora (NO Implementadas)
+## 1. Envolver KPIs en GlassCard
 
-### 1. Tooltips en KPIs y Métricas
-**Dónde:** Dashboard, ResumenPage, métricas de food cost
-**Qué:** Añadir `<TooltipHelp>` junto a términos técnicos para explicar:
-- "Food Cost": % de ventas usado en ingredientes
-- "EBITDA": Utilidad antes de intereses, impuestos, depreciación
-- "Margen Bruto": Diferencia entre ventas y costo directo
+**Dónde:** ResumenPage.tsx, OperationsDashboard.tsx
 
-**Beneficio:** Educación del usuario, reduce confusión
-
-### 2. Consistencia en Variantes de Botones
-**Dónde:** Todas las páginas
-**Qué:** Estandarizar uso de variantes:
-- `default` - Acciones primarias (guardar, crear)
-- `outline` - Acciones secundarias (exportar, cancelar)
-- `destructive` - Acciones peligrosas (eliminar, desactivar)
-- `ghost` - Navegación y acciones terciarias
-
-**Beneficio:** Jerarquía visual clara, mejor UX
-
-### 3. Focus States y Navegación por Teclado
-**Dónde:** Formularios, tablas, navegación
-**Qué:** 
-- Verificar que todos los elementos interactivos sean accesibles por teclado
-- Añadir focus-visible rings consistentes
-- Implementar shortcuts (Ctrl+K para búsqueda, Esc para cerrar modales)
-
-**Beneficio:** Accesibilidad, productividad para usuarios avanzados
-
-### 4. Semáforo Centralizado de Estados
-**Dónde:** Sistema de alertas, KPIs, métricas
-**Qué:** Crear constantes centralizadas para rangos:
-```typescript
-// lib/thresholds.ts
-export const FOOD_COST_THRESHOLDS = {
-  excellent: 28,
-  good: 30,
-  warning: 33,
-  critical: 35
-};
+**Antes:**
+```tsx
+<div className="bg-white rounded-lg p-4">
+  <StatCard ... />
+</div>
 ```
 
-**Beneficio:** Consistencia en criterios de evaluación, fácil ajuste
+**Después:**
+```tsx
+<GlassCard>
+  <StatCard ... />
+</GlassCard>
+```
 
-### 5. Mobile Overflow y Tablas Responsivas
-**Dónde:** PnLTable, tablas de datos en general
-**Qué:** 
-- Implementar scroll horizontal suave en mobile
-- Considerar vista de tarjetas en lugar de tabla para mobile
-- Añadir sticky headers en tablas largas
+**Beneficio:** Efecto glassmorphism profesional
 
-**Beneficio:** Mejor experiencia en dispositivos móviles
+---
 
-### 6. Búsqueda y Filtros Avanzados
-**Dónde:** Lista de tiendas, reportes históricos
-**Qué:**
-- Añadir barra de búsqueda con debounce
-- Filtros por fecha, región, estado
-- Guardado de filtros favoritos
+## 2. Usar Pill para status indicators
 
-**Beneficio:** Navegación más eficiente en datasets grandes
+**Dónde:** Tablas con status (StoreAlertTable, AlertItem)
 
-### 7. Gráficos Interactivos
-**Dónde:** Food cost trends, P&L visualizations
-**Qué:**
-- Usar Recharts para gráficos de tendencias
-- Añadir tooltips con detalles en hover
-- Permitir zoom y selección de rangos de fechas
+**Antes:**
+```tsx
+<span className="text-red-500">Crítico</span>
+```
 
-**Beneficio:** Análisis visual más rico y explorable
+**Después:**
+```tsx
+<Pill tone="danger">Crítico</Pill>
+<Pill tone="warn">Warning</Pill>
+<Pill tone="accent">OK</Pill>
+```
 
-### 8. Notificaciones y Alertas en Tiempo Real
-**Dónde:** Dashboard, sidebar
-**Qué:**
-- Badge con contador de alertas no leídas
-- Panel de notificaciones con historial
-- Opciones de marcar como leído/archivar
+**Beneficio:** Consistencia visual en estados
 
-**Beneficio:** Usuario siempre informado de cambios críticos
+---
 
-### 9. Comparación Multi-Período
-**Dónde:** P&L Reports, Food Cost Analysis
-**Qué:**
-- Selector de dos períodos para comparar lado a lado
-- Visualización de deltas y % de cambio
-- Exportación de comparativas
+## 3. Envolver tablas con TableWrap
 
-**Beneficio:** Identificar tendencias y efectos de decisiones
+**Dónde:** StoreAlertTable, CategoryBreakdown
 
-### 10. Modo Oscuro Consistente
-**Dónde:** Todo el sistema
-**Qué:**
-- Verificar que todos los colores usen tokens semánticos
-- Probar contraste en ambos modos
-- Asegurar que gráficos se vean bien en dark mode
+**Antes:**
+```tsx
+<table className="...">...</table>
+```
 
-**Beneficio:** Reducción de fatiga visual, preferencia del usuario
+**Después:**
+```tsx
+<TableWrap>
+  <table className="table--base">...</table>
+</TableWrap>
+```
+
+**Beneficio:** Sticky headers + hover states suaves
+
+---
+
+## 4. ChartCard + LegendDots para gráficas
+
+**Dónde:** TrendingChart, cualquier gráfica recharts
+
+**Antes:**
+```tsx
+<div className="bg-white p-4">
+  <h3>Trending</h3>
+  <LineChart .../>
+</div>
+```
+
+**Después:**
+```tsx
+<ChartCard 
+  title="Trending (últimas 12 semanas)"
+  action={<button>Export</button>}
+>
+  <LineChart .../>
+  <LegendDots items={[
+    {label: "FC", color: "#3b82f6"},
+    {label: "Meta", color: "#ef4444"}
+  ]} />
+</ChartCard>
+```
+
+**Beneficio:** Layout consistente + leyendas interactivas
+
+---
+
+## 5. Clase hover-raise en cards clicables
+
+**Dónde:** StoreCards, cualquier card con onClick
+
+Agregar clase:
+```tsx
+<div className="... hover-raise cursor-pointer">
+```
+
+**Beneficio:** Feedback visual al hover
+
+---
+
+## 6. AutoGrid para layouts responsive
+
+**Dónde:** Grids de KPIs, lists de cards
+
+**Antes:**
+```tsx
+<div className="grid grid-cols-4 gap-4">
+  {kpis.map(...)}
+</div>
+```
+
+**Después:**
+```tsx
+<AutoGrid>
+  {kpis.map(...)}
+</AutoGrid>
+```
+
+**Beneficio:** Auto-responsive sin breakpoints manuales
+
+---
+
+## 7. Loading states con Skeletons
+
+**Dónde:** Cualquier componente con loading
+
+Agregar:
+```tsx
+{isLoading ? <KpiSkeleton /> : <KPIs data={data} />}
+{isLoadingChart ? <ChartSkeleton /> : <Chart data={data} />}
+```
+
+**Beneficio:** UX percibida mejorada
+
+---
+
+## 8. Toolbar para filtros + acciones
+
+**Dónde:** TiendasPage, cualquier lista con filtros
+
+Ejemplo:
+```tsx
+<Toolbar 
+  left={
+    <>
+      <Segmented items={["Todas","Críticas","OK"]} active={0} onChange={...} />
+      <input placeholder="Buscar..." />
+    </>
+  }
+  right={
+    <>
+      <button>Export</button>
+      <button>+ Nueva</button>
+    </>
+  }
+/>
+```
+
+**Beneficio:** Layout consistente filtros/acciones
+
+---
+
+## 9. Data-skin por tenant (theming)
+
+Implementación:
+```tsx
+// En App.tsx o layout principal
+useEffect(() => {
+  const tenant = getTenant();
+  document.documentElement.setAttribute('data-skin', tenant.slug);
+}, []);
+```
+
+En tokens.css agregar:
+```css
+:root[data-skin="froyo"] { --accent: #34d399; }
+:root[data-skin="crepas"] { --accent: #f59e0b; }
+```
+
+**Beneficio:** Branding personalizado por cliente
+
+---
+
+## 10. Section para separar contenido
+
+**Dónde:** Páginas largas como ResumenPage
+
+Ejemplo:
+```tsx
+<Section>
+  <h2>Food Cost Overview</h2>
+  <AutoGrid>...</AutoGrid>
+</Section>
+
+<Section>
+  <h2>Trending</h2>
+  <ChartCard>...</ChartCard>
+</Section>
+```
+
+**Beneficio:** Spacing consistente entre secciones
 
 ---
 
@@ -147,16 +234,6 @@ export const FOOD_COST_THRESHOLDS = {
 
 ---
 
-## Notas de Implementación
-
-- Todos los cambios deben ser incrementales y no disruptivos
-- Priorizar uso de componentes y utilities existentes
-- Mantener consistencia con design system (index.css, tailwind.config.ts)
-- Documentar nuevos patrones en este archivo
-- Testing en mobile antes de considerar completo
-
----
-
 ## Componentes Verificados (Ya Existen)
 
 ✅ `src/components/common/PageHeader.tsx`
@@ -166,5 +243,19 @@ export const FOOD_COST_THRESHOLDS = {
 ✅ `src/components/ui/states/ErrorState.tsx`
 ✅ `src/components/ui/skeleton.tsx`
 ✅ `src/utils/exportCsv.ts`
-✅ `src/components/ui/StatusPill.tsx` (nuevo)
-✅ `src/components/ui/TooltipHelp.tsx` (nuevo)
+✅ `src/components/ui/StatusPill.tsx`
+✅ `src/components/ui/TooltipHelp.tsx`
+
+## Componentes Nuevos Disponibles (2025-10-13)
+
+✅ `src/components/ui/GlassCard.tsx`
+✅ `src/components/ui/Section.tsx`
+✅ `src/components/ui/AutoGrid.tsx`
+✅ `src/components/ui/TableWrap.tsx`
+✅ `src/components/ui/ChartCard.tsx`
+✅ `src/components/ui/LegendDots.tsx`
+✅ `src/components/ui/Pill.tsx`
+✅ `src/components/ui/KpiSkeleton.tsx`
+✅ `src/components/ui/ChartSkeleton.tsx`
+✅ `src/components/ui/Toolbar.tsx`
+✅ `src/components/ui/Segmented.tsx`
