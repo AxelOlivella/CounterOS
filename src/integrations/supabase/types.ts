@@ -131,6 +131,7 @@ export type Database = {
           site_id: string
           site_name: string
           source_doc: string
+          tenant_id: string | null
           year: number
         }
         Insert: {
@@ -144,6 +145,7 @@ export type Database = {
           site_id: string
           site_name: string
           source_doc: string
+          tenant_id?: string | null
           year: number
         }
         Update: {
@@ -157,9 +159,18 @@ export type Database = {
           site_id?: string
           site_name?: string
           source_doc?: string
+          tenant_id?: string | null
           year?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_finance_history_tenant"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
       }
       finance_portal_centro_opx_detail: {
         Row: {
@@ -173,6 +184,7 @@ export type Database = {
           site_id: string
           site_name: string
           source_doc: string
+          tenant_id: string | null
           year: number
         }
         Insert: {
@@ -186,6 +198,7 @@ export type Database = {
           site_id: string
           site_name: string
           source_doc: string
+          tenant_id?: string | null
           year: number
         }
         Update: {
@@ -199,9 +212,18 @@ export type Database = {
           site_id?: string
           site_name?: string
           source_doc?: string
+          tenant_id?: string | null
           year?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_finance_opx_tenant"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
       }
       ingredients: {
         Row: {
