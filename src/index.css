@@ -16,43 +16,63 @@
   
   /* Neutral Scale */
   --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
+  --foreground: 222 84% 5%;
   --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
+  --card-foreground: 222 84% 5%;
   --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
+  --popover-foreground: 222 84% 5%;
   --muted: 210 40% 96%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
+  --muted-foreground: 215 16% 47%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
   --ring: 214 100% 12%;
   
   /* Destructive */
-  --destructive: 0 84.2% 60.2%;
+  --destructive: 0 84% 60%;
   --destructive-foreground: 210 40% 98%;
+  
+  /* F&B Semantic Colors - Sistema de Semáforo */
+  --critical: 0 73% 41%;        /* 🔴 Rojo - Acción URGENTE */
+  --warning: 38 92% 50%;        /* 🟡 Amarillo - Monitorear */
+  --success: 142 71% 45%;       /* 🟢 Verde - Todo bien */
+  --neutral: 215 14% 47%;       /* ⚪ Gris - Info/contexto */
+  
+  --critical-foreground: 0 0% 100%;
+  --warning-foreground: 0 0% 0%;
+  --success-foreground: 0 0% 100%;
   
   /* Radius */
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
+  --background: 222 47% 7%;        /* Casi negro */
   --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
+  --card: 222 40% 11%;             /* Cards más claros que bg */
   --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
+  --popover: 222 47% 7%;
   --popover-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
+  --muted: 217 33% 18%;
+  --muted-foreground: 215 20% 65%;
+  --border: 217 33% 18%;
+  --input: 217 33% 18%;
+  --ring: 213 27% 84%;
   --primary: 154 71% 44%;
-  --primary-foreground: 222.2 84% 4.9%;
-  --secondary: 217.2 32.6% 17.5%;
+  --primary-foreground: 222 47% 11%;
+  --secondary: 217 33% 18%;
   --secondary-foreground: 210 40% 98%;
-  --accent: 217.2 32.6% 17.5%;
+  --accent: 217 33% 18%;
   --accent-foreground: 210 40% 98%;
+  
+  /* F&B Semantic Colors - Dark Mode Optimizado */
+  --critical: 0 84% 60%;           /* 🔴 Más brillante en dark */
+  --warning: 38 92% 58%;           /* 🟡 Más brillante */
+  --success: 142 76% 45%;          /* 🟢 Mantiene visibilidad */
+  --neutral: 215 16% 57%;          /* ⚪ Más claro */
+  
+  --critical-foreground: 0 0% 100%;
+  --warning-foreground: 0 0% 0%;
+  --success-foreground: 0 0% 100%;
 }
 
 @layer base {
@@ -101,10 +121,16 @@
   }
 }
 
-/* Accessibility - Touch targets */
+/* Accessibility - Touch targets F&B optimized */
 .mobile-button {
-  min-height: 44px;
-  min-width: 44px;
+  min-height: 60px;  /* 60x60px para pantallas con grasa */
+  min-width: 60px;
+  @apply text-base font-semibold; /* Texto más grande */
+}
+
+.mobile-tap-target {
+  min-height: 48px;  /* Mínimo para elementos secundarios */
+  min-width: 48px;
 }
 
 /* Focus states */
@@ -168,21 +194,25 @@
   @apply text-muted-foreground;
 }
 
-/* Cost Metric States */
+/* Cost Metric States - F&B Semantic Colors */
 .cost-metric {
-  @apply text-foreground font-semibold;
+  @apply text-foreground font-bold tabular-nums; /* Números más visibles */
 }
 
 .cost-neutral {
-  @apply text-muted-foreground;
+  color: hsl(var(--neutral));
 }
 
-.cost-over {
-  color: hsl(var(--destructive));
+.cost-critical {
+  color: hsl(var(--critical));
 }
 
-.cost-saving {
-  color: hsl(var(--secondary));
+.cost-warning {
+  color: hsl(var(--warning));
+}
+
+.cost-success {
+  color: hsl(var(--success));
 }
 
 /* Mobile CTA Styles */

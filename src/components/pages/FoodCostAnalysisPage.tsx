@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCard } from '@/components/alerts/AlertCard';
 import { FoodCostTrendChart } from '@/components/food-cost/FoodCostTrendChart';
-import { CategoryBreakdownChart } from '@/components/food-cost/CategoryBreakdownChart';
+import { HeroMetric } from '@/components/dashboard/HeroMetric';
 import { VarianceAnalysisChart } from '@/components/food-cost/VarianceAnalysisChart';
 import { Loader2, TrendingUp, AlertTriangle, Target, AlertCircle, ClipboardCheck } from 'lucide-react';
 import { format, subDays } from 'date-fns';
@@ -291,76 +291,52 @@ export const FoodCostAnalysisPage = () => {
         </CardContent>
       </Card>
 
-      {/* Alertas Avanzadas con Diagnóstico */}
+      {/* Alertas Glanceable */}
       {alerts.length > 0 && (
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">🚨 Alertas Accionables</h2>
-            <Badge variant="outline">{alerts.length} detectadas</Badge>
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-xl font-bold">🚨 Alertas</h2>
+            <Badge variant="outline" className="text-sm font-bold">
+              {alerts.length}
+            </Badge>
           </div>
-          {alerts.slice(0, 5).map((alert) => (
-            <AlertCard key={alert.id} alert={alert} />
+          {alerts.slice(0, 3).map((alert) => (
+            <AlertCard key={alert.id} alert={alert} compact />
           ))}
         </div>
       )}
 
-      {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Food Cost Promedio</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${summary.avgFoodCost > 30 ? 'text-red-600' : 'text-green-600'}`}>
-              {summary.avgFoodCost.toFixed(1)}%
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {summary.avgFoodCost > 30 ? 'Sobre objetivo' : 'Dentro del objetivo'}
-            </p>
-          </CardContent>
-        </Card>
+      {/* Hero Metric: Food Cost GIGANTE */}
+      <HeroMetric
+        value={summary.avgFoodCost}
+        suffix="%"
+        label="Food Cost Promedio"
+        target={TARGET_FOOD_COST}
+        status={
+          summary.avgFoodCost > TARGET_FOOD_COST + 3 ? 'critical' :
+          summary.avgFoodCost > TARGET_FOOD_COST + 1.5 ? 'warning' :
+          'success'
+        }
+        variance={summary.avgFoodCost - TARGET_FOOD_COST}
+        size="large"
+      />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ingresos Totales</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ${summary.totalRevenue.toLocaleString()}
-            </div>
-            <p className="text-xs text-muted-foreground">Período seleccionado</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">COGS Total</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ${summary.totalCogs.toLocaleString()}
-            </div>
-            <p className="text-xs text-muted-foreground">Costo de ventas</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Varianza vs Objetivo</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${summary.variance > 0 ? 'text-red-600' : 'text-green-600'}`}>
-              {summary.variance > 0 ? '+' : ''}{summary.variance.toFixed(1)}%
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {summary.variance > 0 ? 'Sobre' : 'Bajo'} objetivo (30%)
-            </p>
-          </CardContent>
-        </Card>
+      {/* Métricas Secundarias */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <HeroMetric
+          value={summary.totalRevenue / 1000}
+          suffix="K"
+          label="Ingresos"
+          status="neutral"
+          size="default"
+        />
+        <HeroMetric
+          value={summary.totalCogs / 1000}
+          suffix="K"
+          label="COGS"
+          status="neutral"
+          size="default"
+        />
       </div>
 
       {/* Charts - Simplified without problematic components */}
