@@ -1,8 +1,12 @@
-# Parser de Facturas XML (CFDI)
+# Parsers de CounterOS
+
+Sistema completo de parsing para facturas XML (CFDI) y archivos CSV de ventas.
 
 ## 📋 Descripción
 
-Parser robusto para archivos XML de facturas CFDI 4.0 del SAT (Sistema de Administración Tributaria de México).
+Parsers robustos para:
+- **XML**: Facturas CFDI 4.0 del SAT (Sistema de Administración Tributaria de México)
+- **CSV**: Archivos de ventas con formatos flexibles
 
 ## ✨ Características
 
@@ -161,10 +165,178 @@ La categorización es **case-insensitive** y busca keywords en cualquier parte d
 - [ ] Mapeo manual de productos sin categoría
 - [ ] Exportar reportes de compras por proveedor
 
+---
+
+# Parser de CSV de Ventas
+
+## 📊 Características
+
+- ✅ **Parsing flexible** con múltiples formatos de columnas
+- ✅ **Validación** de estructura antes de parsear
+- ✅ **Agrupación** por día y por tienda
+- ✅ **Resúmenes automáticos** con estadísticas
+- ✅ **Detección de formato** (delimitadores, headers)
+- ✅ **Manejo robusto de errores**
+
+## 🚀 Uso del CSV Parser
+
+### Parsear archivo de ventas
+
+```typescript
+import { parseCSVVentas } from '@/lib/parsers/csvParser';
+
+const csvContent = await fetch('/samples/ventas_septiembre.csv').then(r => r.text());
+const ventas = await parseCSVVentas(csvContent);
+
+console.log(ventas.length);         // 90 registros
+console.log(ventas[0].montoTotal);  // 12450.50
+console.log(ventas[0].tienda);      // "Portal Centro"
+```
+
+### Validar antes de parsear
+
+```typescript
+import { validateCSVVentas } from '@/lib/parsers/csvParser';
+
+const validacion = validateCSVVentas(csvContent);
+
+if (!validacion.valid) {
+  console.error('Errores:', validacion.errors);
+  // ["Falta columna 'fecha'", "Falta columna 'monto'"]
+}
+
+if (validacion.warnings.length > 0) {
+  console.warn('Warnings:', validacion.warnings);
+}
+```
+
+### Agrupar ventas por día
+
+```typescript
+import { agruparVentasPorDia } from '@/lib/parsers/csvParser';
+
+const ventasPorDia = agruparVentasPorDia(ventas);
+
+ventasPorDia.forEach((datos, fecha) => {
+  console.log(`${fecha}: $${datos.totalVentas.toFixed(2)}`);
+  console.log(`  Transacciones: ${datos.numTransacciones}`);
+  console.log(`  Tiendas: ${datos.tiendas.size}`);
+});
+```
+
+### Agrupar ventas por tienda
+
+```typescript
+import { agruparVentasPorTienda } from '@/lib/parsers/csvParser';
+
+const ventasPorTienda = agruparVentasPorTienda(ventas);
+
+ventasPorTienda.forEach((datos, tienda) => {
+  console.log(`${tienda}:`);
+  console.log(`  Total: $${datos.totalVentas.toFixed(2)}`);
+  console.log(`  Promedio diario: $${datos.promedioVentasDiario.toFixed(2)}`);
+  console.log(`  Días operados: ${datos.dias}`);
+});
+```
+
+### Calcular resumen
+
+```typescript
+import { calcularResumenVentas } from '@/lib/parsers/csvParser';
+
+const resumen = calcularResumenVentas(ventas);
+
+console.log(`Total ventas: $${resumen.totalVentas.toLocaleString()}`);
+console.log(`Período: ${resumen.fechaInicio} → ${resumen.fechaFin}`);
+console.log(`Tiendas: ${resumen.tiendas.join(', ')}`);
+console.log(`Promedio diario: $${resumen.ventaPromedioDiaria.toFixed(2)}`);
+```
+
+### Detectar formato automáticamente
+
+```typescript
+import { detectarFormatoCSV } from '@/lib/parsers/csvParser';
+
+const formato = detectarFormatoCSV(csvContent);
+
+console.log(formato.delimiter);     // ","
+console.log(formato.hasHeader);     // true
+console.log(formato.columnas);      // ["fecha", "monto_total", "tienda", ...]
+```
+
+## 🧪 Testing del CSV Parser
+
+```typescript
+import { testCSVParser, testValidacionRapida } from '@/lib/parsers/csvParserTest';
+
+// Test completo con archivo de ejemplo
+await testCSVParser();
+
+// Test rápido de validación
+testValidacionRapida();
+```
+
+## 📁 Archivo de Ejemplo
+
+`/public/samples/ventas_septiembre.csv` - 90 registros de ventas de 3 tiendas durante septiembre 2024:
+- **Portal Centro**: ~$390K
+- **Plaza Norte**: ~$285K  
+- **Crepas OS**: ~$220K
+- **Total**: ~$1.2M en el mes
+
+## 📊 Estructura de Datos CSV
+
+### VentaParsed
+
+```typescript
+{
+  fecha: Date;              // Fecha de la venta
+  montoTotal: number;       // Monto total en MXN
+  tienda: string;           // Nombre de la tienda
+  numTransacciones?: number; // Número de transacciones (opcional)
+}
+```
+
+### Formatos de CSV Soportados
+
+El parser es flexible y soporta múltiples formatos:
+
+```csv
+# Formato 1: Completo
+fecha,monto_total,tienda,transacciones
+2024-09-01,12450.50,Portal Centro,45
+
+# Formato 2: Sin transacciones
+fecha,monto,tienda
+2024-09-01,12450.50,Portal Centro
+
+# Formato 3: Con espacios en headers
+Fecha, Monto Total, Tienda
+2024-09-01, 12450.50, Portal Centro
+```
+
+## 🔧 Validaciones
+
+### Columnas Requeridas
+- `fecha` (o variantes: Fecha, FECHA)
+- `monto` o `monto_total` (o variantes)
+
+### Columnas Opcionales
+- `tienda` (default: 'N/A')
+- `transacciones` (default: 1)
+
+### Validaciones de Datos
+- Fechas válidas (formato ISO o estándar)
+- Montos numéricos positivos
+- Sin registros vacíos
+
 ## 📦 Dependencias
 
-- `fast-xml-parser` ^4.x - Parser XML rápido y confiable
+- `fast-xml-parser` ^5.x - Parser XML rápido y confiable
+- `papaparse` ^5.x - Parser CSV potente y flexible
 
 ## 🤝 Contribuir
 
-Para agregar nuevas categorías, edita el objeto `keywords` en la función `autoCategorizarCompra()`.
+**XML Parser**: Para agregar nuevas categorías, edita el objeto `keywords` en la función `autoCategorizarCompra()`.
+
+**CSV Parser**: El parser detecta automáticamente formatos y es muy flexible con columnas.
