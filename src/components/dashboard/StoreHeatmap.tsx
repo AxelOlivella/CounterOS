@@ -297,9 +297,11 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
         filteredStores.forEach((store) => {
           bounds.extend([store.lng, store.lat]);
         });
+        
+        // Add padding and limit zoom to avoid too much zoom out
         map.current?.fitBounds(bounds, {
-          padding: 50,
-          maxZoom: 13,
+          padding: { top: 80, bottom: 80, left: 80, right: 80 },
+          maxZoom: 12,  // Don't zoom out too much
           duration: 1000,
         });
         console.log(`✅ ${markersRef.current.length} marcadores agregados al mapa`);

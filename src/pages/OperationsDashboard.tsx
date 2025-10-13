@@ -148,20 +148,27 @@ const mockStoresGeo = [
   { id: 69, name: "Bosques", lat: 19.405, lng: -99.238, fc: 32.3, status: "warning" as const, location: "CDMX Oeste" },
   { id: 77, name: "Interlomas", lat: 19.391, lng: -99.268, fc: 30.1, status: "warning" as const, location: "CDMX Oeste" },
 
-  // Estado de México (60 tiendas distribuidas) - random pattern with regions
+  // Estado de México (60 tiendas distribuidas) - better distribution
   ...Array.from({ length: 60 }, (_, i) => {
-    const lat = 19.4 + (Math.random() - 0.5) * 0.8;
-    const lng = -99.15 + (Math.random() - 0.5) * 0.6;
+    // Distribuir más ampliamente en el área metropolitana
+    const baseRegions = [
+      { lat: 19.5, lng: -99.1, name: "Estado de México Norte" },
+      { lat: 19.3, lng: -99.1, name: "Estado de México Sur" },
+      { lat: 19.4, lng: -99.0, name: "Estado de México Este" },
+      { lat: 19.4, lng: -99.3, name: "Estado de México Oeste" },
+    ];
+    const region = baseRegions[i % 4];
+    const lat = region.lat + (Math.random() - 0.5) * 0.3;
+    const lng = region.lng + (Math.random() - 0.5) * 0.3;
     const fc = 26 + Math.random() * 12;
-    const regions = ["Estado de México Norte", "Estado de México Sur", "Estado de México Este", "Estado de México Oeste"];
     return {
       id: 100 + i,
       name: `Tienda ${100 + i}`,
-      lat,
-      lng,
+      lat: Number(lat.toFixed(4)),
+      lng: Number(lng.toFixed(4)),
       fc: Number(fc.toFixed(1)),
       status: (fc > 32 ? "critical" : fc > 29 ? "warning" : "ok") as "critical" | "warning" | "ok",
-      location: regions[i % 4],
+      location: region.name,
     };
   }),
 ];
