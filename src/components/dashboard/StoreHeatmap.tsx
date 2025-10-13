@@ -7,9 +7,8 @@ import { AlertTriangle, Maximize2 } from "lucide-react";
 import { StoreMapFilters, type MapFilters } from "./StoreMapFilters";
 import { MapLegend } from "./MapLegend";
 
-// IMPORTANT: User needs to add MAPBOX_PUBLIC_TOKEN to Supabase Edge Function Secrets
-// For now, using a public demo token (limited to dev/staging)
-const MAPBOX_TOKEN = "pk.eyJ1IjoibG92YWJsZS1kZW1vIiwiYSI6ImNtNXExZmV2YTBjOWkya3M0OWd4dGFsN3gifQ.demo_token_placeholder";
+// Use Mapbox token from environment variable
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || "";
 
 interface StoreGeo {
   id: number;
@@ -330,18 +329,18 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
           </div>
         )}
 
-        {/* API Key Warning - Remove this after user adds real token */}
-        {MAPBOX_TOKEN.includes("placeholder") && (
+        {/* API Key Warning - Show if token is missing */}
+        {!MAPBOX_TOKEN && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-yellow-50 border-2 border-yellow-400 rounded-lg p-6 max-w-md text-center shadow-lg">
             <AlertTriangle className="h-8 w-8 text-yellow-600 mx-auto mb-3" />
             <p className="font-semibold text-gray-900 mb-2">
               Mapbox API Key Required
             </p>
             <p className="text-sm text-gray-600 mb-3">
-              Add your Mapbox public token to Supabase Edge Function Secrets:
+              Add VITE_MAPBOX_TOKEN to your .env file:
             </p>
             <code className="block bg-white px-3 py-2 rounded text-xs mb-3">
-              MAPBOX_PUBLIC_TOKEN=your_token_here
+              VITE_MAPBOX_TOKEN=your_public_token_here
             </code>
             <a
               href="https://account.mapbox.com/access-tokens/"
