@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { getCTA } from './CTARegistry';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface CTAButtonProps {
   ctaId: string;
@@ -48,16 +48,14 @@ export function CTAButton({ ctaId, children, className, onClick }: CTAButtonProp
 
   if (!cta.isEnabled && cta.tooltip) {
     return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            {buttonElement}
-          </TooltipTrigger>
-          <TooltipContent>
-            <p className="text-sm">{cta.tooltip}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {buttonElement}
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="text-sm">{cta.tooltip}</p>
+        </TooltipContent>
+      </Tooltip>
     );
   }
 
