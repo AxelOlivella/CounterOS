@@ -6,6 +6,7 @@ import { AlertItem } from '@/components/mobile/AlertItem';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSEO } from '@/hooks/useSEO';
 import { 
   Store, 
@@ -186,10 +187,17 @@ const TiendasPage = () => {
                   />
                 </div>
                 
-                <Button variant="outline" disabled>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Nueva Tienda
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" disabled>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Nueva Tienda
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Función disponible próximamente</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
             </div>
 

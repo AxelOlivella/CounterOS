@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { SkeletonCard } from '@/components/ui/skeleton-card';
 import { CalendarIcon, Save, ClipboardCheck } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -226,8 +227,15 @@ export default function InventoryCountPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4 max-h-[600px] overflow-y-auto">
-            {countItems.map(item => (
+          {loading ? (
+            <div className="space-y-4">
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </div>
+          ) : (
+            <div className="space-y-4 max-h-[600px] overflow-y-auto">
+              {countItems.map(item => (
               <div key={item.ingredient_id} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start p-4 border rounded-lg">
                 <div className="md:col-span-3">
                   <Label className="text-sm font-medium">{item.ingredient_name}</Label>
@@ -256,8 +264,9 @@ export default function InventoryCountPage() {
                   />
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           <div className="mt-6 flex justify-end">
             <Button 

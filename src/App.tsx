@@ -7,29 +7,36 @@ import { TenantProvider } from "@/contexts/TenantContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OperationsLayout } from "@/components/layout/OperationsLayout";
-import { LandingPage } from "./pages/LandingPage";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { lazy, Suspense } from "react";
+import { LoadingState } from "./components/ui/states/LoadingState";
+
+// Eager loading for critical pages
 import { LandingEnterprise } from "./pages/LandingEnterprise";
 import { LoginPage } from "./pages/LoginPage";
-import OperationsDashboard from "./pages/OperationsDashboard";
-import StoreDetailPage from "./pages/StoreDetailPage";
-
-import { UploadPage } from "./components/pages/UploadPage";
-import { FoodCostAnalysisPage } from "./components/pages/FoodCostAnalysisPage";
-import { PnLReportsPage } from "./components/pages/PnLReportsPage";
-import { MenuEngineeringPage } from "./components/pages/MenuEngineeringPage";
-import { SupplierManagementPage } from "./components/pages/SupplierManagementPage";
-import { ProductMixPage } from "./components/pages/ProductMixPage";
-import InventoryCountPage from "./components/pages/InventoryCountPage";
-import { SetupPage } from "./pages/SetupPage";
-import OnboardingPage from "./pages/OnboardingPage";
-import DatosPage from "./pages/DatosPage";
-import StoreDashboardPage from "./pages/StoreDashboardPage";
-import TiendasPage from "./pages/TiendasPage";
-import AlertasPage from "./pages/AlertasPage";
-import ResumenPage from "./pages/ResumenPage";
-import PlaceholderPage from "./pages/PlaceholderPage";
 import NotFound from "./pages/NotFound";
-import { ProtectedRoute } from "./components/ProtectedRoute";
+
+// Code-splitting for heavy pages
+const LandingPage = lazy(() => import("./pages/LandingPage").then(m => ({ default: m.LandingPage })));
+const SetupPage = lazy(() => import("./pages/SetupPage").then(m => ({ default: m.SetupPage })));
+const OnboardingPage = lazy(() => import("./pages/OnboardingPage"));
+const ResumenPage = lazy(() => import("./pages/ResumenPage"));
+const TiendasPage = lazy(() => import("./pages/TiendasPage"));
+const StoreDashboardPage = lazy(() => import("./pages/StoreDashboardPage"));
+const DatosPage = lazy(() => import("./pages/DatosPage"));
+const AlertasPage = lazy(() => import("./pages/AlertasPage"));
+const PlaceholderPage = lazy(() => import("./pages/PlaceholderPage"));
+
+// Analysis pages
+const OperationsDashboard = lazy(() => import("./pages/OperationsDashboard"));
+const StoreDetailPage = lazy(() => import("./pages/StoreDetailPage"));
+const FoodCostAnalysisPage = lazy(() => import("./components/pages/FoodCostAnalysisPage").then(m => ({ default: m.FoodCostAnalysisPage })));
+const PnLReportsPage = lazy(() => import("./components/pages/PnLReportsPage").then(m => ({ default: m.PnLReportsPage })));
+const MenuEngineeringPage = lazy(() => import("./components/pages/MenuEngineeringPage").then(m => ({ default: m.MenuEngineeringPage })));
+const SupplierManagementPage = lazy(() => import("./components/pages/SupplierManagementPage").then(m => ({ default: m.SupplierManagementPage })));
+const ProductMixPage = lazy(() => import("./components/pages/ProductMixPage").then(m => ({ default: m.ProductMixPage })));
+const InventoryCountPage = lazy(() => import("./components/pages/InventoryCountPage"));
+const UploadPage = lazy(() => import("./components/pages/UploadPage").then(m => ({ default: m.UploadPage })));
 
 const queryClient = new QueryClient();
 
@@ -44,7 +51,8 @@ const App = () => (
             v7_startTransition: true,
             v7_relativeSplatPath: true
           }}>
-            <Routes>
+            <Suspense fallback={<LoadingState />}>
+              <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingEnterprise />} />
             <Route path="/enterprise" element={<LandingEnterprise />} />
@@ -136,7 +144,7 @@ const App = () => (
               </ProtectedRoute>
             } />
             
-            {/* Additional Analysis Routes */}
+            {/* Analysis Routes - Consolidated */}
             <Route path="/food-cost-analysis" element={
               <ProtectedRoute>
                 <AppLayout>
@@ -144,6 +152,10 @@ const App = () => (
                 </AppLayout>
               </ProtectedRoute>
             } />
+            
+            {/* Redirect duplicate route */}
+            <Route path="/foodcost" element={<Navigate to="/food-cost-analysis" replace />} />
+            <Route path="/variance-analysis" element={<Navigate to="/food-cost-analysis" replace />} />
             
             <Route path="/pnl-reports" element={
               <ProtectedRoute>
@@ -153,19 +165,14 @@ const App = () => (
               </ProtectedRoute>
             } />
             
+            {/* Redirect duplicate route */}
+            <Route path="/pnl" element={<Navigate to="/pnl-reports" replace />} />
+            
             {/* Advanced Analysis Routes */}
             <Route path="/menu-engineering" element={
               <ProtectedRoute>
                 <AppLayout>
                   <MenuEngineeringPage />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/variance-analysis" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <FoodCostAnalysisPage />
                 </AppLayout>
               </ProtectedRoute>
             } />
@@ -194,30 +201,8 @@ const App = () => (
               </ProtectedRoute>
             } />
             
-            <Route path="/upload" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <UploadPage />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            
-            {/* New Routes - Safe additions */}
-            <Route path="/foodcost" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <FoodCostAnalysisPage />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/pnl" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <PnLReportsPage />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
+            {/* Redirect /upload to /cargar */}
+            <Route path="/upload" element={<Navigate to="/cargar" replace />} />
             
             {/* Placeholder Routes - Keep for development */}
             <Route path="/stores" element={
@@ -244,7 +229,8 @@ const App = () => (
             
             {/* 404 Handler - OBLIGATORY custom page */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
+              </Routes>
+            </Suspense>
         </BrowserRouter>
         </ErrorBoundary>
       </TenantProvider>
