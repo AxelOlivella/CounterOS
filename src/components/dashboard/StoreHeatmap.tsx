@@ -9,6 +9,7 @@ import { MapLegend } from "./MapLegend";
 
 // Use Mapbox token from environment variable
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || "";
+console.log('🗺️ Mapbox Token Status:', MAPBOX_TOKEN ? 'Token presente' : 'Token faltante', MAPBOX_TOKEN?.substring(0, 20));
 
 interface StoreGeo {
   id: number;
@@ -87,18 +88,27 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
+    console.log('🗺️ Inicializando mapa Mapbox...');
+    
     // Set Mapbox access token
     mapboxgl.accessToken = MAPBOX_TOKEN;
 
-    // Initialize map centered on CDMX
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: getMapStyle(),
-      center: [-99.133, 19.432], // CDMX center
-      zoom: 11,
-      pitch: 0,
-      bearing: 0,
-    });
+    try {
+      // Initialize map centered on CDMX
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: getMapStyle(),
+        center: [-99.133, 19.432], // CDMX center
+        zoom: 11,
+        pitch: 0,
+        bearing: 0,
+      });
+
+      console.log('✅ Mapa inicializado correctamente');
+    } catch (error) {
+      console.error('❌ Error al inicializar mapa:', error);
+      return;
+    }
 
     // Add navigation controls
     map.current.addControl(
@@ -130,7 +140,12 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
 
   // Update markers when filters change
   useEffect(() => {
-    if (!map.current) return;
+    if (!map.current) {
+      console.log('⚠️ No hay instancia de mapa disponible');
+      return;
+    }
+
+    console.log('📍 Actualizando marcadores. Total tiendas filtradas:', filteredStores.length);
 
     // Clear existing markers
     markersRef.current.forEach((marker) => marker.remove());
@@ -138,6 +153,7 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
 
     // Add filtered markers with staggered animation
     filteredStores.forEach((store, index) => {
+      console.log(`  📌 Agregando marcador ${index + 1}:`, store.name, `[${store.lat}, ${store.lng}]`);
       const color = getColor(store.status);
 
       // Create custom marker element
@@ -210,18 +226,22 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
       `);
 
       // Create marker
-      const marker = new mapboxgl.Marker(el)
-        .setLngLat([store.lng, store.lat])
-        .setPopup(popup)
-        .addTo(map.current!);
+      try {
+        const marker = new mapboxgl.Marker(el)
+          .setLngLat([store.lng, store.lat])
+          .setPopup(popup)
+          .addTo(map.current!);
 
-      // Click handler - navigate to store detail
-      el.addEventListener("click", () => {
-        navigate(`/dashboard/operations/store/${store.id}`);
-      });
+        // Click handler - navigate to store detail
+        el.addEventListener("click", () => {
+          navigate(`/dashboard/operations/store/${store.id}`);
+        });
 
-      // Store marker ref
-      markersRef.current.push(marker);
+        // Store marker ref
+        markersRef.current.push(marker);
+      } catch (error) {
+        console.error(`❌ Error creando marcador para ${store.name}:`, error);
+      }
 
       // Optional: Show label if filter enabled
       if (filters.showLabels) {
@@ -256,6 +276,9 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
         maxZoom: 13,
         duration: 1000,
       });
+      console.log(`✅ ${markersRef.current.length} marcadores agregados al mapa`);
+    } else {
+      console.log('⚠️ No hay tiendas para mostrar después del filtro');
     }
   }, [filteredStores, filters.showLabels, navigate]);
 
