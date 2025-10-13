@@ -21,10 +21,15 @@ export const getCurrentTenant = async (): Promise<string> => {
     .from('users')
     .select('tenant_id')
     .eq('auth_user_id', user.id)
-    .single();
+    .maybeSingle();
 
-  if (error || !userProfile) {
-    throw new Error('User profile not found');
+  if (error) {
+    console.error('Error fetching user profile:', error);
+    throw new Error(`Database error: ${error.message}`);
+  }
+
+  if (!userProfile) {
+    throw new Error('User profile not found. Please complete onboarding first.');
   }
 
   return userProfile.tenant_id;
