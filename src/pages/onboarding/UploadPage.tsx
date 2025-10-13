@@ -125,8 +125,8 @@ export default function UploadPage() {
         description: "Procesando tus datos...",
       });
 
-      // Navigate to processing/success page
-      navigate("/onboarding/success");
+      // Navigate to processing page
+      navigate("/onboarding/processing");
     } catch (error) {
       logger.error("Error al guardar archivos", error);
       toast({

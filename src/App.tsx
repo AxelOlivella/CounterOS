@@ -23,6 +23,7 @@ const OnboardingPage = lazy(() => import("./pages/OnboardingPage"));
 const WelcomePage = lazy(() => import("./pages/onboarding/WelcomePage"));
 const StoresPage = lazy(() => import("./pages/onboarding/StoresPage"));
 const OnboardingUploadPage = lazy(() => import("./pages/onboarding/UploadPage"));
+const ProcessingPage = lazy(() => import("./pages/onboarding/ProcessingPage"));
 const ResumenPage = lazy(() => import("./pages/ResumenPage"));
 const TiendasPage = lazy(() => import("./pages/TiendasPage"));
 const StoreDashboardPage = lazy(() => import("./pages/StoreDashboardPage"));
@@ -86,6 +87,12 @@ const App = () => (
             <Route path="/onboarding/upload" element={
               <ProtectedRoute>
                 <OnboardingUploadPage />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/onboarding/processing" element={
+              <ProtectedRoute>
+                <ProcessingPage />
               </ProtectedRoute>
             } />
             
