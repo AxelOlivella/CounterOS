@@ -182,55 +182,43 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
         console.log(`  📌 Agregando marcador ${index + 1}:`, store.name, `[${store.lat}, ${store.lng}]`);
         const color = getColor(store.status);
 
-        // Create custom marker element
-        const el = document.createElement("div");
-        el.className = "custom-marker";
-        el.style.cssText = `
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          background-color: ${color};
-          border: 2px solid white;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          opacity: 0;
-          transform: scale(0);
-          animation: markerFadeIn 0.4s ease-out ${index * 0.02}s forwards;
-        `;
+      // Create custom marker element with inner visual to avoid overriding Mapbox transforms
+      const el = document.createElement("div");
+      el.className = "custom-marker";
+      el.style.cssText = `position: relative; width: 0; height: 0;`;
 
-        // Add animation keyframes to document
-        if (!document.getElementById("marker-animations")) {
-          const style = document.createElement("style");
-          style.id = "marker-animations";
-          style.textContent = `
-            @keyframes markerFadeIn {
-              0% {
-                opacity: 0;
-                transform: scale(0) translateY(20px);
-              }
-              60% {
-                transform: scale(1.2) translateY(-5px);
-              }
-              100% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-              }
-            }
-          `;
-          document.head.appendChild(style);
-        }
+      const inner = document.createElement("div");
+      inner.className = "custom-marker-inner";
+      inner.style.cssText = `
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: ${color};
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        cursor: pointer;
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+        opacity: 0;
+        transform: scale(0);
+      `;
+      el.appendChild(inner);
 
-        // Hover effects
-        el.addEventListener("mouseenter", () => {
-          el.style.transform = "scale(1.3)";
-          el.style.zIndex = "1000";
-        });
+      // Staggered fade-in animation on inner element (keep root transform intact)
+      setTimeout(() => {
+        inner.style.opacity = "1";
+        inner.style.transform = "scale(1)";
+      }, index * 20);
 
-        el.addEventListener("mouseleave", () => {
-          el.style.transform = "scale(1)";
-          el.style.zIndex = "auto";
-        });
+      // Hover effects (apply to inner element only)
+      el.addEventListener("mouseenter", () => {
+        inner.style.transform = "scale(1.25)";
+        inner.style.zIndex = "1000";
+      });
+
+      el.addEventListener("mouseleave", () => {
+        inner.style.transform = "scale(1)";
+        inner.style.zIndex = "auto";
+      });
 
         // Create popup
         const popup = new mapboxgl.Popup({
