@@ -32,12 +32,39 @@ interface TenantProviderProps {
 
 export const TenantProvider = ({ children }: TenantProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<any | null>(null);
+  const [tenant, setTenant] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Fetch user profile and tenant data
+    const fetchUserData = async (userId: string) => {
+      try {
+        // Fetch user profile
+        const { data: profile, error: profileError } = await supabase
+          .from('users')
+          .select('*, tenants(*)')
+          .eq('auth_user_id', userId)
+          .single();
+
+        if (profileError) {
+          console.error('Error fetching user profile:', profileError);
+          return;
+        }
+
+        setUserProfile(profile);
+        setTenant(profile?.tenants || null);
+      } catch (error) {
+        console.error('Error in fetchUserData:', error);
+      }
+    };
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchUserData(session.user.id);
+      }
       setLoading(false);
     });
 
@@ -45,6 +72,12 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setUser(session?.user ?? null);
+        if (session?.user) {
+          fetchUserData(session.user.id);
+        } else {
+          setUserProfile(null);
+          setTenant(null);
+        }
         setLoading(false);
       }
     );
@@ -54,10 +87,12 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    setUserProfile(null);
+    setTenant(null);
   };
 
   return (
-    <TenantContext.Provider value={{ user, loading, signOut, userProfile: null, tenant: null }}>
+    <TenantContext.Provider value={{ user, loading, signOut, userProfile, tenant }}>
       {children}
     </TenantContext.Provider>
   );
