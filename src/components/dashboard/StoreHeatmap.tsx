@@ -175,136 +175,141 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
 
-    // Add filtered markers with staggered animation
-    filteredStores.forEach((store, index) => {
-      console.log(`  📌 Agregando marcador ${index + 1}:`, store.name, `[${store.lat}, ${store.lng}]`);
-      const color = getColor(store.status);
+    // Use requestAnimationFrame to ensure map is ready
+    const timeoutId = setTimeout(() => {
+      // Add filtered markers with staggered animation
+      filteredStores.forEach((store, index) => {
+        console.log(`  📌 Agregando marcador ${index + 1}:`, store.name, `[${store.lat}, ${store.lng}]`);
+        const color = getColor(store.status);
 
-      // Create custom marker element
-      const el = document.createElement("div");
-      el.className = "custom-marker";
-      el.style.cssText = `
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background-color: ${color};
-        border: 2px solid white;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        opacity: 0;
-        transform: scale(0);
-        animation: markerFadeIn 0.4s ease-out ${index * 0.02}s forwards;
-      `;
-
-      // Add animation keyframes to document
-      if (!document.getElementById("marker-animations")) {
-        const style = document.createElement("style");
-        style.id = "marker-animations";
-        style.textContent = `
-          @keyframes markerFadeIn {
-            0% {
-              opacity: 0;
-              transform: scale(0) translateY(20px);
-            }
-            60% {
-              transform: scale(1.2) translateY(-5px);
-            }
-            100% {
-              opacity: 1;
-              transform: scale(1) translateY(0);
-            }
-          }
+        // Create custom marker element
+        const el = document.createElement("div");
+        el.className = "custom-marker";
+        el.style.cssText = `
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background-color: ${color};
+          border: 2px solid white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          opacity: 0;
+          transform: scale(0);
+          animation: markerFadeIn 0.4s ease-out ${index * 0.02}s forwards;
         `;
-        document.head.appendChild(style);
-      }
 
-      // Hover effects
-      el.addEventListener("mouseenter", () => {
-        el.style.transform = "scale(1.3)";
-        el.style.zIndex = "1000";
-      });
+        // Add animation keyframes to document
+        if (!document.getElementById("marker-animations")) {
+          const style = document.createElement("style");
+          style.id = "marker-animations";
+          style.textContent = `
+            @keyframes markerFadeIn {
+              0% {
+                opacity: 0;
+                transform: scale(0) translateY(20px);
+              }
+              60% {
+                transform: scale(1.2) translateY(-5px);
+              }
+              100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+              }
+            }
+          `;
+          document.head.appendChild(style);
+        }
 
-      el.addEventListener("mouseleave", () => {
-        el.style.transform = "scale(1)";
-        el.style.zIndex = "auto";
-      });
-
-      // Create popup
-      const popup = new mapboxgl.Popup({
-        offset: 25,
-        closeButton: false,
-        className: "store-popup",
-      }).setHTML(`
-        <div class="p-2">
-          <div class="font-semibold text-sm">#${store.id} - ${store.name}</div>
-          <div class="text-xs text-gray-600 mt-1">${store.location || "CDMX"}</div>
-          <div class="flex items-center gap-2 mt-2">
-            <span class="text-xs text-gray-500">FC:</span>
-            <span class="font-bold text-sm" style="color: ${color}">${store.fc.toFixed(1)}%</span>
-          </div>
-          <button class="mt-2 text-xs text-blue-600 hover:text-blue-800 font-medium">
-            Ver detalles →
-          </button>
-        </div>
-      `);
-
-      // Create marker
-      try {
-        const marker = new mapboxgl.Marker(el)
-          .setLngLat([store.lng, store.lat])
-          .setPopup(popup)
-          .addTo(map.current!);
-
-        // Click handler - navigate to store detail
-        el.addEventListener("click", () => {
-          navigate(`/dashboard/operations/store/${store.id}`);
+        // Hover effects
+        el.addEventListener("mouseenter", () => {
+          el.style.transform = "scale(1.3)";
+          el.style.zIndex = "1000";
         });
 
-        // Store marker ref
-        markersRef.current.push(marker);
-      } catch (error) {
-        console.error(`❌ Error creando marcador para ${store.name}:`, error);
-      }
+        el.addEventListener("mouseleave", () => {
+          el.style.transform = "scale(1)";
+          el.style.zIndex = "auto";
+        });
 
-      // Optional: Show label if filter enabled
-      if (filters.showLabels) {
-        const labelEl = document.createElement("div");
-        labelEl.className = "store-label";
-        labelEl.textContent = store.name;
-        labelEl.style.cssText = `
-          position: absolute;
-          background: rgba(255,255,255,0.95);
-          padding: 2px 6px;
-          border-radius: 4px;
-          font-size: 10px;
-          font-weight: 500;
-          white-space: nowrap;
-          pointer-events: none;
-          box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-          margin-left: 16px;
-          margin-top: -6px;
-        `;
-        el.appendChild(labelEl);
-      }
-    });
+        // Create popup
+        const popup = new mapboxgl.Popup({
+          offset: 25,
+          closeButton: false,
+          className: "store-popup",
+        }).setHTML(`
+          <div class="p-2">
+            <div class="font-semibold text-sm">#${store.id} - ${store.name}</div>
+            <div class="text-xs text-gray-600 mt-1">${store.location || "CDMX"}</div>
+            <div class="flex items-center gap-2 mt-2">
+              <span class="text-xs text-gray-500">FC:</span>
+              <span class="font-bold text-sm" style="color: ${color}">${store.fc.toFixed(1)}%</span>
+            </div>
+            <button class="mt-2 text-xs text-blue-600 hover:text-blue-800 font-medium">
+              Ver detalles →
+            </button>
+          </div>
+        `);
 
-    // Fit bounds to show all filtered markers
-    if (filteredStores.length > 0) {
-      const bounds = new mapboxgl.LngLatBounds();
-      filteredStores.forEach((store) => {
-        bounds.extend([store.lng, store.lat]);
+        // Create marker
+        try {
+          const marker = new mapboxgl.Marker(el)
+            .setLngLat([store.lng, store.lat])
+            .setPopup(popup)
+            .addTo(map.current!);
+
+          // Click handler - navigate to store detail
+          el.addEventListener("click", () => {
+            navigate(`/dashboard/operations/store/${store.id}`);
+          });
+
+          // Store marker ref
+          markersRef.current.push(marker);
+        } catch (error) {
+          console.error(`❌ Error creando marcador para ${store.name}:`, error);
+        }
+
+        // Optional: Show label if filter enabled
+        if (filters.showLabels) {
+          const labelEl = document.createElement("div");
+          labelEl.className = "store-label";
+          labelEl.textContent = store.name;
+          labelEl.style.cssText = `
+            position: absolute;
+            background: rgba(255,255,255,0.95);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 500;
+            white-space: nowrap;
+            pointer-events: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            margin-left: 16px;
+            margin-top: -6px;
+          `;
+          el.appendChild(labelEl);
+        }
       });
-      map.current?.fitBounds(bounds, {
-        padding: 50,
-        maxZoom: 13,
-        duration: 1000,
-      });
-      console.log(`✅ ${markersRef.current.length} marcadores agregados al mapa`);
-    } else {
-      console.log('⚠️ No hay tiendas para mostrar después del filtro');
-    }
-  }, [filteredStores, filters.showLabels, navigate]);
+
+      // Fit bounds to show all filtered markers
+      if (filteredStores.length > 0) {
+        const bounds = new mapboxgl.LngLatBounds();
+        filteredStores.forEach((store) => {
+          bounds.extend([store.lng, store.lat]);
+        });
+        map.current?.fitBounds(bounds, {
+          padding: 50,
+          maxZoom: 13,
+          duration: 1000,
+        });
+        console.log(`✅ ${markersRef.current.length} marcadores agregados al mapa`);
+      } else {
+        console.log('⚠️ No hay tiendas para mostrar después del filtro');
+      }
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [filteredStores, filters.showLabels, navigate, mapReady]);
 
   return (
     <div
