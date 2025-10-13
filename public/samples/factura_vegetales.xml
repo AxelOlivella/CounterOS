@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/4" xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital" Version="4.0" Serie="C" Folio="55555" Fecha="2024-09-17T07:00:00" SubTotal="3200.00" Descuento="0.00" Moneda="MXN" Total="3712.00" TipoDeComprobante="I" Exportacion="01" LugarExpedicion="64000">
+  <cfdi:Emisor Rfc="VER920720GHI" Nombre="VERDURAS Y HORTALIZAS FRESCAS SA" RegimenFiscal="601"/>
+  <cfdi:Receptor Rfc="COU950630XYZ" Nombre="COUNTER OS RESTAURANT" DomicilioFiscalReceptor="64000" RegimenFiscalReceptor="601" UsoCFDI="G03"/>
+  <cfdi:Conceptos>
+    <cfdi:Concepto ClaveProdServ="10400101" NoIdentificacion="VEG001" Cantidad="80" ClaveUnidad="E48" Unidad="KG" Descripcion="TOMATE BOLA FRESCO" ValorUnitario="18.00" Importe="1440.00" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="1440.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="230.40"/>
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="10400102" NoIdentificacion="VEG002" Cantidad="50" ClaveUnidad="E48" Unidad="KG" Descripcion="CEBOLLA BLANCA" ValorUnitario="15.00" Importe="750.00" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="750.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="120.00"/>
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="10400103" NoIdentificacion="VEG003" Cantidad="40" ClaveUnidad="E48" Unidad="KG" Descripcion="LECHUGA ROMANA" ValorUnitario="25.00" Importe="1000.00" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="1000.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="160.00"/>
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+    </cfdi:Concepto>
+  </cfdi:Conceptos>
+  <cfdi:Impuestos TotalImpuestosTrasladados="512.00">
+    <cfdi:Traslados>
+      <cfdi:Traslado Base="3200.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="512.00"/>
+    </cfdi:Traslados>
+  </cfdi:Impuestos>
+  <cfdi:Complemento>
+    <tfd:TimbreFiscalDigital xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital" Version="1.1" UUID="V1W2X3Y4-Z5A6-47B8-C9D0-E1F2G3H4I5J6" FechaTimbrado="2024-09-17T07:05:00" SelloCFD="GHI789..." NoCertificadoSAT="00001000000555555555" SelloSAT="JKL345..."/>
+  </cfdi:Complemento>
+</cfdi:Comprobante>

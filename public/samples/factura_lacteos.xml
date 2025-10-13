@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/4" xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital" Version="4.0" Serie="A" Folio="12345" Fecha="2024-09-15T10:30:00" SubTotal="8500.00" Descuento="0.00" Moneda="MXN" Total="9860.00" TipoDeComprobante="I" Exportacion="01" LugarExpedicion="64000">
+  <cfdi:Emisor Rfc="LAC890512ABC" Nombre="LACTEOS Y DERIVADOS SA DE CV" RegimenFiscal="601"/>
+  <cfdi:Receptor Rfc="COU950630XYZ" Nombre="COUNTER OS RESTAURANT" DomicilioFiscalReceptor="64000" RegimenFiscalReceptor="601" UsoCFDI="G03"/>
+  <cfdi:Conceptos>
+    <cfdi:Concepto ClaveProdServ="10200101" NoIdentificacion="LAC001" Cantidad="50" ClaveUnidad="E48" Unidad="KG" Descripcion="QUESO MANCHEGO PREMIUM" ValorUnitario="85.00" Importe="4250.00" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="4250.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="680.00"/>
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="10200102" NoIdentificacion="LAC002" Cantidad="30" ClaveUnidad="E48" Unidad="KG" Descripcion="QUESO OAXACA TRADICIONAL" ValorUnitario="65.00" Importe="1950.00" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="1950.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="312.00"/>
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+    </cfdi:Concepto>
+    <cfdi:Concepto ClaveProdServ="10200103" NoIdentificacion="LAC003" Cantidad="40" ClaveUnidad="E48" Unidad="LT" Descripcion="CREMA PARA BATIR 40%" ValorUnitario="58.00" Importe="2320.00" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="2320.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="371.20"/>
+        </cfdi:Traslados>
+      </cfdi:Impuestos>
+    </cfdi:Concepto>
+  </cfdi:Conceptos>
+  <cfdi:Impuestos TotalImpuestosTrasladados="1360.00">
+    <cfdi:Traslados>
+      <cfdi:Traslado Base="8500.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="1360.00"/>
+    </cfdi:Traslados>
+  </cfdi:Impuestos>
+  <cfdi:Complemento>
+    <tfd:TimbreFiscalDigital xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital" Version="1.1" UUID="A1B2C3D4-E5F6-47A8-B9C0-D1E2F3A4B5C6" FechaTimbrado="2024-09-15T10:35:00" SelloCFD="ABC123..." NoCertificadoSAT="00001000000123456789" SelloSAT="XYZ789..."/>
+  </cfdi:Complemento>
+</cfdi:Comprobante>
