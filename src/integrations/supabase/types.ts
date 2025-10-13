@@ -718,12 +718,15 @@ export type Database = {
           active: boolean | null
           city: string | null
           code: string
+          concept: string | null
           created_at: string | null
           latitude: number | null
+          location: string | null
           longitude: number | null
           manager_name: string | null
           manager_tenure_months: number | null
           name: string
+          slug: string | null
           store_id: string
           target_food_cost_pct: number | null
           tenant_id: string
@@ -732,12 +735,15 @@ export type Database = {
           active?: boolean | null
           city?: string | null
           code: string
+          concept?: string | null
           created_at?: string | null
           latitude?: number | null
+          location?: string | null
           longitude?: number | null
           manager_name?: string | null
           manager_tenure_months?: number | null
           name: string
+          slug?: string | null
           store_id?: string
           target_food_cost_pct?: number | null
           tenant_id: string
@@ -746,12 +752,15 @@ export type Database = {
           active?: boolean | null
           city?: string | null
           code?: string
+          concept?: string | null
           created_at?: string | null
           latitude?: number | null
+          location?: string | null
           longitude?: number | null
           manager_name?: string | null
           manager_tenure_months?: number | null
           name?: string
+          slug?: string | null
           store_id?: string
           target_food_cost_pct?: number | null
           tenant_id?: string
