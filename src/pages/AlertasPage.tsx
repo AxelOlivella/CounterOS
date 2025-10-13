@@ -5,8 +5,11 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { EmptyState } from '@/components/ui/states/EmptyState';
 import { StoreSelector } from '@/components/ui/store-selector';
 import { useStoreSelection } from '@/hooks/useStoreSelection';
+import { useNavigate } from 'react-router-dom';
 import { 
   AlertTriangle, 
   TrendingUp, 
@@ -15,11 +18,13 @@ import {
   Bell,
   Settings,
   CheckCircle,
-  XCircle
+  XCircle,
+  FileSearch
 } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 
 const AlertasPage = () => {
+  const navigate = useNavigate();
   const { selectedStore, isConsolidatedView } = useStoreSelection();
   const [alertRules, setAlertRules] = useState({
     foodCostHigh: {
@@ -40,7 +45,8 @@ const AlertasPage = () => {
     }
   });
 
-  const [activeAlerts] = useState([
+  // Toggle to show empty state demo
+  const [activeAlerts, setActiveAlerts] = useState([
     {
       id: 1,
       type: 'warning',
@@ -135,51 +141,74 @@ const AlertasPage = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {activeAlerts.map((alert) => (
-                    <div key={alert.id} className={`p-4 border rounded-lg ${getAlertColor(alert.type)}`}>
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          {getAlertIcon(alert.type)}
-                          <h4 className="font-medium">{alert.title}</h4>
-                          <Badge variant="outline">
-                            {alert.store}
+                {activeAlerts.length === 0 ? (
+                  <EmptyState
+                    icon={<CheckCircle className="h-12 w-12 text-success" />}
+                    title="¡Todo en orden!"
+                    description="No hay alertas activas en este momento. Todas tus tiendas están operando dentro de los parámetros normales."
+                    action={{
+                      label: "Ver Configuración",
+                      onClick: () => {
+                        const configSection = document.getElementById('alert-config');
+                        configSection?.scrollIntoView({ behavior: 'smooth' });
+                      },
+                      variant: 'outline'
+                    }}
+                  />
+                ) : (
+                  <div className="space-y-4">
+                    {activeAlerts.map((alert) => (
+                      <div key={alert.id} className={`p-4 border rounded-lg ${getAlertColor(alert.type)}`}>
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            {getAlertIcon(alert.type)}
+                            <h4 className="font-medium">{alert.title}</h4>
+                            <Badge variant="outline">
+                              {alert.store}
+                            </Badge>
+                          </div>
+                          <Badge variant={alert.impact === 'Alto' ? 'destructive' : 'secondary'}>
+                            {alert.impact}
                           </Badge>
                         </div>
-                        <Badge variant={alert.impact === 'Alto' ? 'destructive' : 'secondary'}>
-                          {alert.impact}
-                        </Badge>
-                      </div>
-                      
-                      <p className="text-sm text-muted-foreground mb-2">
-                        {alert.message}
-                      </p>
-                      
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">
-                          {alert.timestamp}
-                        </span>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="outline">
-                            Ver Detalle
-                          </Button>
-                          <Button size="sm">
-                            Marcar Revisado
-                          </Button>
+                        
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {alert.message}
+                        </p>
+                        
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">
+                            {alert.timestamp}
+                          </span>
+                          <div className="flex gap-2">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button size="sm" variant="outline">
+                                  Ver Detalle
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Análisis completo de la alerta</p>
+                              </TooltipContent>
+                            </Tooltip>
+                            <Button size="sm" onClick={() => setActiveAlerts(prev => prev.filter(a => a.id !== alert.id))}>
+                              Marcar Revisado
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <div className="mt-3 p-3 bg-white/60 rounded border-l-4 border-l-primary">
+                          <p className="text-sm font-medium text-primary">
+                            Acción recomendada:
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {alert.action}
+                          </p>
                         </div>
                       </div>
-                      
-                      <div className="mt-3 p-3 bg-white/60 rounded border-l-4 border-l-primary">
-                        <p className="text-sm font-medium text-primary">
-                          Acción recomendada:
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {alert.action}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -216,7 +245,7 @@ const AlertasPage = () => {
           </div>
 
           {/* Alert Configuration */}
-          <div className="space-y-6">
+          <div className="space-y-6" id="alert-config">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -331,9 +360,18 @@ const AlertasPage = () => {
                   </div>
                 </div>
 
-                <Button className="w-full mt-6">
-                  Guardar Configuración
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button className="w-full mt-6" disabled={activeAlerts.length === 0}>
+                      Guardar Configuración
+                    </Button>
+                  </TooltipTrigger>
+                  {activeAlerts.length === 0 && (
+                    <TooltipContent>
+                      <p>No hay cambios pendientes para guardar</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
               </CardContent>
             </Card>
 

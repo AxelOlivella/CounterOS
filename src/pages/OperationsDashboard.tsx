@@ -1,7 +1,11 @@
 import { StatCard } from "@/components/dashboard/StatCard";
 import { StoreHeatmap } from "@/components/dashboard/StoreHeatmap";
 import { StoreAlertTable } from "@/components/dashboard/StoreAlertTable";
-import { Clock } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { EmptyState } from "@/components/ui/states/EmptyState";
+import { Button } from "@/components/ui/button";
+import { Clock, AlertTriangle, Warehouse, Settings, Download } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Mock data - will be replaced with real data in Phase 2
 const mockData = {
@@ -163,10 +167,14 @@ const mockStoresGeo = [
 ];
 
 export default function OperationsDashboard() {
+  const navigate = useNavigate();
   const currentTime = new Date().toLocaleTimeString("es-MX", {
     hour: "2-digit",
     minute: "2-digit",
   });
+
+  // Simulating loading/error states for demo
+  const hasData = mockStoresGeo.length > 0;
 
   const foodCostDelta = mockData.foodCostAvg - mockData.foodCostTarget;
   const totalAlerts = mockData.alerts.critical + mockData.alerts.warning;
@@ -176,8 +184,8 @@ export default function OperationsDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 animate-slide-up">
+      {/* Header with action buttons */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 animate-slide-up">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
             Operations Overview - {mockData.totalStores} Tiendas
@@ -187,57 +195,97 @@ export default function OperationsDashboard() {
             <span>Última actualización: Hoy {currentTime}</span>
           </div>
         </div>
+
+        <div className="flex gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="sm" disabled>
+                <Download className="h-4 w-4 mr-2" />
+                Exportar
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Exportación de reportes disponible próximamente</p>
+            </TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="sm" disabled>
+                <Settings className="h-4 w-4 mr-2" />
+                Config
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Configuración de dashboard en desarrollo</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
       </div>
+
+      {/* Empty State Example (hidden in normal operation) */}
+      {!hasData && (
+        <EmptyState
+          icon={<Warehouse className="h-12 w-12 text-muted-foreground" />}
+          title="No hay tiendas configuradas"
+          description="Para comenzar a usar el dashboard de operaciones, necesitas configurar al menos una tienda en tu cuenta."
+          action={{
+            label: "Ir a Tiendas",
+            onClick: () => navigate('/tiendas'),
+            variant: 'default'
+          }}
+        />
+      )}
 
       {/* 4 Hero Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-stagger">
-        <StatCard
-          title="FC Promedio"
-          value={`${mockData.foodCostAvg}%`}
-          delta={`+${foodCostDelta.toFixed(1)}pts`}
-          status="warning"
-          subtitle={`vs meta ${mockData.foodCostTarget}%`}
-        />
+      {hasData && (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-stagger">
+            <StatCard
+              title="FC Promedio"
+              value={`${mockData.foodCostAvg}%`}
+              delta={`+${foodCostDelta.toFixed(1)}pts`}
+              status="warning"
+              subtitle={`vs meta ${mockData.foodCostTarget}%`}
+            />
 
-        <StatCard
-          title="Alertas"
-          value={totalAlerts}
-          subtitle={`🔴 ${mockData.alerts.critical} críticos, 🟡 ${mockData.alerts.warning} warnings`}
-          status={mockData.alerts.critical > 0 ? "critical" : "warning"}
-        />
+            <StatCard
+              title="Alertas"
+              value={totalAlerts}
+              subtitle={`🔴 ${mockData.alerts.critical} críticos, 🟡 ${mockData.alerts.warning} warnings`}
+              status={mockData.alerts.critical > 0 ? "critical" : "warning"}
+            />
 
-        <StatCard
-          title="Tiendas OK"
-          value={`${mockData.storesOK}/${mockData.totalStores}`}
-          subtitle={`✓ ${storesOKPercentage}% en rango`}
-          status="success"
-        />
+            <StatCard
+              title="Tiendas OK"
+              value={`${mockData.storesOK}/${mockData.totalStores}`}
+              subtitle={`✓ ${storesOKPercentage}% en rango`}
+              status="success"
+            />
 
-        <StatCard
-          title="Variabilidad"
-          value={`±${mockData.variability}pts`}
-          subtitle="Target: ±1.5pts"
-          status="warning"
-          delta="Muy alto"
-        />
-      </div>
+            <StatCard
+              title="Variabilidad"
+              value={`±${mockData.variability}pts`}
+              subtitle="Target: ±1.5pts"
+              status="warning"
+              delta="Muy alto"
+            />
+          </div>
 
-      {/* Store Heatmap - Geographic View */}
-      <StoreHeatmap stores={mockStoresGeo} />
+          {/* Store Heatmap - Geographic View */}
+          <StoreHeatmap stores={mockStoresGeo} />
 
-      {/* Store Alerts Table */}
-      <StoreAlertTable
-        stores={mockStores}
-        limit={7}
-        onViewAll={() => {
-          // Navigate to stores page
-          window.location.href = '/tiendas';
-        }}
-        onAssign={() => {
-          // Disabled - feature in development
-          // Will open assignment modal in Phase 3
-        }}
-      />
+          {/* Store Alerts Table */}
+          <StoreAlertTable
+            stores={mockStores}
+            limit={7}
+            onViewAll={() => navigate('/tiendas')}
+            onAssign={() => {
+              // Disabled - feature in development
+            }}
+          />
+        </>
+      )}
     </div>
   );
 }

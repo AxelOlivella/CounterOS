@@ -22,16 +22,23 @@ export function EmptyState({
   className
 }: EmptyStateProps) {
   return (
-    <div className={cn('empty-state', className)}>
-      <div className="empty-state-icon">
+    <div 
+      className={cn(
+        'flex flex-col items-center justify-center text-center py-12 px-4',
+        className
+      )}
+      role="status"
+      aria-live="polite"
+    >
+      <div className="mb-4 p-4 bg-muted/50 rounded-full">
         {icon}
       </div>
       
-      <h3 className="empty-state-title">
+      <h3 className="text-lg font-semibold text-foreground mb-2">
         {title}
       </h3>
       
-      <p className="empty-state-description">
+      <p className="text-sm text-muted-foreground max-w-sm mb-6">
         {description}
       </p>
       
@@ -39,7 +46,7 @@ export function EmptyState({
         <Button
           onClick={action.onClick}
           variant={action.variant || 'default'}
-          className="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+          aria-label={action.label}
         >
           {action.label}
         </Button>
