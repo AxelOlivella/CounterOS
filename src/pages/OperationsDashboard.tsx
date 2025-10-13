@@ -1,4 +1,5 @@
 import { StatCard } from "@/components/dashboard/StatCard";
+import { StoreHeatmap } from "@/components/dashboard/StoreHeatmap";
 import { StoreAlertTable } from "@/components/dashboard/StoreAlertTable";
 import { Clock } from "lucide-react";
 
@@ -93,6 +94,72 @@ const mockStores = [
   },
 ];
 
+// Mock geographic data - 100 stores with coordinates
+const mockStoresGeo = [
+  // CDMX Norte (10 tiendas)
+  { id: 47, name: "Polanco", lat: 19.433, lng: -99.195, fc: 36.2, status: "critical" as const },
+  { id: 52, name: "Satélite", lat: 19.508, lng: -99.234, fc: 30.5, status: "warning" as const },
+  { id: 63, name: "Lindavista", lat: 19.488, lng: -99.127, fc: 28.2, status: "ok" as const },
+  { id: 71, name: "Vallejo", lat: 19.465, lng: -99.154, fc: 27.8, status: "ok" as const },
+  { id: 83, name: "Azcapotzalco", lat: 19.490, lng: -99.186, fc: 29.3, status: "ok" as const },
+  { id: 88, name: "Tacuba", lat: 19.459, lng: -99.187, fc: 31.2, status: "warning" as const },
+  { id: 92, name: "Popotla", lat: 19.452, lng: -99.168, fc: 28.9, status: "ok" as const },
+  { id: 94, name: "Refinería", lat: 19.489, lng: -99.198, fc: 27.3, status: "ok" as const },
+  { id: 96, name: "Tacubaya", lat: 19.402, lng: -99.187, fc: 30.8, status: "warning" as const },
+  { id: 98, name: "Anzures", lat: 19.430, lng: -99.182, fc: 28.5, status: "ok" as const },
+  
+  // CDMX Sur (10 tiendas) - CLUSTER PROBLEMÁTICO
+  { id: 82, name: "Coyoacán", lat: 19.350, lng: -99.162, fc: 35.8, status: "critical" as const },
+  { id: 12, name: "Narvarte", lat: 19.397, lng: -99.149, fc: 31.8, status: "warning" as const },
+  { id: 41, name: "Tlalpan", lat: 19.290, lng: -99.166, fc: 33.2, status: "critical" as const },
+  { id: 67, name: "Del Valle", lat: 19.377, lng: -99.163, fc: 34.1, status: "critical" as const },
+  { id: 73, name: "Xochimilco", lat: 19.257, lng: -99.103, fc: 32.9, status: "warning" as const },
+  { id: 76, name: "Taxqueña", lat: 19.337, lng: -99.187, fc: 33.8, status: "critical" as const },
+  { id: 79, name: "Pedregal", lat: 19.313, lng: -99.200, fc: 32.1, status: "warning" as const },
+  { id: 85, name: "Coapa", lat: 19.295, lng: -99.138, fc: 34.5, status: "critical" as const },
+  { id: 89, name: "San Ángel", lat: 19.348, lng: -99.191, fc: 30.9, status: "warning" as const },
+  { id: 93, name: "Culhuacán", lat: 19.332, lng: -99.106, fc: 33.4, status: "critical" as const },
+  
+  // CDMX Centro (10 tiendas)
+  { id: 15, name: "Roma", lat: 19.413, lng: -99.163, fc: 34.9, status: "critical" as const },
+  { id: 5, name: "Condesa", lat: 19.410, lng: -99.172, fc: 32.1, status: "warning" as const },
+  { id: 91, name: "Insurgentes", lat: 19.421, lng: -99.162, fc: 32.8, status: "warning" as const },
+  { id: 33, name: "Doctores", lat: 19.421, lng: -99.143, fc: 29.1, status: "ok" as const },
+  { id: 44, name: "Centro", lat: 19.432, lng: -99.133, fc: 28.7, status: "ok" as const },
+  { id: 55, name: "Juárez", lat: 19.427, lng: -99.157, fc: 30.2, status: "warning" as const },
+  { id: 61, name: "Cuauhtémoc", lat: 19.425, lng: -99.155, fc: 29.8, status: "ok" as const },
+  { id: 68, name: "Obrera", lat: 19.417, lng: -99.144, fc: 28.3, status: "ok" as const },
+  { id: 74, name: "Guerrero", lat: 19.445, lng: -99.145, fc: 31.5, status: "warning" as const },
+  { id: 81, name: "Tabacalera", lat: 19.430, lng: -99.160, fc: 27.9, status: "ok" as const },
+  
+  // CDMX Oeste (10 tiendas)
+  { id: 23, name: "Santa Fe", lat: 19.359, lng: -99.260, fc: 33.1, status: "critical" as const },
+  { id: 28, name: "Observatorio", lat: 19.401, lng: -99.203, fc: 30.6, status: "warning" as const },
+  { id: 34, name: "Las Águilas", lat: 19.339, lng: -99.220, fc: 29.4, status: "ok" as const },
+  { id: 39, name: "Mixcoac", lat: 19.376, lng: -99.188, fc: 28.8, status: "ok" as const },
+  { id: 46, name: "Tarango", lat: 19.315, lng: -99.235, fc: 31.9, status: "warning" as const },
+  { id: 51, name: "Olivar", lat: 19.357, lng: -99.198, fc: 29.7, status: "ok" as const },
+  { id: 58, name: "Tizapán", lat: 19.352, lng: -99.185, fc: 28.1, status: "ok" as const },
+  { id: 64, name: "Lomas", lat: 19.426, lng: -99.244, fc: 27.5, status: "ok" as const },
+  { id: 69, name: "Bosques", lat: 19.405, lng: -99.238, fc: 32.3, status: "warning" as const },
+  { id: 77, name: "Interlomas", lat: 19.391, lng: -99.268, fc: 30.1, status: "warning" as const },
+
+  // Estado de México (60 tiendas distribuidas) - random pattern
+  ...Array.from({ length: 60 }, (_, i) => {
+    const lat = 19.4 + (Math.random() - 0.5) * 0.8;
+    const lng = -99.15 + (Math.random() - 0.5) * 0.6;
+    const fc = 26 + Math.random() * 12;
+    return {
+      id: 100 + i,
+      name: `Tienda ${100 + i}`,
+      lat,
+      lng,
+      fc: Number(fc.toFixed(1)),
+      status: (fc > 32 ? "critical" : fc > 29 ? "warning" : "ok") as "critical" | "warning" | "ok",
+    };
+  }),
+];
+
 export default function OperationsDashboard() {
   const currentTime = new Date().toLocaleTimeString("es-MX", {
     hour: "2-digit",
@@ -153,6 +220,9 @@ export default function OperationsDashboard() {
         />
       </div>
 
+      {/* Store Heatmap - Geographic View */}
+      <StoreHeatmap stores={mockStoresGeo} />
+
       {/* Store Alerts Table */}
       <StoreAlertTable
         stores={mockStores}
@@ -170,23 +240,6 @@ export default function OperationsDashboard() {
           // TODO Phase 3: open assignment modal
         }}
       />
-
-      {/* Placeholder for Phase 2B: Heatmap */}
-      <div className="bg-white rounded-lg shadow-sm p-12 text-center animate-fade-in border border-gray-200">
-        <div className="max-w-md mx-auto space-y-3">
-          <div className="text-gray-400 text-lg font-medium">
-            🗺️ Mapa de Calor (Fase 2B)
-          </div>
-          <div className="text-gray-500 text-sm">
-            Vista geográfica de las 100 tiendas color-coded por FC
-          </div>
-          <div className="flex justify-center gap-2 text-xs text-gray-400">
-            <span>• Mapa interactivo</span>
-            <span>• Filtros por región</span>
-            <span>• Drill-down visual</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
