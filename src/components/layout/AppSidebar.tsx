@@ -12,7 +12,11 @@ import {
   Home,
   AlertTriangle,
   LogOut,
-  User
+  User,
+  ChefHat,
+  TrendingUp,
+  Truck,
+  LayoutGrid
 } from 'lucide-react';
 import {
   Sidebar,
@@ -38,6 +42,13 @@ const menuItems = [
   { id: 'food-cost', label: 'Food Cost', icon: PieChart, path: '/food-cost-analysis' },
   { id: 'pnl', label: 'P&L', icon: DollarSign, path: '/pnl-reports' },
   { id: 'alertas', label: 'Alertas', icon: AlertTriangle, path: '/alertas' },
+];
+
+const analysisItems = [
+  { id: 'menu-engineering', label: 'Menu Engineering', icon: ChefHat, path: '/menu-engineering' },
+  { id: 'variance', label: 'Análisis Variancia', icon: TrendingUp, path: '/variance-analysis' },
+  { id: 'suppliers', label: 'Proveedores', icon: Truck, path: '/supplier-management' },
+  { id: 'product-mix', label: 'Product Mix', icon: LayoutGrid, path: '/product-mix' },
 ];
 
 const secondaryItems = [
@@ -112,6 +123,35 @@ export function AppSidebar() {
                             3
                           </Badge>
                         )}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-xs font-medium text-muted-foreground px-2">
+            {!isCollapsed ? 'Análisis Avanzado' : ''}
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu className="space-y-1">
+              {analysisItems.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item.path);
+                
+                return (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton asChild>
+                      <NavLink 
+                        to={item.path}
+                        className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-colors ${getNavClass(item.path)}`}
+                        style={active ? { backgroundColor: primaryColor } : undefined}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {!isCollapsed && <span className="text-sm">{item.label}</span>}
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

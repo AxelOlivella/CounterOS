@@ -11,6 +11,9 @@ import { LoginPage } from "./pages/LoginPage";
 import { UploadPage } from "./components/pages/UploadPage";
 import { FoodCostAnalysisPage } from "./components/pages/FoodCostAnalysisPage";
 import { PnLReportsPage } from "./components/pages/PnLReportsPage";
+import { MenuEngineeringPage } from "./components/pages/MenuEngineeringPage";
+import { SupplierManagementPage } from "./components/pages/SupplierManagementPage";
+import { ProductMixPage } from "./components/pages/ProductMixPage";
 import { SetupPage } from "./pages/SetupPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import DatosPage from "./pages/DatosPage";
@@ -116,6 +119,39 @@ const App = () => (
               <ProtectedRoute>
                 <AppLayout>
                   <PnLReportsPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
+            {/* Advanced Analysis Routes */}
+            <Route path="/menu-engineering" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <MenuEngineeringPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/variance-analysis" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <FoodCostAnalysisPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/supplier-management" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <SupplierManagementPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/product-mix" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <ProductMixPage />
                 </AppLayout>
               </ProtectedRoute>
             } />
