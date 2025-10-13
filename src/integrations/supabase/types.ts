@@ -107,6 +107,13 @@ export type Database = {
             foreignKeyName: "expenses_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "store_performance_view"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "expenses_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["store_id"]
           },
@@ -440,6 +447,13 @@ export type Database = {
             foreignKeyName: "purchases_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "store_performance_view"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "purchases_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["store_id"]
           },
@@ -544,11 +558,73 @@ export type Database = {
             foreignKeyName: "sales_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "store_performance_view"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "sales_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["store_id"]
           },
           {
             foreignKeyName: "sales_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
+      }
+      store_categories: {
+        Row: {
+          actual_pct: number
+          category_id: string
+          category_name: string
+          created_at: string | null
+          period: string
+          store_id: string
+          target_pct: number
+          tenant_id: string
+        }
+        Insert: {
+          actual_pct: number
+          category_id?: string
+          category_name: string
+          created_at?: string | null
+          period: string
+          store_id: string
+          target_pct: number
+          tenant_id: string
+        }
+        Update: {
+          actual_pct?: number
+          category_id?: string
+          category_name?: string
+          created_at?: string | null
+          period?: string
+          store_id?: string
+          target_pct?: number
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_categories_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "store_performance_view"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "store_categories_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "store_categories_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -562,8 +638,13 @@ export type Database = {
           city: string | null
           code: string
           created_at: string | null
+          latitude: number | null
+          longitude: number | null
+          manager_name: string | null
+          manager_tenure_months: number | null
           name: string
           store_id: string
+          target_food_cost_pct: number | null
           tenant_id: string
         }
         Insert: {
@@ -571,8 +652,13 @@ export type Database = {
           city?: string | null
           code: string
           created_at?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          manager_name?: string | null
+          manager_tenure_months?: number | null
           name: string
           store_id?: string
+          target_food_cost_pct?: number | null
           tenant_id: string
         }
         Update: {
@@ -580,8 +666,13 @@ export type Database = {
           city?: string | null
           code?: string
           created_at?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          manager_name?: string | null
+          manager_tenure_months?: number | null
           name?: string
           store_id?: string
+          target_food_cost_pct?: number | null
           tenant_id?: string
         }
         Relationships: [
@@ -704,6 +795,13 @@ export type Database = {
             foreignKeyName: "sales_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "store_performance_view"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "sales_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["store_id"]
           },
@@ -736,11 +834,45 @@ export type Database = {
             foreignKeyName: "sales_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "store_performance_view"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "sales_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["store_id"]
           },
           {
             foreignKeyName: "sales_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
+      }
+      store_performance_view: {
+        Row: {
+          city: string | null
+          code: string | null
+          current_food_cost_pct: number | null
+          food_cost_variance: number | null
+          latitude: number | null
+          longitude: number | null
+          manager_name: string | null
+          manager_tenure_months: number | null
+          name: string | null
+          revenue_30d: number | null
+          status: string | null
+          store_id: string | null
+          target_food_cost_pct: number | null
+          tenant_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stores_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -783,6 +915,13 @@ export type Database = {
             foreignKeyName: "sales_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "store_performance_view"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "sales_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["store_id"]
           },
@@ -810,6 +949,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ingredients"
             referencedColumns: ["ingredient_id"]
+          },
+          {
+            foreignKeyName: "sales_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "store_performance_view"
+            referencedColumns: ["store_id"]
           },
           {
             foreignKeyName: "sales_store_id_fkey"
@@ -855,6 +1001,13 @@ export type Database = {
             foreignKeyName: "sales_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "store_performance_view"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "sales_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["store_id"]
           },
@@ -888,6 +1041,40 @@ export type Database = {
           merma_estimada_dinero: number | null
         }
         Relationships: []
+      }
+      weekly_food_cost_view: {
+        Row: {
+          avg_food_cost_pct: number | null
+          store_id: string | null
+          tenant_id: string | null
+          total_cogs: number | null
+          total_revenue: number | null
+          week_number: number | null
+          week_start: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "store_performance_view"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "sales_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "sales_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
       }
     }
     Functions: {
