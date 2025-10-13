@@ -53,7 +53,7 @@ export function MobileTabBar() {
   };
 
   return (
-    <div className="tab-bar md:hidden">
+    <div className="tab-bar md:hidden animate-slide-up">
       <div className="flex items-center justify-around">
         {tabItems.map((item) => {
           const Icon = item.icon;

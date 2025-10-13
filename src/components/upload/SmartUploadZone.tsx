@@ -86,18 +86,28 @@ export function SmartUploadZone({
 
   if (uploading) {
     return (
-      <Card className="p-8">
+      <Card className="p-8 animate-scale-in">
         <div className="space-y-6">
-          <div className="text-center">
+          <div className="text-center animate-fade-in">
+            <div className="inline-block p-4 bg-secondary/10 rounded-full mb-3">
+              <Upload className="h-8 w-8 text-secondary animate-bounce-subtle" />
+            </div>
             <h3 className="text-xl font-semibold mb-2">Procesando factura...</h3>
+            <p className="text-sm text-muted-foreground">Esto toma solo unos segundos</p>
           </div>
 
           <div className="space-y-4">
-            {steps.map((step) => (
-              <div key={step.id} className="flex items-center gap-3">
+            {steps.map((step, idx) => (
+              <div 
+                key={step.id} 
+                className={cn(
+                  "flex items-center gap-3 transition-all duration-300",
+                  `animate-fade-in animate-stagger-${Math.min(idx + 1, 3)}`
+                )}
+              >
                 {getStepIcon(step.status)}
                 <span className={cn(
-                  "text-sm font-medium",
+                  "text-sm font-medium transition-colors duration-200",
                   step.status === 'complete' && "text-success",
                   step.status === 'processing' && "text-secondary",
                   step.status === 'error' && "text-critical"

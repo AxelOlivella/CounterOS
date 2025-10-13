@@ -13,6 +13,7 @@ import { HeroMetric } from '@/components/dashboard/HeroMetric';
 import { CategoryBreakdown } from '@/components/dashboard/CategoryBreakdown';
 import { CategoryDetail } from '@/components/dashboard/CategoryDetail';
 import { VarianceAnalysisChart } from '@/components/food-cost/VarianceAnalysisChart';
+import { SkeletonCard } from '@/components/ui/skeleton-card';
 import { Loader2, TrendingUp, AlertTriangle, Target, AlertCircle, ClipboardCheck } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -21,6 +22,7 @@ import { generateAlerts, formatImpact, getAlertBadgeVariant, type Alert as Alert
 import type { VarianceRow, TopVarianceIngredient } from '@/lib/types_variance';
 import type { RealVarianceRow } from '@/lib/types_inventory';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 
 interface Store {
   id: string;
@@ -347,52 +349,71 @@ export const FoodCostAnalysisPage = () => {
       </Card>
 
       {/* Alertas Glanceable */}
-      {alerts.length > 0 && (
+      {loading ? (
         <div className="space-y-3">
+          <SkeletonCard variant="list" />
+        </div>
+      ) : alerts.length > 0 && (
+        <div className="space-y-3 animate-fade-in">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-xl font-bold">🚨 Alertas</h2>
             <Badge variant="outline" className="text-sm font-bold">
               {alerts.length}
             </Badge>
           </div>
-          {alerts.slice(0, 3).map((alert) => (
-            <AlertCard key={alert.id} alert={alert} compact />
+          {alerts.slice(0, 3).map((alert, idx) => (
+            <div key={alert.id} className={cn("animate-fade-in", `animate-stagger-${Math.min(idx + 1, 3)}`)}>
+              <AlertCard alert={alert} compact />
+            </div>
           ))}
         </div>
       )}
 
       {/* Hero Metric: Food Cost GIGANTE */}
-      <HeroMetric
-        value={summary.avgFoodCost}
-        suffix="%"
-        label="Food Cost Promedio"
-        target={TARGET_FOOD_COST}
-        status={
-          summary.avgFoodCost > TARGET_FOOD_COST + 3 ? 'critical' :
-          summary.avgFoodCost > TARGET_FOOD_COST + 1.5 ? 'warning' :
-          'success'
-        }
-        variance={summary.avgFoodCost - TARGET_FOOD_COST}
-        size="large"
-      />
+      {loading ? (
+        <SkeletonCard variant="hero" />
+      ) : (
+        <div className="animate-scale-in">
+          <HeroMetric
+            value={summary.avgFoodCost}
+            suffix="%"
+            label="Food Cost Promedio"
+            target={TARGET_FOOD_COST}
+            status={
+              summary.avgFoodCost > TARGET_FOOD_COST + 3 ? 'critical' :
+              summary.avgFoodCost > TARGET_FOOD_COST + 1.5 ? 'warning' :
+              'success'
+            }
+            variance={summary.avgFoodCost - TARGET_FOOD_COST}
+            size="large"
+          />
+        </div>
+      )}
 
       {/* Métricas Secundarias */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <HeroMetric
-          value={summary.totalRevenue / 1000}
-          suffix="K"
-          label="Ingresos"
-          status="neutral"
-          size="default"
-        />
-        <HeroMetric
-          value={summary.totalCogs / 1000}
-          suffix="K"
-          label="COGS"
-          status="neutral"
-          size="default"
-        />
-      </div>
+      {loading ? (
+        <div className="grid gap-4 md:grid-cols-2">
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 animate-fade-in" style={{ animationDelay: '100ms' }}>
+          <HeroMetric
+            value={summary.totalRevenue / 1000}
+            suffix="K"
+            label="Ingresos"
+            status="neutral"
+            size="default"
+          />
+          <HeroMetric
+            value={summary.totalCogs / 1000}
+            suffix="K"
+            label="COGS"
+            status="neutral"
+            size="default"
+          />
+        </div>
+      )}
 
       {/* Progressive disclosure: Breakdown or Overview */}
       {viewLevel === 'breakdown' ? (

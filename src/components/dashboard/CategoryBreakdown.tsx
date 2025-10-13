@@ -48,12 +48,12 @@ export function CategoryBreakdown({ categories, onCategoryClick }: CategoryBreak
   };
 
   return (
-    <Card className="p-6">
+    <Card className="p-6 animate-scale-in">
       <h3 className="text-lg font-semibold mb-2">¿Dónde está el problema?</h3>
       <p className="text-sm text-muted-foreground mb-6">Toca una categoría para ver detalles</p>
 
       <div className="space-y-4">
-        {categories.map((category) => {
+        {categories.map((category, idx) => {
           const variance = category.value - category.target;
           const variancePct = ((variance / category.target) * 100).toFixed(1);
           
@@ -61,7 +61,10 @@ export function CategoryBreakdown({ categories, onCategoryClick }: CategoryBreak
             <button
               key={category.name}
               onClick={() => onCategoryClick(category)}
-              className="w-full mobile-tap-target group"
+              className={cn(
+                "w-full mobile-tap-target group animate-fade-in",
+                `animate-stagger-${Math.min(idx + 1, 3)}`
+              )}
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">

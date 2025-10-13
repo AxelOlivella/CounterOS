@@ -42,7 +42,7 @@ export function CategoryDetail({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Header con back button */}
       <div className="flex items-center gap-3">
         <Button

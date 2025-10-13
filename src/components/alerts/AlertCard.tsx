@@ -41,7 +41,7 @@ export function AlertCard({ alert, compact = false }: AlertCardProps) {
 
   return (
     <Card className={cn(
-      'border-2 transition-all hover:shadow-md',
+      'border-2 transition-all hover:shadow-md animate-slide-up',
       config.bg,
       compact && 'p-4'
     )}>
