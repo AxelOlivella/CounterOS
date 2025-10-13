@@ -45,6 +45,8 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
   });
 
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
+  const currentStyleRef = useRef<string>("");
 
   // Count by status
   const counts = {
@@ -104,6 +106,13 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
         bearing: 0,
       });
 
+      currentStyleRef.current = getMapStyle();
+
+      map.current.on('load', () => {
+        console.log('✅ Mapa cargado');
+        setMapReady(true);
+      });
+
       console.log('✅ Mapa inicializado correctamente');
     } catch (error) {
       console.error('❌ Error al inicializar mapa:', error);
@@ -133,15 +142,30 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
 
   // Update map style when filter changes
   useEffect(() => {
-    if (map.current) {
-      map.current.setStyle(getMapStyle());
-    }
+    if (!map.current) return;
+    const newStyle = getMapStyle();
+    if (currentStyleRef.current === newStyle) return;
+
+    console.log('🎨 Cambiando estilo del mapa a:', newStyle);
+    setMapReady(false);
+    map.current.setStyle(newStyle);
+    map.current.once('style.load', () => {
+      currentStyleRef.current = newStyle;
+      setMapReady(true);
+      console.log('✅ Estilo del mapa cargado');
+    });
   }, [filters.mapStyle]);
+
+  // Resize map on fullscreen toggle
+  useEffect(() => {
+    if (!map.current) return;
+    setTimeout(() => map.current?.resize(), 50);
+  }, [isFullscreen]);
 
   // Update markers when filters change
   useEffect(() => {
-    if (!map.current) {
-      console.log('⚠️ No hay instancia de mapa disponible');
+    if (!map.current || !mapReady) {
+      console.log('⚠️ Mapa no listo para dibujar marcadores (mapReady=', mapReady, ')');
       return;
     }
 
