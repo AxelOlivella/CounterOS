@@ -4,6 +4,9 @@ import { Badge } from '@/components/ui/badge';
 import { StoreSelector } from '@/components/ui/store-selector';
 import { useStoreSelection } from '@/hooks/useStoreSelection';
 import { useSEO } from '@/hooks/useSEO';
+import { useDashboardSummary } from '@/hooks/useDashboardSummary';
+import { LoadingState } from '@/components/ui/states/LoadingState';
+import { ErrorState } from '@/components/ui/states/ErrorState';
 import { routes } from '@/routes';
 import { 
   TrendingUp, 
@@ -19,6 +22,9 @@ import { useNavigate } from 'react-router-dom';
 const ResumenPage = () => {
   const navigate = useNavigate();
   const { selectedStore, isConsolidatedView } = useStoreSelection();
+  
+  // Fetch real data from Supabase
+  const { data: summaryData, isLoading, error } = useDashboardSummary();
 
   // SEO Configuration
   useSEO({
@@ -27,25 +33,30 @@ const ResumenPage = () => {
     keywords: ['resumen ejecutivo restaurante', 'dashboard costos', 'food cost consolidado']
   });
 
-  // Mock data - in real app this would come from API
-  const summaryData = {
-    bestStore: {
-      name: 'Plaza Norte',
-      foodCost: 28.5,
-      revenue: 125000,
-      improvement: '+2.1%'
-    },
-    worstStore: {
-      name: 'Portal Centro',
-      foodCost: 34.2,
-      revenue: 98000,
-      decline: '-1.8%'
-    },
-    totalSavings: 52300,
-    avgFoodCost: 31.2,
-    target: 30.0,
-    alertsCount: 3
-  };
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="container mx-auto max-w-6xl">
+        <LoadingState 
+          title="Cargando resumen ejecutivo..." 
+          description="Procesando métricas de tus tiendas"
+        />
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error || !summaryData) {
+    return (
+      <div className="container mx-auto max-w-6xl">
+        <ErrorState 
+          title="Error al cargar el resumen" 
+          description="No se pudieron cargar las métricas del dashboard"
+          error={error?.message}
+        />
+      </div>
+    );
+  }
 
   const quickActions = [
     {
@@ -144,7 +155,7 @@ const ResumenPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Tiendas Monitoreadas</p>
-                <p className="text-2xl font-bold">2</p>
+                <p className="text-2xl font-bold">{summaryData.totalStores}</p>
               </div>
               <Store className="h-8 w-8 text-blue-500" />
             </div>
