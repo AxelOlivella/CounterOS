@@ -7,6 +7,7 @@ import { useSEO } from '@/hooks/useSEO';
 import { useDashboardSummary } from '@/hooks/useDashboardSummary';
 import { LoadingState } from '@/components/ui/states/LoadingState';
 import { ErrorState } from '@/components/ui/states/ErrorState';
+import { EmptyOnboardingState } from '@/components/ui/states/EmptyOnboardingState';
 import { routes } from '@/routes';
 import { 
   TrendingUp, 
@@ -56,6 +57,11 @@ const ResumenPage = () => {
         />
       </div>
     );
+  }
+
+  // Show empty state if no stores configured
+  if (summaryData.totalStores === 0) {
+    return <EmptyOnboardingState />;
   }
 
   const quickActions = [
