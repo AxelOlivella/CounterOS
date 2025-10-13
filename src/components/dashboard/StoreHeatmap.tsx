@@ -1,6 +1,15 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import { cn } from "@/lib/utils";
-import { MapPin, AlertTriangle } from "lucide-react";
+import { AlertTriangle, Maximize2 } from "lucide-react";
+import { StoreMapFilters, type MapFilters } from "./StoreMapFilters";
+import { MapLegend } from "./MapLegend";
+
+// IMPORTANT: User needs to add MAPBOX_PUBLIC_TOKEN to Supabase Edge Function Secrets
+// For now, using a public demo token (limited to dev/staging)
+const MAPBOX_TOKEN = "pk.eyJ1IjoibG92YWJsZS1kZW1vIiwiYSI6ImNtNXExZmV2YTBjOWkya3M0OWd4dGFsN3gifQ.demo_token_placeholder";
 
 interface StoreGeo {
   id: number;
@@ -9,6 +18,7 @@ interface StoreGeo {
   lng: number;
   fc: number;
   status: "ok" | "warning" | "critical";
+  location?: string;
 }
 
 interface StoreHeatmapProps {
@@ -17,8 +27,24 @@ interface StoreHeatmapProps {
 }
 
 export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
-  const [hoveredStore, setHoveredStore] = useState<StoreGeo | null>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const navigate = useNavigate();
+
+  // Extract unique regions from stores
+  const availableRegions = Array.from(
+    new Set(stores.map((s) => s.location || "CDMX").filter(Boolean))
+  );
+
+  const [filters, setFilters] = useState<MapFilters>({
+    regions: availableRegions,
+    statuses: ["ok", "warning", "critical"],
+    showLabels: false,
+    mapStyle: "light",
+  });
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Count by status
   const counts = {
@@ -27,19 +53,12 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
     critical: stores.filter((s) => s.status === "critical").length,
   };
 
-  // Normalize coordinates to SVG viewport
-  const latRange = { min: 19.0, max: 19.7 }; // CDMX approx range
-  const lngRange = { min: -99.5, max: -98.9 };
-  const viewportWidth = 800;
-  const viewportHeight = 400;
-
-  const normalizeCoords = (lat: number, lng: number) => {
-    const x =
-      ((lng - lngRange.min) / (lngRange.max - lngRange.min)) * viewportWidth;
-    const y =
-      ((latRange.max - lat) / (latRange.max - latRange.min)) * viewportHeight;
-    return { x, y };
-  };
+  // Filter stores
+  const filteredStores = stores.filter(
+    (store) =>
+      filters.regions.includes(store.location || "CDMX") &&
+      filters.statuses.includes(store.status)
+  );
 
   const getColor = (status: string) => {
     switch (status) {
@@ -54,181 +73,286 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
     }
   };
 
-  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setMousePos({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
+  const getMapStyle = () => {
+    switch (filters.mapStyle) {
+      case "streets":
+        return "mapbox://styles/mapbox/streets-v12";
+      case "satellite":
+        return "mapbox://styles/mapbox/satellite-streets-v12";
+      case "light":
+      default:
+        return "mapbox://styles/mapbox/light-v11";
+    }
   };
+
+  useEffect(() => {
+    if (!mapContainer.current || map.current) return;
+
+    // Set Mapbox access token
+    mapboxgl.accessToken = MAPBOX_TOKEN;
+
+    // Initialize map centered on CDMX
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: getMapStyle(),
+      center: [-99.133, 19.432], // CDMX center
+      zoom: 11,
+      pitch: 0,
+      bearing: 0,
+    });
+
+    // Add navigation controls
+    map.current.addControl(
+      new mapboxgl.NavigationControl({
+        visualizePitch: true,
+      }),
+      "top-right"
+    );
+
+    // Add fullscreen control
+    map.current.addControl(new mapboxgl.FullscreenControl(), "top-right");
+
+    // Disable rotation
+    map.current.dragRotate.disable();
+    map.current.touchZoomRotate.disableRotation();
+
+    return () => {
+      map.current?.remove();
+      map.current = null;
+    };
+  }, []);
+
+  // Update map style when filter changes
+  useEffect(() => {
+    if (map.current) {
+      map.current.setStyle(getMapStyle());
+    }
+  }, [filters.mapStyle]);
+
+  // Update markers when filters change
+  useEffect(() => {
+    if (!map.current) return;
+
+    // Clear existing markers
+    markersRef.current.forEach((marker) => marker.remove());
+    markersRef.current = [];
+
+    // Add filtered markers with staggered animation
+    filteredStores.forEach((store, index) => {
+      const color = getColor(store.status);
+
+      // Create custom marker element
+      const el = document.createElement("div");
+      el.className = "custom-marker";
+      el.style.cssText = `
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: ${color};
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+        transform: scale(0);
+        animation: markerFadeIn 0.4s ease-out ${index * 0.02}s forwards;
+      `;
+
+      // Add animation keyframes to document
+      if (!document.getElementById("marker-animations")) {
+        const style = document.createElement("style");
+        style.id = "marker-animations";
+        style.textContent = `
+          @keyframes markerFadeIn {
+            0% {
+              opacity: 0;
+              transform: scale(0) translateY(20px);
+            }
+            60% {
+              transform: scale(1.2) translateY(-5px);
+            }
+            100% {
+              opacity: 1;
+              transform: scale(1) translateY(0);
+            }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      // Hover effects
+      el.addEventListener("mouseenter", () => {
+        el.style.transform = "scale(1.3)";
+        el.style.zIndex = "1000";
+      });
+
+      el.addEventListener("mouseleave", () => {
+        el.style.transform = "scale(1)";
+        el.style.zIndex = "auto";
+      });
+
+      // Create popup
+      const popup = new mapboxgl.Popup({
+        offset: 25,
+        closeButton: false,
+        className: "store-popup",
+      }).setHTML(`
+        <div class="p-2">
+          <div class="font-semibold text-sm">#${store.id} - ${store.name}</div>
+          <div class="text-xs text-gray-600 mt-1">${store.location || "CDMX"}</div>
+          <div class="flex items-center gap-2 mt-2">
+            <span class="text-xs text-gray-500">FC:</span>
+            <span class="font-bold text-sm" style="color: ${color}">${store.fc.toFixed(1)}%</span>
+          </div>
+          <button class="mt-2 text-xs text-blue-600 hover:text-blue-800 font-medium">
+            Ver detalles →
+          </button>
+        </div>
+      `);
+
+      // Create marker
+      const marker = new mapboxgl.Marker(el)
+        .setLngLat([store.lng, store.lat])
+        .setPopup(popup)
+        .addTo(map.current!);
+
+      // Click handler - navigate to store detail
+      el.addEventListener("click", () => {
+        navigate(`/dashboard/operations/store/${store.id}`);
+      });
+
+      // Store marker ref
+      markersRef.current.push(marker);
+
+      // Optional: Show label if filter enabled
+      if (filters.showLabels) {
+        const labelEl = document.createElement("div");
+        labelEl.className = "store-label";
+        labelEl.textContent = store.name;
+        labelEl.style.cssText = `
+          position: absolute;
+          background: rgba(255,255,255,0.95);
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-size: 10px;
+          font-weight: 500;
+          white-space: nowrap;
+          pointer-events: none;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+          margin-left: 16px;
+          margin-top: -6px;
+        `;
+        el.appendChild(labelEl);
+      }
+    });
+
+    // Fit bounds to show all filtered markers
+    if (filteredStores.length > 0) {
+      const bounds = new mapboxgl.LngLatBounds();
+      filteredStores.forEach((store) => {
+        bounds.extend([store.lng, store.lat]);
+      });
+      map.current?.fitBounds(bounds, {
+        padding: 50,
+        maxZoom: 13,
+        duration: 1000,
+      });
+    }
+  }, [filteredStores, filters.showLabels, navigate]);
 
   return (
     <div
       className={cn(
-        "bg-white rounded-lg shadow-sm border border-gray-200 p-6 animate-fade-in",
+        "bg-white rounded-lg shadow-sm border border-gray-200 animate-fade-in",
+        isFullscreen && "fixed inset-0 z-50 rounded-none",
         className
       )}
     >
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-        <div className="flex items-center gap-2">
-          <MapPin className="h-5 w-5 text-gray-500" />
-          <h2 className="text-lg font-semibold text-gray-900">
-            Food Cost por Tienda (Vista Geográfica)
-          </h2>
+      {/* Header with Filters */}
+      <div className="px-6 py-4 border-b border-gray-200 space-y-3">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Food Cost por Tienda (Vista Geográfica)
+            </h2>
+            <button
+              onClick={() => setIsFullscreen(!isFullscreen)}
+              className="p-1 hover:bg-gray-100 rounded transition"
+            >
+              <Maximize2 className="h-4 w-4 text-gray-500" />
+            </button>
+          </div>
+
+          <div className="text-sm text-gray-500">
+            Mostrando {filteredStores.length} de {stores.length} tiendas
+          </div>
         </div>
-        <div className="flex gap-3 text-sm">
-          <span className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            <span className="text-gray-600">{counts.ok}</span>
-          </span>
-          <span className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-            <span className="text-gray-600">{counts.warning}</span>
-          </span>
-          <span className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-            <span className="text-gray-600">{counts.critical}</span>
-          </span>
-        </div>
+
+        <StoreMapFilters
+          filters={filters}
+          onFiltersChange={setFilters}
+          availableRegions={availableRegions}
+          counts={counts}
+        />
       </div>
 
       {/* Map Container */}
-      <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg overflow-hidden">
-        <svg
-          width="100%"
-          height="400"
-          viewBox={`0 0 ${viewportWidth} ${viewportHeight}`}
-          className="w-full"
-          onMouseMove={handleMouseMove}
-          onMouseLeave={() => setHoveredStore(null)}
-        >
-          {/* Background grid for reference */}
-          <defs>
-            <pattern
-              id="grid"
-              width="40"
-              height="40"
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d="M 40 0 L 0 0 0 40"
-                fill="none"
-                stroke="#e5e7eb"
-                strokeWidth="0.5"
-              />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
+      <div className="relative">
+        <div
+          ref={mapContainer}
+          className={cn(
+            "w-full transition-all duration-300",
+            isFullscreen ? "h-[calc(100vh-8rem)]" : "h-[500px]"
+          )}
+        />
 
-          {/* Store dots */}
-          {stores.map((store) => {
-            const { x, y } = normalizeCoords(store.lat, store.lng);
-            const color = getColor(store.status);
-            const isHovered = hoveredStore?.id === store.id;
+        {/* Legend Overlay */}
+        <MapLegend
+          counts={counts}
+          className="absolute bottom-4 left-4 max-w-xs"
+        />
 
-            return (
-              <g key={store.id}>
-                {/* Outer ring on hover */}
-                {isHovered && (
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r="12"
-                    fill="none"
-                    stroke={color}
-                    strokeWidth="2"
-                    opacity="0.4"
-                    className="animate-pulse"
-                  />
-                )}
-
-                {/* Main dot */}
-                <circle
-                  cx={x}
-                  cy={y}
-                  r={isHovered ? "8" : "6"}
-                  fill={color}
-                  opacity={isHovered ? "1" : "0.8"}
-                  className="cursor-pointer transition-all duration-200 hover:opacity-100"
-                  onMouseEnter={() => setHoveredStore(store)}
-                />
-              </g>
-            );
-          })}
-        </svg>
-
-        {/* Tooltip */}
-        {hoveredStore && (
-          <div
-            className="absolute bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-lg p-3 pointer-events-none z-10"
-            style={{
-              left: `${mousePos.x + 15}px`,
-              top: `${mousePos.y + 15}px`,
-              transform: "translateY(-50%)",
-            }}
-          >
-            <div className="text-sm">
-              <div className="font-semibold text-gray-900">
-                #{hoveredStore.id} - {hoveredStore.name}
-              </div>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-gray-600">FC:</span>
-                <span
-                  className={cn(
-                    "font-bold tabular-nums",
-                    hoveredStore.status === "critical"
-                      ? "text-red-600"
-                      : hoveredStore.status === "warning"
-                      ? "text-yellow-600"
-                      : "text-green-600"
-                  )}
-                >
-                  {hoveredStore.fc.toFixed(1)}%
-                </span>
+        {/* Insight Box Overlay */}
+        {counts.critical > 5 && (
+          <div className="absolute top-4 right-4 max-w-sm bg-white/95 backdrop-blur-sm rounded-lg p-4 border border-yellow-200 shadow-md">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-gray-900 mb-1">
+                  Pattern detectado
+                </p>
+                <p className="text-sm text-gray-700">
+                  <strong>Cluster de {counts.critical} tiendas críticas.</strong>{" "}
+                  Posible problema regional. Requiere investigación inmediata.
+                </p>
               </div>
             </div>
           </div>
         )}
 
-        {/* Insight Box */}
-        <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg p-4 border border-yellow-200 shadow-md">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-gray-900 mb-1">
-                Pattern detectado
-              </p>
-              <p className="text-sm text-gray-700">
-                <strong>Cluster de 8 tiendas críticas en CDMX Sur.</strong>{" "}
-                Posible problema regional (proveedor o gerente regional).
-                Requiere investigación inmediata.
-              </p>
-            </div>
+        {/* API Key Warning - Remove this after user adds real token */}
+        {MAPBOX_TOKEN.includes("placeholder") && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-yellow-50 border-2 border-yellow-400 rounded-lg p-6 max-w-md text-center shadow-lg">
+            <AlertTriangle className="h-8 w-8 text-yellow-600 mx-auto mb-3" />
+            <p className="font-semibold text-gray-900 mb-2">
+              Mapbox API Key Required
+            </p>
+            <p className="text-sm text-gray-600 mb-3">
+              Add your Mapbox public token to Supabase Edge Function Secrets:
+            </p>
+            <code className="block bg-white px-3 py-2 rounded text-xs mb-3">
+              MAPBOX_PUBLIC_TOKEN=your_token_here
+            </code>
+            <a
+              href="https://account.mapbox.com/access-tokens/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Get token at mapbox.com →
+            </a>
           </div>
-        </div>
-      </div>
-
-      {/* Legend */}
-      <div className="mt-6 flex flex-wrap justify-center gap-6 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-green-500"></div>
-          <span className="text-gray-600">
-            &lt;29% (Excelente) - {counts.ok} tiendas
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-          <span className="text-gray-600">
-            29-32% (OK) - {counts.warning} tiendas
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-red-500"></div>
-          <span className="text-gray-600">
-            &gt;32% (Crítico) - {counts.critical} tiendas
-          </span>
-        </div>
+        )}
       </div>
     </div>
   );

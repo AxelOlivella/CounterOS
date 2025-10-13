@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface Store {
   id: number;
@@ -27,8 +28,17 @@ export function StoreAlertTable({
   onViewAll,
   onAssign,
 }: StoreAlertTableProps) {
+  const navigate = useNavigate();
   const displayedStores = stores.slice(0, limit);
   const hasMore = stores.length > limit;
+
+  const handleViewStore = (storeId: number) => {
+    if (onViewStore) {
+      onViewStore(storeId);
+    }
+    // Navigate to store detail page
+    navigate(`/dashboard/operations/store/${storeId}`);
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 animate-fade-in">
@@ -135,7 +145,7 @@ export function StoreAlertTable({
                 </td>
                 <td className="px-4 py-4 text-sm">
                   <button
-                    onClick={() => onViewStore?.(store.id)}
+                    onClick={() => handleViewStore(store.id)}
                     className="text-blue-600 hover:text-blue-800 font-medium transition-colors hover:underline"
                   >
                     Ver

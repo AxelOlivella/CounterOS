@@ -10,6 +10,7 @@ import { LandingPage } from "./pages/LandingPage";
 import { LandingEnterprise } from "./pages/LandingEnterprise";
 import { LoginPage } from "./pages/LoginPage";
 import OperationsDashboard from "./pages/OperationsDashboard";
+import StoreDetailPage from "./pages/StoreDetailPage";
 
 import { UploadPage } from "./components/pages/UploadPage";
 import { FoodCostAnalysisPage } from "./components/pages/FoodCostAnalysisPage";
@@ -117,6 +118,15 @@ const App = () => (
               <ProtectedRoute>
                 <OperationsLayout>
                   <OperationsDashboard />
+                </OperationsLayout>
+              </ProtectedRoute>
+            } />
+            
+            {/* Store Detail Page */}
+            <Route path="/dashboard/operations/store/:storeId" element={
+              <ProtectedRoute>
+                <OperationsLayout>
+                  <StoreDetailPage />
                 </OperationsLayout>
               </ProtectedRoute>
             } />
