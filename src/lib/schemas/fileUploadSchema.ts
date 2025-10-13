@@ -36,7 +36,7 @@ export const validateFile = (file: File, type: 'xml' | 'csv'): { valid: boolean;
   if (!file.name.toLowerCase().endsWith(expectedExtension)) {
     return { 
       valid: false, 
-      error: `Solo archivos ${type.toUpperCase()}. Recibiste: ${file.name.split('.').pop()?.toUpperCase() || 'desconocido'}` 
+      error: `Solo archivos ${type.toUpperCase()}` 
     };
   }
   
