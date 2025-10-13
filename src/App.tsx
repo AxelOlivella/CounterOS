@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { TenantProvider } from "@/contexts/TenantContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LandingPage } from "./pages/LandingPage";
+import { LandingEnterprise } from "./pages/LandingEnterprise";
 import { LoginPage } from "./pages/LoginPage";
 
 import { UploadPage } from "./components/pages/UploadPage";
@@ -37,7 +38,9 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             {/* Public Routes */}
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={<LandingEnterprise />} />
+            <Route path="/enterprise" element={<LandingEnterprise />} />
+            <Route path="/original" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/setup" element={<SetupPage />} />
             
