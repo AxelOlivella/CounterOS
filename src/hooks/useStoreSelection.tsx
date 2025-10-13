@@ -36,13 +36,13 @@ export const useStoreSelection = () => {
         .order('name');
 
       if (error) {
-        console.error('Error fetching stores:', error);
+        // Silently fail - stores will be empty array
         return;
       }
 
       setStores(data || []);
     } catch (error) {
-      console.error('Error fetching stores:', error);
+      // Silently fail - stores will be empty array
     } finally {
       setLoading(false);
     }

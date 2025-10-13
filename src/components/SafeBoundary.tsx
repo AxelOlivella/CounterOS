@@ -22,7 +22,11 @@ export class SafeBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('SafeBoundary caught an error:', error, errorInfo);
+    // Only log in development
+    if (import.meta.env.DEV) {
+      console.error('SafeBoundary caught an error:', error, errorInfo);
+    }
+    // TODO: Send to error tracking service in production (e.g., Sentry)
   }
 
   handleReset = () => {

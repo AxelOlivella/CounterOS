@@ -99,14 +99,8 @@ export function useEnterpriseFeatures() {
     // Audit logging
     logActivity: (action: string, resource: string, metadata?: any) => {
       if (hasFeature('auditLogs')) {
-        // In production, this would send to audit service
-        console.group('🔍 Audit Log');
-        console.log('User:', userProfile?.email);
-        console.log('Action:', action);
-        console.log('Resource:', resource);
-        console.log('Timestamp:', new Date().toISOString());
-        console.log('Metadata:', metadata);
-        console.groupEnd();
+        // Removed console logs - will be sent to audit service in production
+        // TODO: Integrate with audit logging service (e.g., CloudWatch, DataDog)
       }
     },
   }), [hasFeature, userProfile]);

@@ -135,12 +135,15 @@ export function logSecurityAction(log: SecurityAuditLog): void {
   // In production, this would send to a secure audit service
   if (process.env.NODE_ENV === 'development') {
     console.group('🔒 Security Audit Log');
-    console.log('User:', log.userId);
-    console.log('Role:', log.userRole);
-    console.log('Action:', log.action);
-    console.log('Resource:', log.resource);
-    console.log('Success:', log.success);
-    console.log('Timestamp:', log.timestamp.toISOString());
+    // Audit logs only in development
+    if (import.meta.env.DEV) {
+      console.log('User:', log.userId);
+      console.log('Role:', log.userRole);
+      console.log('Action:', log.action);
+      console.log('Resource:', log.resource);
+      console.log('Success:', log.success);
+      console.log('Timestamp:', log.timestamp.toISOString());
+    }
     console.groupEnd();
   }
 }

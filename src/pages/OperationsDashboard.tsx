@@ -230,12 +230,12 @@ export default function OperationsDashboard() {
         stores={mockStores}
         limit={7}
         onViewAll={() => {
-          console.log("Ver todas las tiendas");
-          // TODO Phase 3: expand table or navigate to stores page
+          // Navigate to stores page
+          window.location.href = '/tiendas';
         }}
         onAssign={() => {
-          console.log("Asignar acciones");
-          // TODO Phase 3: open assignment modal
+          // Disabled - feature in development
+          // Will open assignment modal in Phase 3
         }}
       />
     </div>

@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { TenantProvider } from "@/contexts/TenantContext";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OperationsLayout } from "@/components/layout/OperationsLayout";
 import { LandingPage } from "./pages/LandingPage";
@@ -36,10 +37,14 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <TenantProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
+        <ErrorBoundary>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true
+          }}>
+            <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingEnterprise />} />
             <Route path="/enterprise" element={<LandingEnterprise />} />
@@ -241,6 +246,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        </ErrorBoundary>
       </TenantProvider>
     </TooltipProvider>
   </QueryClientProvider>

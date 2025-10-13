@@ -107,11 +107,14 @@ export class PerformanceMonitor {
 
     // In production, send to analytics service
     console.group('📊 Performance Metrics:', pageName);
-    console.log('Load Time:', `${metrics.loadTime.toFixed(2)}ms`);
-    console.log('FCP:', `${metrics.firstContentfulPaint.toFixed(2)}ms`);
-    console.log('LCP:', `${metrics.largestContentfulPaint.toFixed(2)}ms`);
-    console.log('CLS:', metrics.cumulativeLayoutShift.toFixed(4));
-    console.log('TTI:', `${metrics.timeToInteractive.toFixed(2)}ms`);
+    // Performance metrics logged only in development
+    if (import.meta.env.DEV) {
+      console.log('Load Time:', `${metrics.loadTime.toFixed(2)}ms`);
+      console.log('FCP:', `${metrics.firstContentfulPaint.toFixed(2)}ms`);
+      console.log('LCP:', `${metrics.largestContentfulPaint.toFixed(2)}ms`);
+      console.log('CLS:', metrics.cumulativeLayoutShift.toFixed(4));
+      console.log('TTI:', `${metrics.timeToInteractive.toFixed(2)}ms`);
+    }
     console.groupEnd();
   }
 }

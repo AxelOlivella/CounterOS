@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User } from '@supabase/supabase-js';
+import { logger } from '@/lib/logger';
 
 interface TenantContextValue {
   user: User | null;
@@ -48,14 +49,14 @@ export const TenantProvider = ({ children }: TenantProviderProps) => {
           .single();
 
         if (profileError) {
-          console.error('Error fetching user profile:', profileError);
+          logger.error('Error fetching user profile', profileError);
           return;
         }
 
         setUserProfile(profile);
         setTenant(profile?.tenants || null);
       } catch (error) {
-        console.error('Error in fetchUserData:', error);
+        logger.error('Error in fetchUserData', error);
       }
     };
 

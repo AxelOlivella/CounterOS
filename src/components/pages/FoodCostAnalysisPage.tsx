@@ -86,7 +86,7 @@ export const FoodCostAnalysisPage = () => {
       })) || [];
       setStores(mappedStores);
     } catch (error) {
-      console.error('Error fetching stores:', error);
+      // Error handled with toast, no console.error needed
       toast({
         title: 'Error',
         description: 'Failed to fetch stores',

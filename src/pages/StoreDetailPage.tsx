@@ -230,13 +230,15 @@ export default function StoreDetailPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => console.log("Export report")}
+              disabled
+              title="Función en desarrollo"
             >
               Exportar reporte
             </Button>
             <Button
               size="sm"
-              onClick={() => console.log("Assign action")}
+              disabled
+              title="Función en desarrollo"
             >
               Asignar acción
             </Button>
@@ -494,7 +496,8 @@ export default function StoreDetailPage() {
             <Button
               className="mt-4 w-full"
               size="lg"
-              onClick={() => console.log("Assign action to Regional Centro")}
+              disabled
+              title="Función en desarrollo"
             >
               Asignar acción a Regional Centro →
             </Button>
