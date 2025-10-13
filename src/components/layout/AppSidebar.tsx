@@ -17,7 +17,8 @@ import {
   TrendingUp,
   Truck,
   LayoutGrid,
-  ClipboardCheck
+  ClipboardCheck,
+  LayoutDashboard
 } from 'lucide-react';
 import {
   Sidebar,
@@ -38,6 +39,7 @@ import { Badge } from '@/components/ui/badge';
 
 const menuItems = [
   { id: 'resumen', label: 'Resumen', icon: Home, path: '/resumen' },
+  { id: 'operations', label: 'Operations Dashboard', icon: LayoutDashboard, path: '/dashboard/operations' },
   { id: 'dashboard', label: 'Dashboard', icon: BarChart3, path: '/dashboard' },
   { id: 'datos', label: 'Cargar Datos', icon: Upload, path: '/datos' },
   { id: 'food-cost', label: 'Food Cost', icon: PieChart, path: '/food-cost-analysis' },

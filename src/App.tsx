@@ -5,9 +5,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { TenantProvider } from "@/contexts/TenantContext";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { OperationsLayout } from "@/components/layout/OperationsLayout";
 import { LandingPage } from "./pages/LandingPage";
 import { LandingEnterprise } from "./pages/LandingEnterprise";
 import { LoginPage } from "./pages/LoginPage";
+import OperationsDashboard from "./pages/OperationsDashboard";
 
 import { UploadPage } from "./components/pages/UploadPage";
 import { FoodCostAnalysisPage } from "./components/pages/FoodCostAnalysisPage";
@@ -109,6 +111,15 @@ const App = () => (
             <Route path="/datos" element={<Navigate to="/cargar" replace />} />
             <Route path="/tienda/:storeId" element={<Navigate to="/tiendas/portal-centro" replace />} />
             <Route path="/settings" element={<Navigate to="/configuracion" replace />} />
+            
+            {/* Operations Dashboard Routes */}
+            <Route path="/dashboard/operations" element={
+              <ProtectedRoute>
+                <OperationsLayout>
+                  <OperationsDashboard />
+                </OperationsLayout>
+              </ProtectedRoute>
+            } />
             
             {/* Additional Analysis Routes */}
             <Route path="/food-cost-analysis" element={
