@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { KpiCard } from '@/components/mobile/KpiCard';
 import { AlertItem } from '@/components/mobile/AlertItem';
@@ -7,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { EmptyState } from '@/components/ui/states/EmptyState';
 import { useSEO } from '@/hooks/useSEO';
 import { 
   Store, 
@@ -15,13 +17,15 @@ import {
   TrendingDown, 
   AlertTriangle, 
   Target,
-  Plus 
+  Plus,
+  MapPin
 } from 'lucide-react';
 import { useStoreSelection } from '@/hooks/useStoreSelection';
 import { calculatePnL, formatCurrency, formatPercentage, formatPP } from '@/utils/calculations';
 
 const TiendasPage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { stores } = useStoreSelection();
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -58,9 +62,13 @@ const TiendasPage = () => {
     }
   ];
 
-  const filteredStores = storesData.filter(store => 
-    store.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    store.city.toLowerCase().includes(searchTerm.toLowerCase())
+  // Memoize filtered stores to avoid recalculation on every render
+  const filteredStores = useMemo(() => 
+    storesData.filter(store => 
+      store.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      store.city.toLowerCase().includes(searchTerm.toLowerCase())
+    ),
+    [searchTerm]
   );
 
   const handleStoreClick = (storeSlug: string) => {
@@ -89,31 +97,49 @@ const TiendasPage = () => {
           </div>
 
           {/* Store Cards */}
-          <div className="space-y-3">
-            {filteredStores.map((store) => {
-              const delta_pp = store.food_cost_pct - store.target_pct;
-              const impact_mxn = (delta_pp * store.sales_mxn) / 100;
-              
-              return (
-                <KpiCard
-                  key={store.slug}
-                  title={store.name}
-                  value={formatCurrency(store.sales_mxn)}
-                  subtitle={`${store.city} • Food Cost: ${formatPercentage(store.food_cost_pct)}`}
-                  badge={{
-                    text: delta_pp > 0 ? `${formatPP(delta_pp)}` : `${formatPP(delta_pp)}`,
-                    variant: delta_pp > 2 ? 'danger' : delta_pp > 0 ? 'warning' : 'success'
-                  }}
-                  trend={{
-                    value: `${store.trend > 0 ? '+' : ''}${store.trend}%`,
-                    isPositive: store.trend > 0
-                  }}
-                  onClick={() => handleStoreClick(store.slug)}
-                  icon={<Store className="h-5 w-5" />}
-                />
-              );
-            })}
-          </div>
+          {filteredStores.length === 0 ? (
+            <EmptyState
+              icon={<MapPin className="h-12 w-12 text-muted-foreground" />}
+              title="No se encontraron tiendas"
+              description={searchTerm 
+                ? `No hay resultados para "${searchTerm}". Intenta con otro término de búsqueda.`
+                : "Aún no tienes tiendas configuradas. Agrega tu primera tienda para comenzar."}
+              action={!searchTerm ? {
+                label: "Agregar Primera Tienda",
+                onClick: () => toast({
+                  title: "Función en desarrollo",
+                  description: "La creación de tiendas estará disponible próximamente"
+                }),
+                variant: 'default'
+              } : undefined}
+            />
+          ) : (
+            <div className="space-y-3">
+              {filteredStores.map((store) => {
+                const delta_pp = store.food_cost_pct - store.target_pct;
+                const impact_mxn = (delta_pp * store.sales_mxn) / 100;
+                
+                return (
+                  <KpiCard
+                    key={store.slug}
+                    title={store.name}
+                    value={formatCurrency(store.sales_mxn)}
+                    subtitle={`${store.city} • Food Cost: ${formatPercentage(store.food_cost_pct)}`}
+                    badge={{
+                      text: delta_pp > 0 ? `${formatPP(delta_pp)}` : `${formatPP(delta_pp)}`,
+                      variant: delta_pp > 2 ? 'danger' : delta_pp > 0 ? 'warning' : 'success'
+                    }}
+                    trend={{
+                      value: `${store.trend > 0 ? '+' : ''}${store.trend}%`,
+                      isPositive: store.trend > 0
+                    }}
+                    onClick={() => handleStoreClick(store.slug)}
+                    icon={<Store className="h-5 w-5" />}
+                  />
+                );
+              })}
+            </div>
+          )}
 
           {/* Summary Stats */}
           <div className="grid grid-cols-2 gap-3">

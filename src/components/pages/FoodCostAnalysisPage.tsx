@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTenant } from '@/contexts/TenantContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +14,8 @@ import { CategoryBreakdown } from '@/components/dashboard/CategoryBreakdown';
 import { CategoryDetail } from '@/components/dashboard/CategoryDetail';
 import { VarianceAnalysisChart } from '@/components/food-cost/VarianceAnalysisChart';
 import { SkeletonCard } from '@/components/ui/skeleton-card';
-import { Loader2, TrendingUp, AlertTriangle, Target, AlertCircle, ClipboardCheck } from 'lucide-react';
+import { EmptyState } from '@/components/ui/states/EmptyState';
+import { Loader2, TrendingUp, AlertTriangle, Target, AlertCircle, ClipboardCheck, Database } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { DateRange } from 'react-day-picker';

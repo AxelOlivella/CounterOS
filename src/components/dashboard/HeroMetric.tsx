@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AnimatedNumber } from '@/components/ui/animated-number';
@@ -43,7 +44,7 @@ const statusConfig = {
   }
 };
 
-export function HeroMetric({
+const HeroMetricComponent = ({
   value,
   suffix = '%',
   label,
@@ -51,7 +52,7 @@ export function HeroMetric({
   status,
   variance,
   size = 'large'
-}: HeroMetricProps) {
+}: HeroMetricProps) => {
   const config = statusConfig[status];
   const isLarge = size === 'large';
 
@@ -73,7 +74,10 @@ export function HeroMetric({
       )}>
         {/* Status Badge */}
         <div className="flex items-center justify-between animate-fade-in">
-          <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+          <span 
+            className="text-sm font-medium text-muted-foreground uppercase tracking-wider"
+            id={`metric-label-${label.replace(/\s+/g, '-').toLowerCase()}`}
+          >
             {label}
           </span>
           <Badge 
@@ -82,13 +86,19 @@ export function HeroMetric({
               'border-2 font-bold text-xs transition-all duration-200',
               config.text
             )}
+            aria-label={`Estado: ${config.label}`}
           >
             {config.icon} {config.label}
           </Badge>
         </div>
 
         {/* Número GIGANTE con animación */}
-        <div className="flex items-baseline gap-2 animate-scale-in">
+        <div 
+          className="flex items-baseline gap-2 animate-scale-in"
+          role="status"
+          aria-live="polite"
+          aria-labelledby={`metric-label-${label.replace(/\s+/g, '-').toLowerCase()}`}
+        >
           <AnimatedNumber
             value={value}
             decimals={1}
@@ -102,7 +112,9 @@ export function HeroMetric({
             'font-semibold',
             config.text,
             isLarge ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'
-          )}>
+          )}
+            aria-label={`unidad: ${suffix}`}
+          >
             {suffix}
           </span>
         </div>
@@ -119,7 +131,9 @@ export function HeroMetric({
             <div className={cn(
               'flex items-center gap-1 font-bold transition-colors duration-200',
               variance > 0 ? config.text : 'text-success'
-            )}>
+            )}
+              aria-label={`Varianza: ${variance > 0 ? 'positiva' : 'negativa'} ${Math.abs(variance)} puntos porcentuales`}
+            >
               <div className="animate-bounce-subtle">
                 {getTrendIcon()}
               </div>
@@ -135,4 +149,7 @@ export function HeroMetric({
       </div>
     </Card>
   );
-}
+};
+
+// Export memoized component for performance
+export const HeroMetric = memo(HeroMetricComponent);
