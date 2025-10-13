@@ -1,34 +1,40 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Store, Upload, AlertTriangle } from 'lucide-react';
+import { Home, BarChart3, Upload, Bell, Store } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 const tabItems = [
   {
-    id: 'resumen',
-    label: 'Resumen',
-    path: '/resumen',
-    icon: Home,
+    id: 'home',
+    label: 'Home',
+    path: '/hoy',
+    icon: Home
   },
   {
-    id: 'tiendas',
-    label: 'Tiendas', 
-    path: '/tiendas',
-    icon: Store,
+    id: 'stats',
+    label: 'Stats',
+    path: '/datos',
+    icon: BarChart3
   },
   {
-    id: 'cargar',
-    label: 'Cargar',
+    id: 'upload',
+    label: 'Upload',
     path: '/cargar',
-    icon: Upload,
+    icon: Upload
   },
   {
-    id: 'alertas',
+    id: 'alerts',
     label: 'Alertas',
     path: '/alertas',
-    icon: AlertTriangle,
-    badge: 3,
+    icon: Bell,
+    badge: 2
   },
+  {
+    id: 'more',
+    label: 'Más',
+    path: '/tiendas',
+    icon: Store
+  }
 ];
 
 export function MobileTabBar() {

@@ -140,20 +140,26 @@
 
 /* Mobile Tab Bar Styles */
 .tab-bar {
-  @apply fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border;
+  @apply fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border shadow-lg;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
 .tab-item {
-  @apply flex flex-col items-center justify-center px-2 py-2 min-h-[60px] text-muted-foreground transition-colors;
+  @apply flex flex-col items-center justify-center px-3 py-3 min-h-[64px] text-muted-foreground transition-all duration-200;
+  position: relative;
 }
 
 .tab-item.active {
-  @apply text-primary;
+  @apply text-secondary;
 }
 
-.tab-item.inactive:hover {
-  @apply text-foreground;
+.tab-item.active::before {
+  content: '';
+  @apply absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-secondary rounded-b-full;
+}
+
+.tab-item.inactive:active {
+  @apply bg-muted/50 scale-95;
 }
 
 /* Mobile Card Styles */

@@ -10,6 +10,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCard } from '@/components/alerts/AlertCard';
 import { FoodCostTrendChart } from '@/components/food-cost/FoodCostTrendChart';
 import { HeroMetric } from '@/components/dashboard/HeroMetric';
+import { CategoryBreakdown } from '@/components/dashboard/CategoryBreakdown';
+import { CategoryDetail } from '@/components/dashboard/CategoryDetail';
 import { VarianceAnalysisChart } from '@/components/food-cost/VarianceAnalysisChart';
 import { Loader2, TrendingUp, AlertTriangle, Target, AlertCircle, ClipboardCheck } from 'lucide-react';
 import { format, subDays } from 'date-fns';
@@ -53,6 +55,8 @@ export const FoodCostAnalysisPage = () => {
     totalCogs: 0,
     variance: 0,
   });
+  const [viewLevel, setViewLevel] = useState<'overview' | 'breakdown' | 'detail'>('overview');
+  const [selectedCategory, setSelectedCategory] = useState<any>(null);
 
   const TARGET_FOOD_COST = 30;
 
@@ -242,6 +246,57 @@ export const FoodCostAnalysisPage = () => {
     { week: 'Sem 4', actual: 33.1, target: 30, variance: 3.1 },
   ];
 
+  // Mock categories for breakdown
+  const categories = [
+    { name: 'Proteínas', value: 14.5, target: 11.0, status: 'warning' as const },
+    { name: 'Lácteos', value: 8.2, target: 8.0, status: 'success' as const },
+    { name: 'Vegetales', value: 4.1, target: 4.5, status: 'success' as const },
+    { name: 'Secos', value: 3.2, target: 3.0, status: 'success' as const },
+    { name: 'Bebidas', value: 2.8, target: 3.0, status: 'success' as const },
+  ];
+
+  // Mock detail data
+  const categoryDetailData = {
+    categoryName: selectedCategory?.name || 'Proteínas',
+    variance: 3.5,
+    impactMxn: 3200,
+    products: [
+      { name: 'Carne de res', actual: 8500, target: 6000, status: 'critical' as const },
+      { name: 'Pollo', actual: 4000, target: 4200, status: 'success' as const },
+      { name: 'Pescado', actual: 2000, target: 1800, status: 'success' as const },
+    ],
+    probableCauses: [
+      'Porciones inconsistentes (+25% más grandes que estándar)',
+      'Precio de carne de res subió 15% este mes',
+      'Posible merma no registrada en almacén',
+    ],
+  };
+
+  const handleCategoryClick = (category: any) => {
+    setSelectedCategory(category);
+    setViewLevel('detail');
+  };
+
+  const handleBackToBreakdown = () => {
+    setViewLevel('breakdown');
+  };
+
+  const handleBackToOverview = () => {
+    setViewLevel('overview');
+  };
+
+  // Render detail view
+  if (viewLevel === 'detail') {
+    return (
+      <div className="mobile-container">
+        <CategoryDetail
+          {...categoryDetailData}
+          onBack={handleBackToBreakdown}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -339,8 +394,38 @@ export const FoodCostAnalysisPage = () => {
         />
       </div>
 
-      {/* Charts - Simplified without problematic components */}
-      <div className="grid gap-6 md:grid-cols-2">
+      {/* Progressive disclosure: Breakdown or Overview */}
+      {viewLevel === 'breakdown' ? (
+        <section className="space-y-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBackToOverview}
+            className="mb-4"
+          >
+            ← Volver al resumen
+          </Button>
+          <CategoryBreakdown
+            categories={categories}
+            onCategoryClick={handleCategoryClick}
+          />
+        </section>
+      ) : (
+        <>
+          {/* Quick action to drill down */}
+          <section>
+            <Button
+              variant="outline"
+              onClick={() => setViewLevel('breakdown')}
+              className="w-full mobile-button"
+              size="lg"
+            >
+              Ver desglose por categorías →
+            </Button>
+          </section>
+
+          {/* Charts - Simplified without problematic components */}
+          <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Tendencia de Food Cost</CardTitle>
@@ -375,9 +460,11 @@ export const FoodCostAnalysisPage = () => {
           </CardContent>
         </Card>
       </div>
+        </>
+      )}
 
       {/* Variance Analysis Chart */}
-      <VarianceAnalysisChart 
+      <VarianceAnalysisChart
         current={summary.avgFoodCost}
         target={TARGET_FOOD_COST}
         variance={summary.variance}
