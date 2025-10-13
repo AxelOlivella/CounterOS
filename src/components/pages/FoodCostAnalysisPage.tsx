@@ -7,6 +7,7 @@ import { DatePickerWithRange } from '@/components/ui/date-picker-range';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCard } from '@/components/alerts/AlertCard';
 import { FoodCostTrendChart } from '@/components/food-cost/FoodCostTrendChart';
 import { CategoryBreakdownChart } from '@/components/food-cost/CategoryBreakdownChart';
 import { VarianceAnalysisChart } from '@/components/food-cost/VarianceAnalysisChart';
@@ -290,29 +291,15 @@ export const FoodCostAnalysisPage = () => {
         </CardContent>
       </Card>
 
-      {/* Alerts Banner */}
+      {/* Alertas Avanzadas con Diagnóstico */}
       {alerts.length > 0 && (
-        <div className="space-y-2">
-          {alerts.slice(0, 3).map((alert) => (
-            <Alert key={alert.id} variant={alert.severity === 'critical' ? 'destructive' : 'default'}>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <p className="font-medium">{alert.title}</p>
-                    <p className="text-sm mt-1">{alert.message}</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      <strong>Acción:</strong> {alert.action}
-                    </p>
-                  </div>
-                  {alert.impact_mxn && (
-                    <Badge variant={getAlertBadgeVariant(alert.severity)}>
-                      {formatImpact(alert.impact_mxn)}
-                    </Badge>
-                  )}
-                </div>
-              </AlertDescription>
-            </Alert>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">🚨 Alertas Accionables</h2>
+            <Badge variant="outline">{alerts.length} detectadas</Badge>
+          </div>
+          {alerts.slice(0, 5).map((alert) => (
+            <AlertCard key={alert.id} alert={alert} />
           ))}
         </div>
       )}
