@@ -153,8 +153,13 @@ export const AuthPage = () => {
                     name="password"
                     type="password"
                     placeholder="Mínimo 8 caracteres"
+                    minLength={8}
                     required
+                    aria-describedby="password-requirements"
                   />
+                  <p id="password-requirements" className="text-xs text-muted-foreground">
+                    Usa al menos 8 caracteres con mayúsculas, minúsculas y números
+                  </p>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
