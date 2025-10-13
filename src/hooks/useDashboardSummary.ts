@@ -37,6 +37,19 @@ export function useDashboardSummary() {
 
       if (storesError) throw storesError;
 
+      // If no stores yet, return empty state
+      if (!stores || stores.length === 0) {
+        return {
+          bestStore: { name: 'N/A', foodCost: 0, revenue: 0, improvement: '0%' },
+          worstStore: { name: 'N/A', foodCost: 0, revenue: 0, decline: '0%' },
+          totalSavings: 0,
+          avgFoodCost: 0,
+          target: 28.5,
+          alertsCount: 0,
+          totalStores: 0
+        };
+      }
+
       // 2. Get food cost data for last 30 days
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
