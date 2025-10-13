@@ -6,10 +6,14 @@ import { cn } from "@/lib/utils";
 import { AlertTriangle, Maximize2 } from "lucide-react";
 import { StoreMapFilters, type MapFilters } from "./StoreMapFilters";
 import { MapLegend } from "./MapLegend";
+import { logger } from "@/lib/logger";
 
 // Use Mapbox token from environment variable
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || "";
-console.log('🗺️ Mapbox Token Status:', MAPBOX_TOKEN ? 'Token presente' : 'Token faltante', MAPBOX_TOKEN?.substring(0, 20));
+logger.debug('🗺️ Mapbox Token Status:', { 
+  status: MAPBOX_TOKEN ? 'Token presente' : 'Token faltante', 
+  prefix: MAPBOX_TOKEN?.substring(0, 20) 
+});
 
 interface StoreGeo {
   id: number;
@@ -90,7 +94,7 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
-    console.log('🗺️ Inicializando mapa Mapbox...');
+    logger.debug('🗺️ Inicializando mapa Mapbox...');
     
     // Set Mapbox access token
     mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -109,13 +113,13 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
       currentStyleRef.current = getMapStyle();
 
       map.current.on('load', () => {
-        console.log('✅ Mapa cargado');
+        logger.info('✅ Mapa cargado');
         setMapReady(true);
       });
 
-      console.log('✅ Mapa inicializado correctamente');
+      logger.info('✅ Mapa inicializado correctamente');
     } catch (error) {
-      console.error('❌ Error al inicializar mapa:', error);
+      logger.error('❌ Error al inicializar mapa', error);
       return;
     }
 
@@ -146,13 +150,13 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
     const newStyle = getMapStyle();
     if (currentStyleRef.current === newStyle) return;
 
-    console.log('🎨 Cambiando estilo del mapa a:', newStyle);
+    logger.debug('🎨 Cambiando estilo del mapa a:', newStyle);
     setMapReady(false);
     map.current.setStyle(newStyle);
     map.current.once('style.load', () => {
       currentStyleRef.current = newStyle;
       setMapReady(true);
-      console.log('✅ Estilo del mapa cargado');
+      logger.debug('✅ Estilo del mapa cargado');
     });
   }, [filters.mapStyle]);
 
@@ -165,11 +169,11 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
   // Update markers when filters change
   useEffect(() => {
     if (!map.current || !mapReady) {
-      console.log('⚠️ Mapa no listo para dibujar marcadores (mapReady=', mapReady, ')');
+      logger.debug('⚠️ Mapa no listo para dibujar marcadores', { mapReady });
       return;
     }
 
-    console.log('📍 Actualizando marcadores. Total tiendas filtradas:', filteredStores.length);
+    logger.debug('📍 Actualizando marcadores', { totalTiendasFiltradas: filteredStores.length });
 
     // Clear existing markers
     markersRef.current.forEach((marker) => marker.remove());
@@ -179,7 +183,10 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
     const timeoutId = setTimeout(() => {
       // Add filtered markers with staggered animation
       filteredStores.forEach((store, index) => {
-        console.log(`  📌 Agregando marcador ${index + 1}:`, store.name, `[${store.lat}, ${store.lng}]`);
+        logger.debug(`📌 Agregando marcador ${index + 1}`, { 
+          nombre: store.name, 
+          coords: `[${store.lat}, ${store.lng}]` 
+        });
         const color = getColor(store.status);
 
       // Create custom marker element with inner visual to avoid overriding Mapbox transforms
@@ -292,9 +299,9 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
           maxZoom: 12,  // Don't zoom out too much
           duration: 1000,
         });
-        console.log(`✅ ${markersRef.current.length} marcadores agregados al mapa`);
+        logger.info(`✅ Marcadores agregados al mapa`, { total: markersRef.current.length });
       } else {
-        console.log('⚠️ No hay tiendas para mostrar después del filtro');
+        logger.debug('⚠️ No hay tiendas para mostrar después del filtro');
       }
     }, 100);
 

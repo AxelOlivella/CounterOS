@@ -1,6 +1,8 @@
 // RBAC - Role-Based Access Control System for CounterOS
 // Enterprise-grade permission system
 
+import { logger } from '@/lib/logger';
+
 export type UserRole = 'owner' | 'manager' | 'analyst' | 'staff';
 
 export interface Permission {
@@ -134,16 +136,11 @@ export interface SecurityAuditLog {
 export function logSecurityAction(log: SecurityAuditLog): void {
   // In production, this would send to a secure audit service
   if (process.env.NODE_ENV === 'development') {
-    console.group('🔒 Security Audit Log');
-    // Audit logs only in development
-    if (import.meta.env.DEV) {
-      console.log('User:', log.userId);
-      console.log('Role:', log.userRole);
-      console.log('Action:', log.action);
-      console.log('Resource:', log.resource);
-      console.log('Success:', log.success);
-      console.log('Timestamp:', log.timestamp.toISOString());
-    }
-    console.groupEnd();
+    logger.audit(log.action, log.resource, {
+      userId: log.userId,
+      userRole: log.userRole,
+      success: log.success,
+      timestamp: log.timestamp.toISOString()
+    });
   }
 }
