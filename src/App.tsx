@@ -20,6 +20,7 @@ import NotFound from "./pages/NotFound";
 const LandingPage = lazy(() => import("./pages/LandingPage").then(m => ({ default: m.LandingPage })));
 const SetupPage = lazy(() => import("./pages/SetupPage").then(m => ({ default: m.SetupPage })));
 const OnboardingPage = lazy(() => import("./pages/OnboardingPage"));
+const WelcomePage = lazy(() => import("./pages/onboarding/WelcomePage"));
 const ResumenPage = lazy(() => import("./pages/ResumenPage"));
 const TiendasPage = lazy(() => import("./pages/TiendasPage"));
 const StoreDashboardPage = lazy(() => import("./pages/StoreDashboardPage"));
@@ -64,6 +65,13 @@ const App = () => (
             <Route path="/onboarding" element={
               <ProtectedRoute>
                 <OnboardingPage />
+              </ProtectedRoute>
+            } />
+            
+            {/* New Onboarding Wizard */}
+            <Route path="/onboarding/welcome" element={
+              <ProtectedRoute>
+                <WelcomePage />
               </ProtectedRoute>
             } />
             
