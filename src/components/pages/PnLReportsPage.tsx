@@ -4,9 +4,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Loader2, DollarSign, TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
+import { Loader2, DollarSign, TrendingUp, TrendingDown, BarChart3, Download } from 'lucide-react';
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { exportCounterOSData } from '@/utils/exportCsv';
 
 interface Store {
   id: string;
@@ -166,6 +167,22 @@ export const PnLReportsPage = () => {
     }
   };
 
+  const handleExportTable = () => {
+    try {
+      exportCounterOSData(pnlData as any, 'pnl');
+      toast({
+        title: 'Exportado exitosamente',
+        description: 'Los datos P&L se descargaron como CSV',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error al exportar',
+        description: 'No se pudo generar el archivo CSV',
+        variant: 'destructive'
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -269,7 +286,19 @@ export const PnLReportsPage = () => {
       {/* P&L Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Estado de Resultados por Período</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Estado de Resultados por Período</CardTitle>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleExportTable}
+              disabled={loading || pnlData.length === 0}
+              className="gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Exportar CSV
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">

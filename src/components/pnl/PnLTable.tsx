@@ -1,6 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FileText } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { FileText, Download } from 'lucide-react';
+import { exportCounterOSData } from '@/utils/exportCsv';
+import { useToast } from '@/hooks/use-toast';
 
 interface PnLData {
   revenue: number;
@@ -21,6 +24,36 @@ interface PnLTableProps {
 }
 
 export const PnLTable = ({ data }: PnLTableProps) => {
+  const { toast } = useToast();
+
+  const handleExport = () => {
+    try {
+      const exportData = [
+        { concepto: 'Ingresos por Ventas', monto: data.revenue, porcentaje: 100 },
+        { concepto: 'Costo de Ventas', monto: data.cogs, porcentaje: (data.cogs / data.revenue) * 100 },
+        { concepto: 'Utilidad Bruta', monto: data.grossProfit, porcentaje: data.grossMargin },
+        { concepto: 'Gastos de Nómina', monto: data.laborCosts, porcentaje: (data.laborCosts / data.revenue) * 100 },
+        { concepto: 'Otros Gastos Operativos', monto: data.otherExpenses, porcentaje: (data.otherExpenses / data.revenue) * 100 },
+        { concepto: 'Total Gastos Operativos', monto: data.totalOperatingExpenses, porcentaje: (data.totalOperatingExpenses / data.revenue) * 100 },
+        { concepto: 'EBITDA', monto: data.ebitda, porcentaje: data.ebitdaMargin },
+        { concepto: 'Utilidad Neta', monto: data.netProfit, porcentaje: data.netMargin }
+      ];
+      
+      exportCounterOSData(exportData, 'pnl');
+      
+      toast({
+        title: 'Exportado exitosamente',
+        description: 'El reporte P&L se descargó como CSV',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error al exportar',
+        description: 'No se pudo generar el archivo CSV',
+        variant: 'destructive'
+      });
+    }
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-MX', {
       style: 'currency',
@@ -120,10 +153,21 @@ export const PnLTable = ({ data }: PnLTableProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
-          Estado de Resultados
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Estado de Resultados
+          </CardTitle>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleExport}
+            className="gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Exportar CSV
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-1">

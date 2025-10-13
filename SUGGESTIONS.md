@@ -1,95 +1,170 @@
-# Suggestions for CounterOS Enhancement
+# Sugerencias de Mejora - CounterOS
 
-## Required Dependencies (Need Confirmation)
-- `papaparse` + `@types/papaparse` - For CSV processing in /datos page
-- Already available: `@supabase/supabase-js`, `react-hook-form`, `zod`, `recharts`
+## Componentes y Utilidades Disponibles (2025-01-13)
 
-## Architecture Recommendations
+### ✅ Componentes UI Listos para Usar
+Los siguientes componentes están disponibles y pueden integrarse en cualquier página:
 
-### 1. Database Helpers (Recommended)
-- Create `src/lib/db.ts` with Supabase client using environment variables
-- Create `src/lib/types.ts` with TypeScript interfaces for data models
-- Add `src/hooks/useFoodCost.ts` for data fetching hooks
+1. **PageHeader** (`src/components/common/PageHeader.tsx`)
+   - Header consistente con título, descripción, breadcrumbs y acciones
+   - Uso recomendado en todas las páginas principales
 
-### 2. Missing Components (Need Creation)
-The following components are referenced in App.tsx but don't exist:
-- `src/pages/LandingPage.tsx`
-- `src/pages/LoginPage.tsx` 
-- `src/pages/SetupPage.tsx`
-- `src/pages/OnboardingPage.tsx`
-- `src/pages/DatosPage.tsx`
-- `src/pages/StoreDashboardPage.tsx`
-- `src/pages/TiendasPage.tsx`
-- `src/pages/AlertasPage.tsx`
-- `src/pages/ResumenPage.tsx`
-- `src/pages/PlaceholderPage.tsx`
-- `src/pages/NotFound.tsx`
-- `src/contexts/TenantContext.tsx`
-- `src/components/layout/AppLayout.tsx`
-- `src/components/ProtectedRoute.tsx`
-- `src/components/pages/UploadPage.tsx`
-- `src/components/pages/FoodCostAnalysisPage.tsx`
-- `src/components/pages/PnLReportsPage.tsx`
-- `src/components/ui/*` (shadcn/ui components)
+2. **Estados de Carga y Error**
+   - `LoadingState` - Estado de carga con spinner y mensaje
+   - `ErrorState` - Manejo de errores con opción de retry
+   - `EmptyState` - Estado vacío con llamado a la acción
+   - `LoadingSkeleton` - Skeleton loaders para contenido
 
-### 3. Incremental Implementation Plan
-1. Create essential contexts and layout components first
-2. Add placeholder pages to prevent routing errors
-3. Implement MVP data hooks and types
-4. Build onboarding wizard step by step
-5. Add data upload functionality
-6. Enhance analysis pages with real data
+3. **Componentes de Feedback**
+   - `StatusPill` - Píldoras de estado con variantes (success, warning, danger, info, neutral)
+   - `TooltipHelp` - Ícono de ayuda con tooltip explicativo
+   - `EnvGuard` - Validación de variables de entorno
 
-### 4. Code Quality Improvements
-- All new components should use semantic color tokens from index.css
-- Implement proper TypeScript interfaces
-- Add error boundaries for better UX
-- Include loading states and empty states consistently
+4. **Exportación de Datos**
+   - `exportCounterOSData()` - Exportar datos a CSV con formato CounterOS
+   - Ya integrado en P&L reports
 
-## Recomendaciones Post-Auditoría 2024-12-28
+---
 
-### 1. Integración de Componentes de Seguridad
-**SafeBoundary**: Agregar como wrapper en componentes críticos:
-```tsx
-import { SafeBoundary } from '@/components/SafeBoundary';
-// Envolver páginas de datos sensibles con <SafeBoundary>
+## Oportunidades de Mejora (NO Implementadas)
+
+### 1. Tooltips en KPIs y Métricas
+**Dónde:** Dashboard, ResumenPage, métricas de food cost
+**Qué:** Añadir `<TooltipHelp>` junto a términos técnicos para explicar:
+- "Food Cost": % de ventas usado en ingredientes
+- "EBITDA": Utilidad antes de intereses, impuestos, depreciación
+- "Margen Bruto": Diferencia entre ventas y costo directo
+
+**Beneficio:** Educación del usuario, reduce confusión
+
+### 2. Consistencia en Variantes de Botones
+**Dónde:** Todas las páginas
+**Qué:** Estandarizar uso de variantes:
+- `default` - Acciones primarias (guardar, crear)
+- `outline` - Acciones secundarias (exportar, cancelar)
+- `destructive` - Acciones peligrosas (eliminar, desactivar)
+- `ghost` - Navegación y acciones terciarias
+
+**Beneficio:** Jerarquía visual clara, mejor UX
+
+### 3. Focus States y Navegación por Teclado
+**Dónde:** Formularios, tablas, navegación
+**Qué:** 
+- Verificar que todos los elementos interactivos sean accesibles por teclado
+- Añadir focus-visible rings consistentes
+- Implementar shortcuts (Ctrl+K para búsqueda, Esc para cerrar modales)
+
+**Beneficio:** Accesibilidad, productividad para usuarios avanzados
+
+### 4. Semáforo Centralizado de Estados
+**Dónde:** Sistema de alertas, KPIs, métricas
+**Qué:** Crear constantes centralizadas para rangos:
+```typescript
+// lib/thresholds.ts
+export const FOOD_COST_THRESHOLDS = {
+  excellent: 28,
+  good: 30,
+  warning: 33,
+  critical: 35
+};
 ```
 
-**EnvGuard**: Integrar en App.tsx para validación temprana:
-```tsx
-import { EnvGuard } from '@/components/EnvGuard';
-// Envolver la aplicación para verificar configuración
-```
+**Beneficio:** Consistencia en criterios de evaluación, fácil ajuste
 
-### 2. Utilidades CSV - Integración Sugerida
-**En páginas de carga de datos existentes:**
-- Usar `validateCsv()` antes de procesamiento
-- Mostrar preview de 5 filas antes de importar
-- Implementar validación específica con `validateCounterOSCsv()`
+### 5. Mobile Overflow y Tablas Responsivas
+**Dónde:** PnLTable, tablas de datos en general
+**Qué:** 
+- Implementar scroll horizontal suave en mobile
+- Considerar vista de tarjetas en lugar de tabla para mobile
+- Añadir sticky headers en tablas largas
 
-**En páginas de reportes P&L:**
-- Agregar botón "Exportar CSV" usando `exportCounterOSData()`
-- No requiere cambios de layout, solo handler adicional
+**Beneficio:** Mejor experiencia en dispositivos móviles
 
-### 3. Mejoras de UX Identificadas (Requieren Validación)
-- **Loading states**: Faltan en algunos fetch de datos
-- **Empty states**: Algunos componentes no manejan datos vacíos
-- **Error handling**: Mejorar feedback de errores de red
+### 6. Búsqueda y Filtros Avanzados
+**Dónde:** Lista de tiendas, reportes históricos
+**Qué:**
+- Añadir barra de búsqueda con debounce
+- Filtros por fecha, región, estado
+- Guardado de filtros favoritos
 
-### 4. Navegación Interna
-- Algunos botones/enlaces podrían necesitar handlers de navegación
-- Verificar que todos los enlaces usen `Link` de react-router-dom
-- Estados activos en navegación móvil funcionan correctamente
+**Beneficio:** Navegación más eficiente en datasets grandes
 
-### 5. Páginas Stub Creadas
-Las siguientes páginas son solo referencia de auditoría:
-- `src/pages/hoy.tsx`
-- `src/pages/tiendas.tsx` 
-- `src/pages/pnl.tsx`
-- `src/pages/datos.tsx`
+### 7. Gráficos Interactivos
+**Dónde:** Food cost trends, P&L visualizations
+**Qué:**
+- Usar Recharts para gráficos de tendencias
+- Añadir tooltips con detalles en hover
+- Permitir zoom y selección de rangos de fechas
 
-**NO están enlazadas al navbar principal** - solo para testing/referencia.
+**Beneficio:** Análisis visual más rico y explorable
 
-## No Breaking Changes
-All suggestions above are additive - existing functionality will be preserved.
-New components and utilities can be integrated gradually without disrupting current UX.
+### 8. Notificaciones y Alertas en Tiempo Real
+**Dónde:** Dashboard, sidebar
+**Qué:**
+- Badge con contador de alertas no leídas
+- Panel de notificaciones con historial
+- Opciones de marcar como leído/archivar
+
+**Beneficio:** Usuario siempre informado de cambios críticos
+
+### 9. Comparación Multi-Período
+**Dónde:** P&L Reports, Food Cost Analysis
+**Qué:**
+- Selector de dos períodos para comparar lado a lado
+- Visualización de deltas y % de cambio
+- Exportación de comparativas
+
+**Beneficio:** Identificar tendencias y efectos de decisiones
+
+### 10. Modo Oscuro Consistente
+**Dónde:** Todo el sistema
+**Qué:**
+- Verificar que todos los colores usen tokens semánticos
+- Probar contraste en ambos modos
+- Asegurar que gráficos se vean bien en dark mode
+
+**Beneficio:** Reducción de fatiga visual, preferencia del usuario
+
+---
+
+## Priorización Sugerida
+
+### 🚀 Quick Wins (1-2 horas cada uno)
+1. Tooltips en KPIs principales
+2. Consistencia de variantes de botones
+3. Semáforo centralizado
+
+### 📈 Alto Impacto (4-8 horas cada uno)
+4. Mobile overflow en tablas
+5. Focus states y keyboard navigation
+6. Notificaciones básicas
+
+### 🎯 Mejoras Estratégicas (1-2 días cada uno)
+7. Búsqueda y filtros avanzados
+8. Gráficos interactivos
+9. Comparación multi-período
+10. Modo oscuro completo
+
+---
+
+## Notas de Implementación
+
+- Todos los cambios deben ser incrementales y no disruptivos
+- Priorizar uso de componentes y utilities existentes
+- Mantener consistencia con design system (index.css, tailwind.config.ts)
+- Documentar nuevos patrones en este archivo
+- Testing en mobile antes de considerar completo
+
+---
+
+## Componentes Verificados (Ya Existen)
+
+✅ `src/components/common/PageHeader.tsx`
+✅ `src/components/EnvGuard.tsx`
+✅ `src/components/ui/states/EmptyState.tsx`
+✅ `src/components/ui/states/LoadingState.tsx`
+✅ `src/components/ui/states/ErrorState.tsx`
+✅ `src/components/ui/skeleton.tsx`
+✅ `src/utils/exportCsv.ts`
+✅ `src/components/ui/StatusPill.tsx` (nuevo)
+✅ `src/components/ui/TooltipHelp.tsx` (nuevo)

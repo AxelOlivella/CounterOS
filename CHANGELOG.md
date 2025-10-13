@@ -1,5 +1,22 @@
 # Changelog - CounterOS Development
 
+## 2025-01-13 - Componentes UI Reutilizables y Exportación CSV
+### Added - Componentes UI Adicionales (No Disruptivo)
+- ✅ `src/components/ui/StatusPill.tsx` - Componente de píldora de estado con variantes de color
+- ✅ `src/components/ui/TooltipHelp.tsx` - Ícono de ayuda con tooltip explicativo
+
+### Enhanced - Exportación de Datos P&L
+- ✅ Añadido botón "Exportar CSV" a `PnLTable.tsx` 
+- ✅ Añadido botón "Exportar CSV" a `PnLReportsPage.tsx`
+- ✅ Integración con `exportCounterOSData()` para exportación consistente
+- ✅ Manejo de errores con toasts informativos
+
+### Notes
+- ✅ Cambios completamente aditivos, sin modificar funcionalidad existente
+- ✅ Componentes ya existentes (PageHeader, LoadingState, ErrorState, EmptyState, EnvGuard) verificados
+- ✅ Utilidad `exportCsv.ts` ya estaba disponible y funcional
+- ✅ No se modificaron rutas ni navegación principal
+
 ## 2024-12-28 - Auditoría Funcional y Componentes de Seguridad
 ### Added - Componentes de Seguridad (Modo Incremental)
 - ✅ `src/components/SafeBoundary.tsx` - Error boundary con UI de recuperación
