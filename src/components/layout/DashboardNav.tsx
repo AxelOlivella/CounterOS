@@ -1,11 +1,13 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useTenant } from "@/contexts/TenantContext";
 import { 
   LayoutDashboard, 
   Store, 
   Bell, 
   TrendingUp, 
-  FileText 
+  FileText,
+  ArrowLeft
 } from "lucide-react";
 
 const navItems = [
@@ -41,9 +43,33 @@ const navItems = [
 ];
 
 export function DashboardNav() {
+  const { tenant } = useTenant();
+  
   return (
     <nav className="bg-white border-b border-gray-200 px-6 py-3">
-      <div className="flex items-center gap-1 overflow-x-auto">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link
+            to="/resumen"
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Volver a App</span>
+          </Link>
+          
+          <div className="h-6 w-px bg-gray-200" />
+          
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground text-xs font-bold">
+              {tenant?.name?.charAt(0) || 'C'}
+            </div>
+            <span className="text-sm font-semibold text-gray-900">
+              Operations Dashboard
+            </span>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-1 overflow-x-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           
@@ -79,6 +105,7 @@ export function DashboardNav() {
             </NavLink>
           );
         })}
+        </div>
       </div>
     </nav>
   );
