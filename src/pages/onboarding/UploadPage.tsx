@@ -95,30 +95,30 @@ export default function UploadPage() {
     setIsProcessing(true);
     
     try {
-      // Save files metadata to sessionStorage
-      // Note: We can't directly store File objects, so we store metadata
-      const filesMetadata = {
-        facturas: facturaFiles.map(f => ({
-          name: f.name,
-          size: f.size,
-          type: f.type,
-        })),
-        ventas: {
-          name: ventasFile.name,
-          size: ventasFile.size,
-          type: ventasFile.type,
-        },
-      };
-
-      sessionStorage.setItem("onboarding_files", JSON.stringify(filesMetadata));
+      // Leer contenido de archivos XML
+      const facturasContent = [];
       
-      logger.info("Archivos listos para procesar", { 
-        numFacturas: facturaFiles.length,
-        ventasFileName: ventasFile.name 
+      for (const file of facturaFiles) {
+        const content = await file.text(); // Lee como texto
+        facturasContent.push(content);
+      }
+      
+      // Leer contenido CSV
+      let ventasContent = '';
+      if (ventasFile) {
+        ventasContent = await ventasFile.text();
+      }
+      
+      // Guardar en sessionStorage
+      sessionStorage.setItem('onboarding_files', JSON.stringify({
+        facturas: facturasContent,
+        ventas: ventasContent
+      }));
+      
+      logger.info('Files saved to session', {
+        numFacturas: facturasContent.length,
+        ventasSize: ventasContent.length
       });
-
-      // Simulate brief processing time for UX
-      await new Promise(resolve => setTimeout(resolve, 500));
 
       toast({
         title: "Archivos validados",
@@ -128,10 +128,10 @@ export default function UploadPage() {
       // Navigate to processing page
       navigate("/onboarding/processing");
     } catch (error) {
-      logger.error("Error al guardar archivos", error);
+      logger.error("Failed to read files", error);
       toast({
         title: "Error",
-        description: "No se pudieron guardar los archivos. Intenta de nuevo.",
+        description: "No se pudieron leer los archivos. Intenta de nuevo.",
         variant: "destructive",
       });
     } finally {

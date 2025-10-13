@@ -4,6 +4,11 @@ import { Check, Circle, Loader2 } from "lucide-react";
 import { OnboardingLayout } from "@/components/onboarding/OnboardingLayout";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { parseXMLFactura } from '@/lib/parsers/xmlParser';
+import { parseCSVVentas } from '@/lib/parsers/csvParser';
+import { saveOnboardingData, calculateFoodCostSummary } from '@/lib/api/onboarding';
+import { logger } from '@/lib/logger';
+import { useToast } from "@/hooks/use-toast";
 
 type StepStatus = 'pending' | 'processing' | 'done';
 
@@ -14,78 +19,180 @@ interface ProcessingStep {
 
 export default function ProcessingPage() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [progress, setProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState('Validando archivos...');
+  const [error, setError] = useState<string | null>(null);
   const [steps, setSteps] = useState<ProcessingStep[]>([
     { label: 'Archivos validados', status: 'done' },
     { label: 'Leyendo facturas XML...', status: 'pending' },
     { label: 'Procesando ventas CSV...', status: 'pending' },
     { label: 'Categorizando compras...', status: 'pending' },
     { label: 'Calculando food cost...', status: 'pending' },
-    { label: 'Generando dashboard...', status: 'pending' },
+    { label: 'Guardando en base de datos...', status: 'pending' },
   ]);
 
   useEffect(() => {
-    // Read from sessionStorage
-    const uploadData = sessionStorage.getItem('onboarding_files');
-    const storesData = sessionStorage.getItem('onboarding_stores');
-    
-    if (!uploadData || !storesData) {
-      navigate('/onboarding/upload');
-      return;
-    }
+    processUploadedFiles();
+  }, []);
 
-    const upload = JSON.parse(uploadData);
-    const numFacturas = upload.facturas?.length || 0;
-
-    // Simulate processing with progressive steps
-    const progressSteps = [
-      { delay: 0, progress: 0, stepIndex: 0 },
-      { delay: 800, progress: 20, stepIndex: 1 },
-      { delay: 1600, progress: 40, stepIndex: 2 },
-      { delay: 2400, progress: 60, stepIndex: 3 },
-      { delay: 3200, progress: 80, stepIndex: 4 },
-      { delay: 4000, progress: 100, stepIndex: 5 },
-    ];
-
-    progressSteps.forEach((step) => {
-      setTimeout(() => {
-        setProgress(step.progress);
-        setSteps(prev => prev.map((s, i) => {
-          if (i < step.stepIndex) return { ...s, status: 'done' as StepStatus };
-          if (i === step.stepIndex) return { ...s, status: 'processing' as StepStatus };
-          return s;
-        }));
-      }, step.delay);
-    });
-
-    // Save mock results and redirect
-    setTimeout(() => {
-      const mockResults = {
-        foodCost: 32.4,
-        compras: 127450,
-        ventas: 393210,
-        numFacturas,
-        numVentas: 480,
-        periodo: {
-          inicio: '2024-09-01',
-          fin: '2024-09-30'
+  async function processUploadedFiles() {
+    try {
+      // STEP 1: Leer archivos de sessionStorage
+      setCurrentStep('Leyendo archivos...');
+      setProgress(5);
+      
+      const filesData = sessionStorage.getItem('onboarding_files');
+      const storesData = sessionStorage.getItem('onboarding_stores');
+      
+      if (!filesData || !storesData) {
+        throw new Error('No se encontraron archivos o tiendas en sesión');
+      }
+      
+      const files = JSON.parse(filesData);
+      const stores = JSON.parse(storesData);
+      
+      logger.info('Starting file processing', {
+        numFacturas: files.facturas?.length || 0,
+        hasVentas: !!files.ventas
+      });
+      
+      // STEP 2: Parse XMLs (facturas)
+      updateStepStatus(1, 'processing');
+      setCurrentStep('Procesando facturas XML...');
+      setProgress(20);
+      
+      const facturasParsed = [];
+      
+      if (files.facturas && Array.isArray(files.facturas)) {
+        for (let i = 0; i < files.facturas.length; i++) {
+          const xmlContent = files.facturas[i];
+          
+          try {
+            const parsed = await parseXMLFactura(xmlContent);
+            facturasParsed.push(parsed);
+            
+            logger.debug('Factura parsed', {
+              index: i + 1,
+              uuid: parsed.uuid,
+              total: parsed.total
+            });
+            
+            // Update progress
+            const progressIncrement = 30 / files.facturas.length;
+            setProgress(prev => Math.min(prev + progressIncrement, 50));
+            
+          } catch (error: any) {
+            logger.error('Failed to parse factura', error);
+            throw new Error(`Error en factura ${i + 1}: ${error.message}`);
+          }
         }
+      }
+      
+      updateStepStatus(1, 'done');
+      
+      // STEP 3: Parse CSV (ventas)
+      updateStepStatus(2, 'processing');
+      setCurrentStep('Procesando ventas CSV...');
+      setProgress(55);
+      
+      let ventasParsed = [];
+      
+      if (files.ventas) {
+        try {
+          ventasParsed = await parseCSVVentas(files.ventas);
+          
+          logger.info('Ventas parsed', {
+            count: ventasParsed.length,
+            totalMonto: ventasParsed.reduce((s, v) => s + v.montoTotal, 0)
+          });
+          
+        } catch (error: any) {
+          logger.error('Failed to parse ventas', error);
+          throw new Error(`Error en CSV de ventas: ${error.message}`);
+        }
+      }
+      
+      updateStepStatus(2, 'done');
+      updateStepStatus(3, 'done'); // Categorizando es automático
+      setProgress(65);
+      
+      // STEP 4: Calculate summary (antes de guardar)
+      updateStepStatus(4, 'processing');
+      setCurrentStep('Calculando food cost...');
+      
+      const summary = calculateFoodCostSummary(facturasParsed, ventasParsed);
+      
+      logger.info('Food cost calculated', summary);
+      
+      updateStepStatus(4, 'done');
+      setProgress(70);
+      
+      // STEP 5: Guardar en Supabase
+      updateStepStatus(5, 'processing');
+      setCurrentStep('Guardando en base de datos...');
+      
+      const result = await saveOnboardingData({
+        stores,
+        facturas: facturasParsed,
+        ventas: ventasParsed
+      });
+      
+      updateStepStatus(5, 'done');
+      setProgress(90);
+      
+      // STEP 6: Guardar resultados para success page
+      const resultsToSave = {
+        foodCost: summary.foodCost,
+        compras: summary.compras,
+        ventas: summary.ventas,
+        periodo: result.summary.periodo,
+        storesCreated: result.stores
       };
       
-      sessionStorage.setItem('onboarding_results', JSON.stringify(mockResults));
+      sessionStorage.setItem('onboarding_results', JSON.stringify(resultsToSave));
+      
+      logger.info('Onboarding completed successfully', resultsToSave);
+      
+      // STEP 7: Done!
+      setCurrentStep('¡Listo!');
+      setProgress(100);
+      
+      // Wait 1 second para que usuario vea 100%
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Navigate to success
       navigate('/onboarding/success');
-    }, 5000);
-  }, [navigate]);
+      
+    } catch (error: any) {
+      logger.error('Processing failed', error);
+      
+      setError(error.message || 'Error procesando archivos');
+      setCurrentStep('Error en procesamiento');
+      
+      toast({
+        title: "Error al procesar",
+        description: error.message || "Ocurrió un error inesperado",
+        variant: "destructive",
+      });
+    }
+  }
 
-  const uploadData = JSON.parse(sessionStorage.getItem('onboarding_files') || '{}');
-  const numFacturas = uploadData.facturas?.length || 0;
+  function updateStepStatus(index: number, status: StepStatus) {
+    setSteps(prev => prev.map((s, i) => 
+      i === index ? { ...s, status } : s
+    ));
+  }
 
   return (
     <OnboardingLayout currentStep={3}>
       <div className="text-center mb-8">
         <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
-          Procesando tus archivos...
+          {error ? '❌ Error al procesar' : 'Procesando tus archivos...'}
         </h2>
+        {error && (
+          <p className="text-sm text-destructive mt-2">{error}</p>
+        )}
       </div>
 
       <div className="flex flex-col items-center space-y-8 py-8">
@@ -107,9 +214,9 @@ export default function ProcessingPage() {
           </p>
         </div>
 
-        {/* File Info */}
+        {/* Current Step Info */}
         <div className="text-sm text-muted-foreground">
-          {numFacturas} {numFacturas === 1 ? 'factura' : 'facturas'}, 1 archivo de ventas
+          {currentStep}
         </div>
 
         {/* Steps List */}

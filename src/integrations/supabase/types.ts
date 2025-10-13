@@ -62,6 +62,54 @@ export type Database = {
           },
         ]
       }
+      compras: {
+        Row: {
+          categoria: string
+          compra_id: string
+          concepto: string
+          created_at: string | null
+          fecha: string
+          folio: string | null
+          moneda: string | null
+          monto: number
+          proveedor: string
+          rfc_proveedor: string | null
+          store_id: string
+          tenant_id: string
+          uuid_fiscal: string
+        }
+        Insert: {
+          categoria: string
+          compra_id?: string
+          concepto: string
+          created_at?: string | null
+          fecha: string
+          folio?: string | null
+          moneda?: string | null
+          monto?: number
+          proveedor: string
+          rfc_proveedor?: string | null
+          store_id: string
+          tenant_id: string
+          uuid_fiscal: string
+        }
+        Update: {
+          categoria?: string
+          compra_id?: string
+          concepto?: string
+          created_at?: string | null
+          fecha?: string
+          folio?: string | null
+          moneda?: string | null
+          monto?: number
+          proveedor?: string
+          rfc_proveedor?: string | null
+          store_id?: string
+          tenant_id?: string
+          uuid_fiscal?: string
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
           created_at: string | null
@@ -231,6 +279,39 @@ export type Database = {
             referencedColumns: ["tenant_id"]
           },
         ]
+      }
+      food_cost_daily: {
+        Row: {
+          created_at: string | null
+          fecha: string
+          food_cost_pct: number | null
+          id: string
+          store_id: string
+          tenant_id: string
+          total_compras: number
+          total_ventas: number
+        }
+        Insert: {
+          created_at?: string | null
+          fecha: string
+          food_cost_pct?: number | null
+          id?: string
+          store_id: string
+          tenant_id: string
+          total_compras?: number
+          total_ventas?: number
+        }
+        Update: {
+          created_at?: string | null
+          fecha?: string
+          food_cost_pct?: number | null
+          id?: string
+          store_id?: string
+          tenant_id?: string
+          total_compras?: number
+          total_ventas?: number
+        }
+        Relationships: []
       }
       ingredients: {
         Row: {
@@ -779,6 +860,36 @@ export type Database = {
           },
         ]
       }
+      ventas: {
+        Row: {
+          created_at: string | null
+          fecha: string
+          monto_total: number
+          num_transacciones: number | null
+          store_id: string
+          tenant_id: string
+          venta_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          fecha: string
+          monto_total?: number
+          num_transacciones?: number | null
+          store_id: string
+          tenant_id: string
+          venta_id?: string
+        }
+        Update: {
+          created_at?: string | null
+          fecha?: string
+          monto_total?: number
+          num_transacciones?: number | null
+          store_id?: string
+          tenant_id?: string
+          venta_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       daily_food_cost_view: {
@@ -1192,6 +1303,15 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      recalculate_food_cost_daily: {
+        Args: {
+          p_fecha_fin: string
+          p_fecha_inicio: string
+          p_store_id: string
+          p_tenant_id: string
+        }
+        Returns: undefined
       }
     }
     Enums: {

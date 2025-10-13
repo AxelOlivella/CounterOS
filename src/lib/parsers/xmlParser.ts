@@ -16,6 +16,7 @@ export interface FacturaParsed {
     unidad: string;
     precioUnitario: number;
     importe: number;
+    categoria: string;
   }>;
 }
 
@@ -28,12 +29,14 @@ interface Concepto {
 }
 
 function parseConcepto(concepto: Concepto) {
+  const descripcion = concepto['@_Descripcion'] || '';
   return {
-    descripcion: concepto['@_Descripcion'] || '',
+    descripcion,
     cantidad: parseFloat(concepto['@_Cantidad'] || '0'),
     unidad: concepto['@_Unidad'] || '',
     precioUnitario: parseFloat(concepto['@_ValorUnitario'] || '0'),
     importe: parseFloat(concepto['@_Importe'] || '0'),
+    categoria: autoCategorizarCompra(descripcion),
   };
 }
 
