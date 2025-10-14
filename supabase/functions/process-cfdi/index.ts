@@ -184,11 +184,16 @@ serve(async (req) => {
       throw new Error(`Failed to save purchase items: ${itemsError.message}`);
     }
 
-    const mappedCount = purchaseItems.filter(i => i.ingredient_id !== null).length;
-    console.log(`CFDI processed: ${cfdiData.items.length} items, ${mappedCount} auto-mapped`);
-
+    // Calculate mapping statistics
     const mappedCount = purchaseItems.filter(i => i.ingredient_id !== null).length;
     const unmappedCount = purchaseItems.length - mappedCount;
+    
+    console.log(`CFDI processed successfully:`, {
+      totalItems: cfdiData.items.length,
+      mappedItems: mappedCount,
+      unmappedItems: unmappedCount,
+      mappingRate: `${((mappedCount / purchaseItems.length) * 100).toFixed(1)}%`
+    });
 
     return new Response(
       JSON.stringify({
@@ -265,15 +270,19 @@ async function parseAndValidateCFDI(xmlContent: string): Promise<CFDIData> {
 
 function transformApiResponseToCFDI(apiResult: any): CFDIData {
   // Transform the API response format to our CFDIData interface
-  const items: CFDIItem[] = apiResult.items?.map((item: any, index: number) => ({
-    sku: item.product?.product_key || `ITEM-${index + 1}`,
-    description: item.product?.description || 'Producto sin descripción',
-    qty: item.quantity || 0,
-    unit: item.product?.unit_key || 'PZA',
-    unit_price: item.product?.price || 0,
-    line_total: (item.quantity || 0) * (item.product?.price || 0),
-    category: categorizeCFDIItem(item.product?.description || '', item.product?.product_key || '')
-  })) || [];
+  const items: CFDIItem[] = apiResult.items?.map((item: any, index: number) => {
+    const description = item.product?.description || 'Producto sin descripción';
+    
+    return {
+      sku: item.product?.product_key || `ITEM-${index + 1}`,
+      description,
+      qty: item.quantity || 0,
+      unit: item.product?.unit_key || 'PZA',
+      unit_price: item.product?.price || 0,
+      line_total: (item.quantity || 0) * (item.product?.price || 0),
+      category: autoCategorizarCompra(description)
+    };
+  }) || [];
 
   // Calculate totals if not provided
   let subtotal = 0;
@@ -369,4 +378,37 @@ function findBestIngredientMatch(
   }
 
   return bestMatch;
+}
+
+/**
+ * Categoriza automáticamente compras basándose en keywords en la descripción
+ * Replica la lógica de xmlParser.ts para consistencia
+ */
+function autoCategorizarCompra(descripcion: string): string {
+  const keywords = {
+    lacteos: ['leche', 'queso', 'crema', 'mantequilla', 'yogurt', 'nata', 'cottage', 'philadelphia', 'manchego', 'oaxaca'],
+    proteinas: ['carne', 'pollo', 'res', 'pescado', 'camarón', 'camaron', 'atún', 'atun', 'cerdo', 'puerco', 'jamón', 'jamon', 'salchicha', 'tocino', 'chorizo'],
+    vegetales: ['tomate', 'lechuga', 'cebolla', 'papa', 'zanahoria', 'chile', 'pimiento', 'aguacate', 'calabaza', 'espinaca', 'brócoli', 'brocoli'],
+    frutas: ['manzana', 'naranja', 'plátano', 'platano', 'fresa', 'piña', 'pina', 'mango', 'sandía', 'sandia', 'melón', 'melon', 'uva', 'limón', 'limon'],
+    granos: ['arroz', 'frijol', 'lenteja', 'garbanzo', 'avena', 'trigo', 'maíz', 'maiz', 'quinoa'],
+    panaderia: ['pan', 'tortilla', 'bolillo', 'baguette', 'croissant', 'galleta', 'pastel', 'masa', 'harina'],
+    bebidas: ['refresco', 'agua', 'jugo', 'café', 'cafe', 'té', 'te', 'cerveza', 'vino', 'licor', 'ron', 'tequila', 'mezcal'],
+    condimentos: ['sal', 'pimienta', 'aceite', 'vinagre', 'salsa', 'mayonesa', 'mostaza', 'ketchup', 'soya', 'ajo', 'especias'],
+    desechables: ['plato', 'vaso', 'tenedor', 'cuchara', 'servilleta', 'popote', 'desechable', 'papel', 'bolsa'],
+    limpieza: ['cloro', 'jabón', 'jabon', 'detergente', 'desinfectante', 'escoba', 'trapeador', 'limpiador'],
+    aceites: ['aceite', 'manteca', 'margarina', 'spray'],
+    congelados: ['helado', 'congelado', 'frozen', 'hielo'],
+    enlatados: ['lata', 'enlatado', 'conserva'],
+  };
+  
+  const desc = descripcion.toLowerCase().trim();
+  
+  // Buscar categoría por keywords
+  for (const [categoria, words] of Object.entries(keywords)) {
+    if (words.some(word => desc.includes(word))) {
+      return categoria;
+    }
+  }
+  
+  return 'sin_categorizar';
 }
