@@ -1,6 +1,8 @@
-import { useState } from 'react';
 import GlassCard from '@/components/ui/GlassCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import BrandManagement from './BrandManagement';
+import CreateCorporateForm from './CreateCorporateForm';
+import BulkImportPanel from './BulkImportPanel';
 
 export default function AdminPage() {
   return (
@@ -85,25 +87,29 @@ export default function AdminPage() {
 
         <TabsContent value="hierarchy" className="mt-6">
           <GlassCard className="p-6">
-            <h2 className="text-xl font-bold mb-4">Gestión de Jerarquía</h2>
-            <p className="text-muted-foreground mb-4">
-              Administra corporativos, razones sociales, marcas y tiendas.
-            </p>
-            <div className="p-8 text-center text-muted-foreground">
-              🚧 Panel de gestión en desarrollo
-            </div>
+            <Tabs defaultValue="brands" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="brands">🏷️ Marcas</TabsTrigger>
+                <TabsTrigger value="corporate">🏢 Corporativo</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="brands" className="mt-6">
+                <BrandManagement />
+              </TabsContent>
+
+              <TabsContent value="corporate" className="mt-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Crear Nuevo Corporativo</h3>
+                  <CreateCorporateForm />
+                </div>
+              </TabsContent>
+            </Tabs>
           </GlassCard>
         </TabsContent>
 
         <TabsContent value="import" className="mt-6">
           <GlassCard className="p-6">
-            <h2 className="text-xl font-bold mb-4">Importación Masiva</h2>
-            <p className="text-muted-foreground mb-4">
-              Importa datos históricos de clientes enterprise.
-            </p>
-            <div className="p-8 text-center text-muted-foreground">
-              🚧 Panel de importación en desarrollo
-            </div>
+            <BulkImportPanel />
           </GlassCard>
         </TabsContent>
       </Tabs>

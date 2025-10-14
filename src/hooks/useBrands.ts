@@ -30,38 +30,57 @@ export interface CreateBrandInput {
 }
 
 /**
- * Hook para obtener brands de un legal entity específico
+ * Hook para obtener brands de un legal entity específico o todas las brands
  * 
- * @param legalEntityId - ID del legal entity
+ * @param legalEntityId - ID del legal entity (opcional)
  * @returns Lista de brands
  * 
  * @example
- * const { data: brands, isLoading } = useBrands('legal-entity-uuid');
+ * const { data: brands, isLoading } = useBrands(); // Todas las brands
+ * const { data: brands, isLoading } = useBrands('legal-entity-uuid'); // Filtradas
  */
-export function useBrands(legalEntityId: string | undefined) {
+export function useBrands(legalEntityId?: string) {
   return useQuery({
     queryKey: ['brands', legalEntityId],
-    queryFn: async (): Promise<Brand[]> => {
-      if (!legalEntityId) {
-        throw new Error('Legal entity ID requerido');
-      }
-
+    queryFn: async (): Promise<any[]> => {
       logger.info('[useBrands] Fetching brands', { legalEntityId });
 
-      const { data, error } = await supabase
+      let query = supabase
         .from('brands')
-        .select('*')
-        .eq('legal_entity_id', legalEntityId)
+        .select(`
+          *,
+          legal_entity:legal_entities(id, name, rfc, corporate_id)
+        `)
         .order('name');
+
+      if (legalEntityId) {
+        query = query.eq('legal_entity_id', legalEntityId);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         logger.error('[useBrands] Error fetching brands', error);
         throw error;
       }
 
-      return data || [];
+      // Enriquecer con store count
+      const brandsWithCount = await Promise.all(
+        (data || []).map(async (brand) => {
+          const { count } = await supabase
+            .from('stores')
+            .select('id', { count: 'exact', head: true })
+            .eq('brand_id', brand.id);
+
+          return {
+            ...brand,
+            _count: { stores: count || 0 }
+          };
+        })
+      );
+
+      return brandsWithCount;
     },
-    enabled: !!legalEntityId,
     staleTime: 3 * 60 * 1000, // 3 minutos
     gcTime: 10 * 60 * 1000
   });
