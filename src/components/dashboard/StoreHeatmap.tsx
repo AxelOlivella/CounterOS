@@ -67,13 +67,16 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
   );
 
   const getColor = (status: string) => {
+    // Get computed color values from CSS variables
+    const rootStyles = getComputedStyle(document.documentElement);
+    
     switch (status) {
       case "critical":
-        return "var(--danger)";
+        return rootStyles.getPropertyValue('--danger').trim() || '#ef4444';
       case "warning":
-        return "var(--warn)";
+        return rootStyles.getPropertyValue('--warn').trim() || '#f59e0b';
       case "ok":
-        return "var(--accent)";
+        return rootStyles.getPropertyValue('--accent').trim() || '#22c55e';
       default:
         return "#9ca3af"; // gray-400
     }
