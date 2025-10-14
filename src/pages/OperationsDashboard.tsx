@@ -203,13 +203,13 @@ export default function OperationsDashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6 space-y-6">
+      <div className="min-h-screen bg-background p-6 space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
               Operations Overview
             </h1>
-            <p className="text-sm text-gray-500 mt-1">Cargando datos...</p>
+            <p className="text-sm text-muted-foreground mt-1">Cargando datos...</p>
           </div>
         </div>
         <KpiSkeleton />
@@ -219,14 +219,14 @@ export default function OperationsDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 space-y-6">
+    <div className="min-h-screen bg-background p-6 space-y-6">
       {/* Header with action buttons */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 animate-slide-up">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
             Operations Overview - {mockData.totalStores} Tiendas
           </h1>
-          <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
             <Clock className="h-4 w-4" />
             <span>Última actualización: Hoy {currentTime}</span>
           </div>
@@ -314,7 +314,7 @@ export default function OperationsDashboard() {
           <Section>
             <GlassCard className="p-6">
               <h2 className="text-lg font-semibold mb-2">Food Cost por Tienda (Vista Geográfica)</h2>
-              <p className="text-sm text-zinc-400 mb-4">Mapa interactivo de tus {mockData.totalStores} tiendas</p>
+              <p className="text-sm text-muted-foreground mb-4">Mapa interactivo de tus {mockData.totalStores} tiendas</p>
               <StoreHeatmap stores={mockStoresGeo} />
             </GlassCard>
           </Section>
@@ -323,10 +323,10 @@ export default function OperationsDashboard() {
           <Section>
             <GlassCard className="p-6">
               <div className="flex items-center gap-2 mb-4">
-                <AlertTriangle className="h-5 w-5 text-orange-500" />
+                <AlertTriangle className="h-5 w-5 text-[var(--warn)]" />
                 <h2 className="text-lg font-semibold">Tiendas que Requieren Atención</h2>
               </div>
-              <p className="text-sm text-zinc-400 mb-6">Ordenadas por impacto potencial en rentabilidad</p>
+              <p className="text-sm text-muted-foreground mb-6">Ordenadas por impacto potencial en rentabilidad</p>
               <StoreAlertTable
                 stores={mockStores}
                 limit={7}

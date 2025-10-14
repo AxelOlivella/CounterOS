@@ -14,10 +14,10 @@
   --surface: #0b0b0c;
   --surface-2: #101013;
   
-  /* Semantic colors */
-  --accent: #22c55e;   /* success/ok */
-  --warn:   #f59e0b;   /* warning */
-  --danger: #ef4444;   /* critical */
+  /* Semantic colors (HSL format for consistency) */
+  --accent: 142 71% 45%;   /* success/ok - green */
+  --warn:   38 92% 50%;    /* warning - amber */
+  --danger: 0 73% 41%;     /* critical - red */
 }
 
 body {
@@ -53,17 +53,20 @@ body {
 }
 
 /* Hover sutil para cards */
-.hover-raise:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+.hover-raise {
   transition: transform .2s ease, box-shadow .2s ease;
 }
 
-/* Focus accesible */
+.hover-raise:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Focus accesible - Strong outline for keyboard navigation */
 *:focus-visible {
-  outline: 2px solid rgba(255,255,255,.4);
-  outline-offset: 2px;
-  border-radius: 10px;
+  outline: 3px solid hsl(var(--accent));
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 /* Scrollbar */
@@ -81,6 +84,7 @@ body {
   background: rgba(255,255,255,.04); 
 }
 
-:root[data-skin="froyo"] { --accent: #34d399; }
-:root[data-skin="crepas"] { --accent: #f59e0b; }
-:root[data-skin="portal-centro"] { --accent: #22c55e; }
+/* Theming */
+:root[data-skin="froyo"] { --accent: 160 84% 39%; }
+:root[data-skin="crepas"] { --accent: 38 92% 50%; }
+:root[data-skin="portal-centro"] { --accent: 142 71% 45%; }
