@@ -1,5 +1,6 @@
-import { validateCSVVentas, calcularResumenVentas, parseCSVVentas } from '@/lib/parsers/csvParser';
+import { validateCSVVentas, calcularResumenVentas, parseCSVVentasWithMapping } from '@/lib/parsers/csvParser';
 import { extractResumenFactura, validarXMLCFDI } from '@/lib/parsers/xmlParser';
+import type { ColumnMapping } from '@/lib/parsers/csvColumnDetector';
 
 export interface FileValidationResult {
   valid: boolean;
@@ -134,30 +135,33 @@ export async function validateXMLFacturas(
 
 /**
  * Valida archivo CSV de ventas con preview detallado
+ * Ahora soporta mapping inteligente de columnas
  */
 export async function validateCSVVentasWithPreview(
-  csvContent: string
+  csvContent: string,
+  manualMapping?: ColumnMapping
 ): Promise<CSVValidationResult> {
   try {
-    // Validación básica de estructura
-    const structureValidation = validateCSVVentas(csvContent);
+    // Parse con mapping (auto-detectado o manual)
+    const parseResult = await parseCSVVentasWithMapping(csvContent, manualMapping);
     
-    if (!structureValidation.valid) {
+    if (parseResult.errors.length > 0 && parseResult.data.length === 0) {
       return {
         valid: false,
-        errors: structureValidation.errors,
-        warnings: structureValidation.warnings,
+        errors: parseResult.errors.slice(0, 5), // solo primeros 5 errores
+        warnings: parseResult.confidence === 'low' 
+          ? ['No se detectaron columnas automáticamente. Requiere mapeo manual.'] 
+          : [],
       };
     }
-
-    // Parse completo para obtener preview
-    const ventas = await parseCSVVentas(csvContent);
+    
+    const ventas = parseResult.data;
     
     if (ventas.length === 0) {
       return {
         valid: false,
         errors: ['CSV no contiene ventas válidas'],
-        warnings: structureValidation.warnings,
+        warnings: [],
       };
     }
 
@@ -166,7 +170,16 @@ export async function validateCSVVentasWithPreview(
 
     // Validaciones de negocio
     const errors: string[] = [];
-    const warnings: string[] = [...structureValidation.warnings];
+    const warnings: string[] = [];
+    
+    // Agregar warnings de parsing si existen (pero no son críticos)
+    if (parseResult.errors.length > 0) {
+      warnings.push(`${parseResult.errors.length} fila(s) con advertencias (se omitieron)`);
+    }
+    
+    if (parseResult.confidence === 'medium') {
+      warnings.push('Algunas columnas se detectaron con confianza media. Verifica el preview.');
+    }
 
     // Validar fechas razonables
     const now = new Date();

@@ -28,16 +28,19 @@ export default function PreviewPage() {
       // Leer archivos de sessionStorage
       const filesData = sessionStorage.getItem('onboarding_files');
       const storesData = sessionStorage.getItem('onboarding_stores');
+      const csvMappingData = sessionStorage.getItem('csv_mapping');
       
       if (!filesData || !storesData) {
         throw new Error('No se encontraron archivos. Por favor regresa y sube los archivos nuevamente.');
       }
       
       const files = JSON.parse(filesData);
+      const csvMapping = csvMappingData ? JSON.parse(csvMappingData) : undefined;
       
       logger.info('Validating files for preview', {
         numFacturas: files.facturas?.length || 0,
-        hasVentas: !!files.ventas
+        hasVentas: !!files.ventas,
+        hasMapping: !!csvMapping
       });
 
       // Validar XMLs
@@ -50,9 +53,9 @@ export default function PreviewPage() {
       const xmlResult = await validateXMLFacturas(facturasForValidation);
       setXmlValidation(xmlResult);
 
-      // Validar CSV
+      // Validar CSV con mapping si existe
       if (files.ventas) {
-        const csvResult = await validateCSVVentasWithPreview(files.ventas);
+        const csvResult = await validateCSVVentasWithPreview(files.ventas, csvMapping);
         setCsvValidation(csvResult);
 
         // Validar consistencia entre ambos
