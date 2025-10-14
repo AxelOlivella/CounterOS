@@ -163,15 +163,10 @@ const App = () => (
               </ProtectedRoute>
             } />
             
-            <Route path="/cargar" element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <UploadPage />
-                </AppLayout>
-              </ProtectedRoute>
-            } />
+            {/* Redirect /cargar to onboarding upload for real data processing */}
+            <Route path="/cargar" element={<Navigate to="/onboarding/upload" replace />} />
             
-            {/* Manual data entry - moved to /captura-manual */}
+            {/* Manual data entry */}
             <Route path="/captura-manual" element={
               <ProtectedRoute>
                 <AppLayout>
