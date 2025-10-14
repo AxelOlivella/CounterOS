@@ -69,13 +69,13 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
   const getColor = (status: string) => {
     switch (status) {
       case "critical":
-        return "#ef4444"; // red-500
+        return "hsl(var(--danger))";
       case "warning":
-        return "#f59e0b"; // yellow-500
+        return "hsl(var(--warn))";
       case "ok":
-        return "#10b981"; // green-500
+        return "hsl(var(--accent))";
       default:
-        return "#9ca3af"; // gray-400
+        return "hsl(var(--muted-foreground))";
     }
   };
 
@@ -235,12 +235,12 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
         }).setHTML(`
           <div class="p-2">
             <div class="font-semibold text-sm">#${store.id} - ${store.name}</div>
-            <div class="text-xs text-gray-600 mt-1">${store.location || "CDMX"}</div>
+            <div class="text-xs text-muted-foreground mt-1">${store.location || "CDMX"}</div>
             <div class="flex items-center gap-2 mt-2">
-              <span class="text-xs text-gray-500">FC:</span>
+              <span class="text-xs text-muted-foreground">FC:</span>
               <span class="font-bold text-sm" style="color: ${color}">${store.fc.toFixed(1)}%</span>
             </div>
-            <button class="mt-2 text-xs text-blue-600 hover:text-blue-800 font-medium">
+            <button class="mt-2 text-xs text-primary hover:text-primary/80 font-medium">
               Ver detalles →
             </button>
           </div>
@@ -311,27 +311,27 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
   return (
     <div
       className={cn(
-        "bg-white rounded-lg shadow-sm border border-gray-200 animate-fade-in",
+        "bg-card rounded-lg shadow-sm border border-border animate-fade-in",
         isFullscreen && "fixed inset-0 z-50 rounded-none",
         className
       )}
     >
       {/* Header with Filters */}
-      <div className="px-6 py-4 border-b border-gray-200 space-y-3">
+      <div className="px-6 py-4 border-b border-border space-y-3">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-foreground">
               Food Cost por Tienda (Vista Geográfica)
             </h2>
             <button
               onClick={() => setIsFullscreen(!isFullscreen)}
-              className="p-1 hover:bg-gray-100 rounded transition"
+              className="p-1 hover:bg-muted rounded transition"
             >
-              <Maximize2 className="h-4 w-4 text-gray-500" />
+              <Maximize2 className="h-4 w-4 text-muted-foreground" />
             </button>
           </div>
 
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-muted-foreground">
             Mostrando {filteredStores.length} de {stores.length} tiendas
           </div>
         </div>
@@ -362,14 +362,14 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
 
         {/* Insight Box Overlay */}
         {counts.critical > 5 && (
-          <div className="absolute top-4 right-4 max-w-sm bg-white/95 backdrop-blur-sm rounded-lg p-4 border border-yellow-200 shadow-md">
+          <div className="absolute top-4 right-4 max-w-sm bg-card/95 backdrop-blur-sm rounded-lg p-4 border border-[var(--warn)]/20 shadow-md">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+              <AlertTriangle className="h-5 w-5 text-[var(--warn)] flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-gray-900 mb-1">
+                <p className="text-sm font-medium text-foreground mb-1">
                   Pattern detectado
                 </p>
-                <p className="text-sm text-gray-700">
+                <p className="text-sm text-muted-foreground">
                   <strong>Cluster de {counts.critical} tiendas críticas.</strong>{" "}
                   Posible problema regional. Requiere investigación inmediata.
                 </p>
@@ -380,22 +380,22 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
 
         {/* API Key Warning - Show if token is missing */}
         {!MAPBOX_TOKEN && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-yellow-50 border-2 border-yellow-400 rounded-lg p-6 max-w-md text-center shadow-lg">
-            <AlertTriangle className="h-8 w-8 text-yellow-600 mx-auto mb-3" />
-            <p className="font-semibold text-gray-900 mb-2">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[var(--warn)]/10 border-2 border-[var(--warn)] rounded-lg p-6 max-w-md text-center shadow-lg">
+            <AlertTriangle className="h-8 w-8 text-[var(--warn)] mx-auto mb-3" />
+            <p className="font-semibold text-foreground mb-2">
               Mapbox API Key Required
             </p>
-            <p className="text-sm text-gray-600 mb-3">
+            <p className="text-sm text-muted-foreground mb-3">
               Add VITE_MAPBOX_TOKEN to your .env file:
             </p>
-            <code className="block bg-white px-3 py-2 rounded text-xs mb-3">
+            <code className="block bg-card px-3 py-2 rounded text-xs mb-3">
               VITE_MAPBOX_TOKEN=your_public_token_here
             </code>
             <a
               href="https://account.mapbox.com/access-tokens/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:underline"
+              className="text-sm text-primary hover:underline"
             >
               Get token at mapbox.com →
             </a>

@@ -80,7 +80,7 @@ export const DashboardPage = () => {
               <select 
                 value={currentTenant}
                 onChange={(e) => setCurrentTenant(e.target.value)}
-                className="text-purple-700 bg-transparent border border-gray-200 rounded px-2 py-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="text-primary bg-transparent border border-border rounded px-2 py-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 {currentModuleConfig.tenants.map(tenant => (
                   <option key={tenant} value={tenant}>{tenant}</option>
@@ -90,10 +90,10 @@ export const DashboardPage = () => {
             
             {/* Main Title */}
             <h1 className="text-3xl font-bold flex items-center gap-3">
-              <ModuleIcon className="h-8 w-8 text-purple-500" />
+              <ModuleIcon className="h-8 w-8 text-primary" />
               Dashboard Operativo - {currentModule}
             </h1>
-            <p className="text-gray-600 mt-1">Portal Centro, Hermosillo • {currentTenant}</p>
+            <p className="text-muted-foreground mt-1">Portal Centro, Hermosillo • {currentTenant}</p>
           </div>
           
           {/* Module Quick Switcher */}
@@ -106,8 +106,8 @@ export const DashboardPage = () => {
                   onClick={() => setCurrentModule(moduleName)}
                   className={`p-3 rounded-lg transition-all ${
                     currentModule === moduleName 
-                      ? 'bg-purple-100 text-purple-700 shadow-md'
-                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                      ? 'bg-primary/10 text-primary shadow-md'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
                   }`}
                   title={moduleName}
                 >
@@ -123,87 +123,87 @@ export const DashboardPage = () => {
       {/* KPI Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         {/* Food Cost - CRITICAL */}
-        <Card className="border-red-500 border-2 bg-red-50">
+        <Card className="border-[var(--danger)] border-2 bg-[var(--danger)]/10">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center justify-between">
               Food Cost
-              <AlertCircle className="h-4 w-4 text-red-500" />
+              <AlertCircle className="h-4 w-4 text-[var(--danger)]" />
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{metrics.foodCost}%</div>
-            <p className="text-xs text-red-500">⚠️ +6.9% sobre objetivo</p>
+            <div className="text-2xl font-bold text-[var(--danger)]">{metrics.foodCost}%</div>
+            <p className="text-xs text-[var(--danger)]">⚠️ +6.9% sobre objetivo</p>
           </CardContent>
         </Card>
 
         {/* Sales */}
-        <Card className="bg-green-50">
+        <Card className="bg-[var(--accent)]/10">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center justify-between">
               Ventas Hoy
-              <DollarSign className="h-4 w-4 text-green-500" />
+              <DollarSign className="h-4 w-4 text-[var(--accent)]" />
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-[var(--accent)]">
               ${metrics.sales.toLocaleString('es-MX')}
             </div>
-            <p className="text-xs text-gray-500">Meta: $450,000</p>
+            <p className="text-xs text-muted-foreground">Meta: $450,000</p>
           </CardContent>
         </Card>
 
         {/* Tickets */}
-        <Card className="bg-blue-50">
+        <Card className="bg-primary/10">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center justify-between">
               Tickets
-              <TrendingUp className="h-4 w-4 text-blue-500" />
+              <TrendingUp className="h-4 w-4 text-primary" />
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{metrics.tickets}</div>
-            <p className="text-xs text-gray-500">Promedio: $389</p>
+            <div className="text-2xl font-bold text-primary">{metrics.tickets}</div>
+            <p className="text-xs text-muted-foreground">Promedio: $389</p>
           </CardContent>
         </Card>
 
         {/* Labor Cost */}
-        <Card className="bg-green-50">
+        <Card className="bg-[var(--accent)]/10">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center justify-between">
               Labor Cost
-              <Package className="h-4 w-4 text-green-500" />
+              <Package className="h-4 w-4 text-[var(--accent)]" />
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{metrics.laborCost}%</div>
-            <p className="text-xs text-green-500">✓ En objetivo</p>
+            <div className="text-2xl font-bold text-[var(--accent)]">{metrics.laborCost}%</div>
+            <p className="text-xs text-[var(--accent)]">✓ En objetivo</p>
           </CardContent>
         </Card>
 
         {/* Wastage */}
-        <Card className="bg-orange-50">
+        <Card className="bg-[var(--warn)]/10">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center justify-between">
               Merma
-              <Snowflake className="h-4 w-4 text-orange-500" />
+              <Snowflake className="h-4 w-4 text-[var(--warn)]" />
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{metrics.wastage}%</div>
-            <p className="text-xs text-orange-500">Objetivo: &lt;3%</p>
+            <div className="text-2xl font-bold text-[var(--warn)]">{metrics.wastage}%</div>
+            <p className="text-xs text-[var(--warn)]">Objetivo: &lt;3%</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Critical Alert */}
-      <div className="bg-red-100 border-l-4 border-red-500 p-4 rounded-lg shadow">
+      <div className="bg-[var(--danger)]/10 border-l-4 border-[var(--danger)] p-4 rounded-lg shadow">
         <div className="flex">
-          <AlertCircle className="h-6 w-6 text-red-400 mt-1 flex-shrink-0" />
+          <AlertCircle className="h-6 w-6 text-[var(--danger)] mt-1 flex-shrink-0" />
           <div className="ml-3 flex-1">
-            <h3 className="text-lg font-bold text-red-800">
+            <h3 className="text-lg font-bold text-[var(--danger)]">
               ALERTA CRÍTICA: Food Cost fuera de control
             </h3>
-            <div className="mt-2 text-sm text-red-700 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="mt-2 text-sm text-[var(--danger)] grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <p className="font-semibold">Actual vs Objetivo</p>
                 <p>{metrics.foodCost}% vs 30%</p>
@@ -230,27 +230,27 @@ export const DashboardPage = () => {
       </div>
 
       {/* Module-Specific Actions */}
-      <div className="bg-white rounded-lg shadow p-4">
-        <h3 className="text-sm font-semibold text-gray-600 mb-3">Acciones Rápidas - {currentModule}</h3>
+      <div className="bg-card rounded-lg shadow p-4">
+        <h3 className="text-sm font-semibold text-muted-foreground mb-3">Acciones Rápidas - {currentModule}</h3>
         <div className="grid gap-3 md:grid-cols-5">
-          <button className="p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
-            <Package className="h-5 w-5 text-purple-600 mx-auto mb-1" />
+          <button className="p-3 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors">
+            <Package className="h-5 w-5 text-primary mx-auto mb-1" />
             <p className="text-xs">Subir Facturas</p>
           </button>
-          <button className="p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
-            <TrendingUp className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+          <button className="p-3 bg-muted hover:bg-muted/80 rounded-lg transition-colors">
+            <TrendingUp className="h-5 w-5 text-muted-foreground mx-auto mb-1" />
             <p className="text-xs">Tendencias</p>
           </button>
-          <button className="p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
-            <DollarSign className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+          <button className="p-3 bg-muted hover:bg-muted/80 rounded-lg transition-colors">
+            <DollarSign className="h-5 w-5 text-muted-foreground mx-auto mb-1" />
             <p className="text-xs">P&L</p>
           </button>
-          <button className="p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
-            <ModuleIcon className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+          <button className="p-3 bg-muted hover:bg-muted/80 rounded-lg transition-colors">
+            <ModuleIcon className="h-5 w-5 text-muted-foreground mx-auto mb-1" />
             <p className="text-xs">Config {currentModule}</p>
           </button>
-          <button className="p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
-            <AlertCircle className="h-5 w-5 text-blue-600 mx-auto mb-1" />
+          <button className="p-3 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors">
+            <AlertCircle className="h-5 w-5 text-primary mx-auto mb-1" />
             <p className="text-xs">Alertas</p>
           </button>
         </div>
@@ -260,14 +260,14 @@ export const DashboardPage = () => {
       <div className="bg-primary text-primary-foreground rounded-lg p-3 text-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
         <div className="flex flex-wrap gap-4">
           <span className="font-semibold">CounterOS™ v1.0.0</span>
-          <span className="text-purple-400">{currentModule} Active</span>
+          <span className="opacity-80">{currentModule} Active</span>
           <span>{currentTenant} • Portal Centro</span>
         </div>
         <div className="flex flex-wrap gap-4">
           <span>{totalStores} tiendas totales</span>
           <span>{Object.keys(modules).length} módulos activos</span>
-          <span className="text-green-400 flex items-center gap-1">
-            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+          <span className="text-[var(--accent)] flex items-center gap-1">
+            <div className="w-2 h-2 bg-[var(--accent)] rounded-full"></div>
             Online
           </span>
         </div>

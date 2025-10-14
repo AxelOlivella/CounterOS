@@ -103,7 +103,7 @@ export function FileUploader({ storeId, tenantId, onUploadComplete }: FileUpload
                 {(selectedFile.size / 1024).toFixed(1)} KB
               </p>
             </div>
-            <CheckCircle2 className="h-5 w-5 text-success" />
+            <CheckCircle2 className="h-5 w-5 text-[var(--accent)]" />
           </div>
         )}
 
@@ -115,9 +115,9 @@ export function FileUploader({ storeId, tenantId, onUploadComplete }: FileUpload
           {uploading ? 'Cargando...' : 'Subir Archivo'}
         </Button>
 
-        <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5" />
-          <div className="text-xs text-blue-800">
+        <div className="flex items-start gap-2 p-3 bg-primary/10 border border-primary/20 rounded-lg">
+          <AlertCircle className="h-4 w-4 text-primary mt-0.5" />
+          <div className="text-xs text-foreground">
             <p className="font-medium">Validación automática</p>
             <p>Los archivos se validan antes de subir. Solo formatos CSV y XML son permitidos.</p>
           </div>

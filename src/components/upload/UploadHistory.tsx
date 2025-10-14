@@ -90,7 +90,7 @@ export const UploadHistory = ({ refreshTrigger }: UploadHistoryProps) => {
       return <Badge variant="destructive">Error</Badge>;
     }
     return processed ? (
-      <Badge variant="default" className="bg-green-100 text-green-800">Completado</Badge>
+      <Badge variant="default" className="bg-[var(--accent)]/10 text-[var(--accent)]">Completado</Badge>
     ) : (
       <Badge variant="secondary">Pendiente</Badge>
     );
@@ -134,19 +134,19 @@ export const UploadHistory = ({ refreshTrigger }: UploadHistoryProps) => {
                 <div className="text-sm text-muted-foreground">Total archivos</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-[var(--accent)]">
                   {files.filter(f => f.processed && !f.error).length}
                 </div>
                 <div className="text-sm text-muted-foreground">Procesados</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-red-600">
+                <div className="text-2xl font-bold text-[var(--danger)]">
                   {files.filter(f => f.error).length}
                 </div>
                 <div className="text-sm text-muted-foreground">Con errores</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-primary">
                   {files.filter(f => !f.processed && !f.error).length}
                 </div>
                 <div className="text-sm text-muted-foreground">Pendientes</div>

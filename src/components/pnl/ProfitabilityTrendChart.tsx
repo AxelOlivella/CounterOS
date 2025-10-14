@@ -267,8 +267,8 @@ export const ProfitabilityTrendChart = ({ data }: ProfitabilityTrendChartProps) 
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
             {/* Best Month */}
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-              <h4 className="font-medium text-green-800 mb-2">Mejor Mes</h4>
+            <div className="p-4 bg-[var(--accent)]/10 border border-[var(--accent)]/20 rounded-lg">
+              <h4 className="font-medium text-[var(--accent)] mb-2">Mejor Mes</h4>
               {(() => {
                 if (data.length === 0) return <div>Sin datos disponibles</div>;
                 
@@ -277,13 +277,13 @@ export const ProfitabilityTrendChart = ({ data }: ProfitabilityTrendChartProps) 
                 );
                 return (
                   <div className="space-y-1">
-                    <div className="text-lg font-semibold text-green-900">
+                    <div className="text-lg font-semibold text-[var(--accent)]">
                       {bestMonth.month}
                     </div>
-                    <div className="text-sm text-green-700">
+                    <div className="text-sm text-[var(--accent)]">
                       Utilidad Neta: ${bestMonth.netProfit.toLocaleString()}
                     </div>
-                    <div className="text-sm text-green-700">
+                    <div className="text-sm text-[var(--accent)]">
                       Margen: {bestMonth.netMargin.toFixed(1)}%
                     </div>
                   </div>
@@ -292,8 +292,8 @@ export const ProfitabilityTrendChart = ({ data }: ProfitabilityTrendChartProps) 
             </div>
 
             {/* Current Trend */}
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h4 className="font-medium text-blue-800 mb-2">Tendencia Actual</h4>
+            <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
+              <h4 className="font-medium text-primary mb-2">Tendencia Actual</h4>
               {(() => {
                 const lastTwo = data.slice(-2);
                 if (lastTwo.length < 2) return <div>Datos insuficientes</div>;
@@ -303,10 +303,10 @@ export const ProfitabilityTrendChart = ({ data }: ProfitabilityTrendChartProps) 
                 
                 return (
                   <div className="space-y-1">
-                    <div className={`text-lg font-semibold ${isPositive ? 'text-green-900' : 'text-red-900'}`}>
+                    <div className={`text-lg font-semibold ${isPositive ? 'text-[var(--accent)]' : 'text-[var(--danger)]'}`}>
                       {isPositive ? '↗️ Creciendo' : '↘️ Declinando'}
                     </div>
-                    <div className="text-sm text-blue-700">
+                    <div className="text-sm text-primary">
                       Cambio: ${Math.abs(trend).toLocaleString()}
                     </div>
                   </div>
@@ -315,13 +315,13 @@ export const ProfitabilityTrendChart = ({ data }: ProfitabilityTrendChartProps) 
             </div>
 
             {/* Average Performance */}
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-              <h4 className="font-medium text-amber-800 mb-2">Promedio del Período</h4>
+            <div className="p-4 bg-[var(--warn)]/10 border border-[var(--warn)]/20 rounded-lg">
+              <h4 className="font-medium text-[var(--warn)] mb-2">Promedio del Período</h4>
               <div className="space-y-1">
-                <div className="text-lg font-semibold text-amber-900">
+                <div className="text-lg font-semibold text-[var(--warn)]">
                   Margen Bruto: {averageGrossMargin.toFixed(1)}%
                 </div>
-                <div className="text-sm text-amber-700">
+                <div className="text-sm text-[var(--warn)]">
                   Margen Neto: {averageNetMargin.toFixed(1)}%
                 </div>
               </div>

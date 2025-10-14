@@ -315,10 +315,10 @@ export const ExpenseBreakdownChart = ({ data }: ExpenseBreakdownChartProps) => {
                         <td className="text-right p-3">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                             isHighImpact 
-                              ? 'bg-red-100 text-red-800'
+                              ? 'bg-[var(--danger)]/10 text-[var(--danger)]'
                               : isMediumImpact
-                              ? 'bg-amber-100 text-amber-800'
-                              : 'bg-green-100 text-green-800'
+                              ? 'bg-[var(--warn)]/10 text-[var(--warn)]'
+                              : 'bg-[var(--accent)]/10 text-[var(--accent)]'
                           }`}>
                             {isHighImpact ? 'Alto' : isMediumImpact ? 'Medio' : 'Bajo'}
                           </span>

@@ -162,10 +162,10 @@ export const VarianceAnalysisChart = ({ current, target, variance }: VarianceAna
             <div className="p-4 rounded-lg border bg-card">
               <div className="flex items-start gap-3">
                 <div className={`p-2 rounded-full ${
-                  variance > 5 ? 'bg-red-100 text-red-600' :
-                  variance > 2 ? 'bg-amber-100 text-amber-600' :
-                  variance > 0 ? 'bg-orange-100 text-orange-600' :
-                  'bg-green-100 text-green-600'
+                  variance > 5 ? 'bg-[var(--danger)]/10 text-[var(--danger)]' :
+                  variance > 2 ? 'bg-[var(--warn)]/10 text-[var(--warn)]' :
+                  variance > 0 ? 'bg-[var(--warn)]/10 text-[var(--warn)]' :
+                  'bg-[var(--accent)]/10 text-[var(--accent)]'
                 }`}>
                   <AlertTriangle className="h-4 w-4" />
                 </div>

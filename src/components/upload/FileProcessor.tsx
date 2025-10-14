@@ -128,11 +128,11 @@ export const FileProcessor = ({ files, onProcessingComplete, onRemoveFile }: Fil
   const getStatusIcon = (status: FileProcessingState['status']) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle className="h-5 w-5 text-green-600" />;
+        return <CheckCircle className="h-5 w-5 text-[var(--accent)]" />;
       case 'error':
-        return <AlertCircle className="h-5 w-5 text-red-600" />;
+        return <AlertCircle className="h-5 w-5 text-[var(--danger)]" />;
       case 'processing':
-        return <Loader2 className="h-5 w-5 animate-spin text-blue-600" />;
+        return <Loader2 className="h-5 w-5 animate-spin text-primary" />;
       default:
         return <FileText className="h-5 w-5 text-muted-foreground" />;
     }
@@ -141,7 +141,7 @@ export const FileProcessor = ({ files, onProcessingComplete, onRemoveFile }: Fil
   const getStatusBadge = (status: FileProcessingState['status']) => {
     switch (status) {
       case 'completed':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Completado</Badge>;
+        return <Badge variant="default" className="bg-[var(--accent)]/10 text-[var(--accent)]">Completado</Badge>;
       case 'error':
         return <Badge variant="destructive">Error</Badge>;
       case 'processing':
@@ -209,15 +209,15 @@ export const FileProcessor = ({ files, onProcessingComplete, onRemoveFile }: Fil
                   <Progress value={state.progress} className="mb-2" />
                   
                   {state.status === 'completed' && (
-                    <p className="text-sm text-green-600">
+                    <p className="text-sm text-[var(--accent)]">
                       ✓ {state.recordsProcessed || 0} registros procesados exitosamente
                     </p>
                   )}
                   
                   {state.status === 'error' && state.errors && (
                     <div>
-                      <p className="text-sm font-medium text-red-600 mb-1">Errores:</p>
-                      <ul className="text-xs text-red-600 space-y-1">
+                      <p className="text-sm font-medium text-[var(--danger)] mb-1">Errores:</p>
+                      <ul className="text-xs text-[var(--danger)] space-y-1">
                         {state.errors.slice(0, 3).map((error, i) => (
                           <li key={i}>• {error}</li>
                         ))}
