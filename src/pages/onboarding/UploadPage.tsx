@@ -9,6 +9,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowLeft, Download, Plus, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { logger } from "@/lib/logger";
+import { detectarFormatoCSV } from "@/lib/parsers/csvParser";
+import { detectColumns } from "@/lib/parsers/csvColumnDetector";
 
 export default function UploadPage() {
   const navigate = useNavigate();

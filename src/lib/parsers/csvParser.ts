@@ -1,4 +1,5 @@
 import Papa from 'papaparse';
+import { detectColumns, ColumnMapping } from './csvColumnDetector';
 
 export interface VentaParsed {
   fecha: Date;
@@ -22,46 +23,102 @@ interface CSVRow {
  * @param fileContent - Contenido del archivo CSV como string
  * @returns Promise con array de ventas parseadas
  */
-export async function parseCSVVentas(
-  fileContent: string
-): Promise<VentaParsed[]> {
+export interface CSVParseResult {
+  data: VentaParsed[];
+  mapping: ColumnMapping;
+  confidence: 'high' | 'medium' | 'low';
+  errors: string[];
+}
+
+/**
+ * Parser inteligente con mapeo automático/manual de columnas
+ */
+export async function parseCSVVentasWithMapping(
+  fileContent: string,
+  manualMapping?: ColumnMapping
+): Promise<CSVParseResult> {
   return new Promise((resolve, reject) => {
-    Papa.parse<CSVRow>(fileContent, {
+    Papa.parse<any>(fileContent, {
       header: true,
       dynamicTyping: true,
       skipEmptyLines: true,
-      transformHeader: (h) => h.trim().toLowerCase().replace(/\s+/g, '_'),
-      complete: (results) => {
+      complete: (results: any) => {
         try {
-          if (results.errors.length > 0) {
-            console.warn('CSV parsing warnings:', results.errors);
-          }
+          const headers: string[] = results?.meta?.fields || [];
+          const detection = manualMapping
+            ? { mapping: manualMapping, confidence: 'high' as const }
+            : detectColumns(headers);
 
-          const ventas = results.data
-            .filter(row => row.fecha && (row.monto_total || row.monto))
-            .map(row => {
-              const monto = parseFloat(String(row.monto_total || row.monto || '0'));
-              const fecha = new Date(row.fecha!);
+          const mapping = detection.mapping;
+          const ventas: VentaParsed[] = [];
+          const errors: string[] = [];
 
-              // Validar fecha
-              if (isNaN(fecha.getTime())) {
-                throw new Error(`Fecha inválida: ${row.fecha}`);
+          results.data.forEach((row: any, index: number) => {
+            try {
+              const fechaValue = mapping.fecha ? row[mapping.fecha] ?? row['fecha'] : row['fecha'];
+              const montoRaw = mapping.monto
+                ? row[mapping.monto] ?? row['monto_total'] ?? row['monto']
+                : row['monto_total'] ?? row['monto'];
+              const tiendaValue = mapping.tienda ? row[mapping.tienda] : (row['tienda'] ?? 'N/A');
+              const transValue = mapping.transacciones
+                ? row[mapping.transacciones]
+                : (row['transacciones'] ?? undefined);
+
+              if (fechaValue == null || montoRaw == null || montoRaw === '') {
+                errors.push(`Fila ${index + 2}: Falta fecha o monto`);
+                return;
               }
 
-              // Validar monto
-              if (isNaN(monto) || monto < 0) {
-                throw new Error(`Monto inválido: ${monto}`);
+              // Parse fecha de manera flexible
+              let fecha: Date;
+              if (fechaValue instanceof Date) {
+                fecha = fechaValue;
+              } else {
+                const fv = String(fechaValue).trim();
+                const native = new Date(fv);
+                if (!isNaN(native.getTime())) {
+                  fecha = native;
+                } else {
+                  const parts = fv.split(/[\/-]/).map((p) => p.trim());
+                  if (parts.length === 3) {
+                    // Asumir DD/MM/YYYY
+                    let d = parseInt(parts[0], 10);
+                    let m = parseInt(parts[1], 10);
+                    let y = parseInt(parts[2], 10);
+                    if (String(y).length === 2) y = 2000 + y;
+                    fecha = new Date(y, m - 1, d);
+                  } else {
+                    throw new Error(`Fecha inválida "${fv}"`);
+                  }
+                }
               }
 
-              return {
+              // Parse monto tolerante (quita símbolos y comas)
+              const monto = typeof montoRaw === 'number'
+                ? montoRaw
+                : parseFloat(String(montoRaw).replace(/[^0-9.,-]/g, '').replace(',', '.'));
+              if (isNaN(monto)) {
+                errors.push(`Fila ${index + 2}: Monto inválido "${montoRaw}"`);
+                return;
+              }
+
+              ventas.push({
                 fecha,
                 montoTotal: monto,
-                tienda: row.tienda || 'N/A',
-                numTransacciones: row.transacciones || 1,
-              };
-            });
+                tienda: String(tiendaValue ?? 'N/A'),
+                numTransacciones: transValue != null ? Number(transValue) : undefined,
+              });
+            } catch (err: any) {
+              errors.push(`Fila ${index + 2}: ${err?.message ?? 'Error desconocido'}`);
+            }
+          });
 
-          resolve(ventas);
+          resolve({
+            data: ventas,
+            mapping,
+            confidence: (detection as any).confidence ?? 'high',
+            errors,
+          });
         } catch (error) {
           reject(error);
         }
@@ -69,6 +126,14 @@ export async function parseCSVVentas(
       error: reject,
     });
   });
+}
+
+// Compatibilidad hacia atrás: función original sigue retornando solo los datos
+export async function parseCSVVentas(
+  fileContent: string
+): Promise<VentaParsed[]> {
+  const result = await parseCSVVentasWithMapping(fileContent);
+  return result.data;
 }
 
 /**
