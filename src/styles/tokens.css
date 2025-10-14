@@ -14,10 +14,10 @@
   --surface: #0b0b0c;
   --surface-2: #101013;
   
-  /* Semantic colors (HSL format for consistency) */
-  --accent: 142 71% 45%;   /* success/ok - green */
-  --warn:   38 92% 50%;    /* warning - amber */
-  --danger: 0 73% 41%;     /* critical - red */
+  /* Semantic colors - HEX format for direct CSS/JS use */
+  --accent: #22c55e;   /* success/ok - green */
+  --warn:   #f59e0b;   /* warning - amber */
+  --danger: #ef4444;   /* critical - red */
 }
 
 body {
@@ -64,7 +64,7 @@ body {
 
 /* Focus accesible - Strong outline for keyboard navigation */
 *:focus-visible {
-  outline: 3px solid hsl(var(--accent));
+  outline: 3px solid var(--accent);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -84,7 +84,7 @@ body {
   background: rgba(255,255,255,.04); 
 }
 
-/* Theming */
-:root[data-skin="froyo"] { --accent: 160 84% 39%; }
-:root[data-skin="crepas"] { --accent: 38 92% 50%; }
-:root[data-skin="portal-centro"] { --accent: 142 71% 45%; }
+/* Theming - HEX values for consistency */
+:root[data-skin="froyo"] { --accent: #34d399; }
+:root[data-skin="crepas"] { --accent: #f59e0b; }
+:root[data-skin="portal-centro"] { --accent: #22c55e; }

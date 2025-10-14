@@ -69,13 +69,13 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
   const getColor = (status: string) => {
     switch (status) {
       case "critical":
-        return "hsl(var(--danger))";
+        return "var(--danger)";
       case "warning":
-        return "hsl(var(--warn))";
+        return "var(--warn)";
       case "ok":
-        return "hsl(var(--accent))";
+        return "var(--accent)";
       default:
-        return "hsl(var(--muted-foreground))";
+        return "#9ca3af"; // gray-400
     }
   };
 
