@@ -84,7 +84,15 @@ export default function ProcessingPage() {
             
           } catch (error: any) {
             logger.error('Failed to parse factura', error);
-            throw new Error(`Error en factura ${i + 1}: ${error.message}`);
+            // Error específico con contexto
+            const xmlPreview = xmlContent.substring(0, 200);
+            const hasUUID = xmlContent.includes('UUID') || xmlContent.includes('uuid');
+            
+            throw new Error(
+              `Error en factura ${i + 1} (archivo #${i + 1}): ${error.message}. ` +
+              `${!hasUUID ? 'Falta UUID fiscal. ' : ''}` +
+              `Verifica que sea un CFDI 4.0 válido.`
+            );
           }
         }
       }
@@ -109,7 +117,16 @@ export default function ProcessingPage() {
           
         } catch (error: any) {
           logger.error('Failed to parse ventas', error);
-          throw new Error(`Error en CSV de ventas: ${error.message}`);
+          
+          // Error específico con contexto
+          const lines = files.ventas.split('\n');
+          const preview = lines.slice(0, 3).join('\n');
+          
+          throw new Error(
+            `Error en CSV de ventas: ${error.message}. ` +
+            `Verifica el formato del archivo (debe tener columnas: fecha, monto_total, tienda). ` +
+            `Vista previa: ${preview.substring(0, 100)}...`
+          );
         }
       }
       

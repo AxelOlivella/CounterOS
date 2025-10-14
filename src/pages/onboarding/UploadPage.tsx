@@ -121,12 +121,12 @@ export default function UploadPage() {
       });
 
       toast({
-        title: "Archivos validados",
-        description: "Procesando tus datos...",
+        title: "Archivos guardados",
+        description: "Revisando contenido...",
       });
 
-      // Navigate to processing page
-      navigate("/onboarding/processing");
+      // Navigate to preview page (validation before processing)
+      navigate("/onboarding/preview");
     } catch (error) {
       logger.error("Failed to read files", error);
       toast({

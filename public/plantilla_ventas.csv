@@ -1,3 +1,12 @@
+# Plantilla de Ventas - CounterOS
+# Instrucciones:
+# 1. Mantén los nombres de las columnas: fecha, monto_total, tienda
+# 2. Formato de fecha: YYYY-MM-DD (ejemplo: 2024-09-15)
+# 3. Monto sin comas, con punto decimal (ejemplo: 15234.50)
+# 4. Nombre de tienda debe coincidir con las tiendas que configuraste
+# 5. Puedes agregar todas las filas que necesites
+# 6. NO borres esta primera línea (el sistema la ignora automáticamente)
+#
 fecha,monto_total,tienda
 2024-09-01,15234.50,Portal Centro
 2024-09-02,18945.20,Portal Centro
@@ -6,3 +15,6 @@ fecha,monto_total,tienda
 2024-09-05,22198.45,Portal Centro
 2024-09-06,17843.90,Portal Centro
 2024-09-07,20456.75,Portal Centro
+2024-09-08,23102.15,Portal Centro
+2024-09-09,19876.40,Portal Centro
+2024-09-10,20543.65,Portal Centro
