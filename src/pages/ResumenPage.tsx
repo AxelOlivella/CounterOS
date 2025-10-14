@@ -7,6 +7,7 @@ import { useDashboardSummary } from '@/hooks/useDashboardSummary';
 import { LoadingState } from '@/components/ui/states/LoadingState';
 import { ErrorState } from '@/components/ui/states/ErrorState';
 import { EmptyOnboardingState } from '@/components/ui/states/EmptyOnboardingState';
+import KpiSkeleton from '@/components/ui/KpiSkeleton';
 import GlassCard from '@/components/ui/GlassCard';
 import AutoGrid from '@/components/ui/AutoGrid';
 import Section from '@/components/ui/Section';
@@ -40,10 +41,19 @@ const ResumenPage = () => {
   if (isLoading) {
     return (
       <div className="container mx-auto max-w-6xl">
-        <LoadingState 
-          title="Cargando resumen ejecutivo..." 
-          description="Procesando métricas de tus tiendas"
-        />
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Resumen Ejecutivo
+              </h1>
+              <p className="text-muted-foreground">
+                Cargando métricas de tus tiendas...
+              </p>
+            </div>
+          </div>
+        </div>
+        <KpiSkeleton />
       </div>
     );
   }

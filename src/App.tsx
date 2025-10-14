@@ -8,7 +8,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OperationsLayout } from "@/components/layout/OperationsLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { LoadingState } from "./components/ui/states/LoadingState";
 
 // Eager loading for critical pages
@@ -45,9 +45,28 @@ const UploadPage = lazy(() => import("./components/pages/UploadPage").then(m => 
 
 const queryClient = new QueryClient();
 
+// Theming component
+const ThemeApplier = () => {
+  useEffect(() => {
+    // Get current tenant/store from localStorage or context
+    // For now, we'll use a default skin
+    const currentSkin = localStorage.getItem('tenant_skin') || 'default';
+    
+    // Apply data-skin attribute to root element
+    if (currentSkin !== 'default') {
+      document.documentElement.setAttribute('data-skin', currentSkin);
+    } else {
+      document.documentElement.removeAttribute('data-skin');
+    }
+  }, []);
+
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      <ThemeApplier />
       <TenantProvider>
         <ErrorBoundary>
           <Toaster />

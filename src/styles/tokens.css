@@ -81,6 +81,6 @@ body {
   background: rgba(255,255,255,.04); 
 }
 
-/* Skins por tenant (opcional, comentado por ahora) */
-/* :root[data-skin="froyo"] { --accent: #34d399; } */
-/* :root[data-skin="crepas"] { --accent: #f59e0b; } */
+:root[data-skin="froyo"] { --accent: #34d399; }
+:root[data-skin="crepas"] { --accent: #f59e0b; }
+:root[data-skin="portal-centro"] { --accent: #22c55e; }

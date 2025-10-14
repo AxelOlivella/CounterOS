@@ -1,4 +1,6 @@
 import { cn } from "@/lib/utils";
+import ChartCard from "@/components/ui/ChartCard";
+import LegendDots from "@/components/ui/LegendDots";
 
 interface TrendingDataPoint {
   week: number;
@@ -18,7 +20,6 @@ export function TrendingChart({
   target,
   title,
   message,
-  className,
 }: TrendingChartProps) {
   // Calculate chart dimensions and scaling
   const minFC = 24;
@@ -29,11 +30,9 @@ export function TrendingChart({
   const targetY = getY(target);
 
   return (
-    <div className={cn("bg-white rounded-lg shadow-sm border border-gray-200 p-6", className)}>
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">{title}</h2>
-
+    <ChartCard title={title}>
       {/* Chart */}
-      <div className="relative" style={{ height: "250px" }}>
+      <div className="relative h-full">
         <svg
           width="100%"
           height="100%"
@@ -49,7 +48,7 @@ export function TrendingChart({
                 y1={getY(val)}
                 x2="800"
                 y2={getY(val)}
-                stroke="#e5e7eb"
+                stroke="rgba(255,255,255,0.1)"
                 strokeWidth="1"
                 strokeDasharray="4 4"
               />
@@ -57,7 +56,7 @@ export function TrendingChart({
                 x="35"
                 y={getY(val)}
                 fontSize="12"
-                fill="#6b7280"
+                fill="#a1a1aa"
                 textAnchor="end"
                 dominantBaseline="middle"
               >
@@ -135,7 +134,7 @@ export function TrendingChart({
                 x={x}
                 y="265"
                 fontSize="11"
-                fill="#6b7280"
+                fill="#a1a1aa"
                 textAnchor="middle"
               >
                 S{d.week}
@@ -145,14 +144,20 @@ export function TrendingChart({
         </svg>
       </div>
 
+      {/* Legend */}
+      <LegendDots items={[
+        {label: "Food Cost", color: "#3b82f6"},
+        {label: "Meta", color: "#ef4444"}
+      ]} />
+
       {/* Insight message */}
       {message && (
-        <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-sm text-gray-700">
+        <div className="mt-4 p-4 bg-[var(--warn)]/10 border border-[var(--warn)]/20 rounded-lg">
+          <p className="text-sm text-zinc-300">
             <strong>Insight:</strong> {message}
           </p>
         </div>
       )}
-    </div>
+    </ChartCard>
   );
 }
