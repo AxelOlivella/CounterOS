@@ -18,6 +18,13 @@ export default function UploadPage() {
   const [facturaFiles, setFacturaFiles] = useState<File[]>([]);
   const [ventasFile, setVentasFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [csvPreview, setCSVPreview] = useState<{
+    headers: string[];
+    rows: any[];
+    mapping: any;
+    confidence: 'high' | 'medium' | 'low';
+  } | null>(null);
+  const [showMappingModal, setShowMappingModal] = useState(false);
 
   // Check if user has stores configured
   useEffect(() => {
@@ -44,7 +51,7 @@ export default function UploadPage() {
     });
   };
 
-  const handleVentasSelected = (files: File[]) => {
+  const handleVentasSelected = async (files: File[]) => {
     const file = files[0];
     if (file) {
       setVentasFile(file);
@@ -52,10 +59,53 @@ export default function UploadPage() {
         fileName: file.name,
         fileSize: file.size 
       });
-      toast({
-        title: "Archivo de ventas cargado",
-        description: file.name,
-      });
+      
+      // Preview CSV con auto-detección
+      try {
+        const content = await file.text();
+        const Papa = await import('papaparse');
+        
+        Papa.default.parse(content, {
+          header: true,
+          preview: 5,
+          complete: (results: any) => {
+            const headers: string[] = results?.meta?.fields || [];
+            const detection = detectColumns(headers);
+            
+            setCSVPreview({
+              headers,
+              rows: results.data || [],
+              mapping: detection.mapping,
+              confidence: detection.confidence,
+            });
+            
+            logger.info('CSV preview ready', { 
+              confidence: detection.confidence,
+              mapping: detection.mapping 
+            });
+            
+            if (detection.confidence === 'low') {
+              setShowMappingModal(true);
+              toast({
+                title: "Mapeo manual requerido",
+                description: "No se detectaron automáticamente las columnas",
+                variant: "destructive",
+              });
+            } else {
+              toast({
+                title: "Archivo de ventas cargado",
+                description: `Columnas detectadas automáticamente (${detection.confidence})`,
+              });
+            }
+          }
+        });
+      } catch (error) {
+        logger.error('Failed to preview CSV', error);
+        toast({
+          title: "Archivo de ventas cargado",
+          description: file.name,
+        });
+      }
     }
   };
 
@@ -72,6 +122,7 @@ export default function UploadPage() {
   const removeVentas = () => {
     const fileName = ventasFile?.name;
     setVentasFile(null);
+    setCSVPreview(null);
     logger.debug("Archivo de ventas eliminado", { fileName });
     toast({
       title: "Archivo eliminado",
@@ -117,9 +168,16 @@ export default function UploadPage() {
         ventas: ventasContent
       }));
       
+      // Guardar mapping de CSV si existe
+      if (csvPreview?.mapping) {
+        sessionStorage.setItem('csv_mapping', JSON.stringify(csvPreview.mapping));
+        logger.info('CSV mapping saved', csvPreview.mapping);
+      }
+      
       logger.info('Files saved to session', {
         numFacturas: facturasContent.length,
-        ventasSize: ventasContent.length
+        ventasSize: ventasContent.length,
+        hasMapping: !!csvPreview?.mapping
       });
 
       toast({
@@ -244,7 +302,7 @@ export default function UploadPage() {
 
           {/* Ventas File Preview */}
           {ventasFile && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <h3 className="text-sm font-medium text-foreground">
                 Archivo subido
               </h3>
@@ -252,6 +310,77 @@ export default function UploadPage() {
                 file={ventasFile}
                 onRemove={removeVentas}
               />
+              
+              {/* CSV Preview */}
+              {csvPreview && (
+                <Card className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium text-sm">Vista previa del CSV</h4>
+                    {csvPreview.confidence === 'high' && (
+                      <span className="text-xs text-green-500 bg-green-50 dark:bg-green-950/30 px-2 py-1 rounded">
+                        ✓ Columnas detectadas
+                      </span>
+                    )}
+                    {csvPreview.confidence === 'medium' && (
+                      <span className="text-xs text-yellow-500 bg-yellow-50 dark:bg-yellow-950/30 px-2 py-1 rounded">
+                        ⚠ Detección parcial
+                      </span>
+                    )}
+                    {csvPreview.confidence === 'low' && (
+                      <span className="text-xs text-red-500 bg-red-50 dark:bg-red-950/30 px-2 py-1 rounded">
+                        ✗ Mapeo manual requerido
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    <div className="p-2 bg-muted rounded">
+                      <div className="text-muted-foreground mb-1">Fecha:</div>
+                      <div className="font-medium">{csvPreview.mapping.fecha || '❌ No detectada'}</div>
+                    </div>
+                    <div className="p-2 bg-muted rounded">
+                      <div className="text-muted-foreground mb-1">Monto:</div>
+                      <div className="font-medium">{csvPreview.mapping.monto || '❌ No detectada'}</div>
+                    </div>
+                    <div className="p-2 bg-muted rounded">
+                      <div className="text-muted-foreground mb-1">Tienda:</div>
+                      <div className="font-medium">{csvPreview.mapping.tienda || '⚠️ Opcional'}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="text-left border-b border-border">
+                          {csvPreview.headers.map((h) => (
+                            <th key={h} className="p-2 font-medium">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {csvPreview.rows.slice(0, 5).map((row, i) => (
+                          <tr key={i} className="border-b border-border/50">
+                            {csvPreview.headers.map((h) => (
+                              <td key={h} className="p-2">{row[h]}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  {csvPreview.confidence !== 'high' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowMappingModal(true)}
+                      className="w-full"
+                    >
+                      Ajustar mapeo de columnas
+                    </Button>
+                  )}
+                </Card>
+              )}
             </div>
           )}
 
@@ -310,6 +439,104 @@ export default function UploadPage() {
           <p className="text-sm text-center text-muted-foreground">
             Sube al menos 1 factura XML y 1 archivo CSV de ventas para continuar
           </p>
+        )}
+        
+        {/* Modal de Mapeo Manual */}
+        {showMappingModal && csvPreview && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <Card className="max-w-md w-full p-6 space-y-4">
+              <h2 className="text-xl font-bold">Mapear columnas del CSV</h2>
+              <p className="text-sm text-muted-foreground">
+                Indica qué columna de tu CSV corresponde a cada campo requerido
+              </p>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Columna de Fecha <span className="text-red-500">*</span>
+                  </label>
+                  <select 
+                    className="w-full px-3 py-2 rounded-lg bg-background border border-input"
+                    value={csvPreview.mapping.fecha || ''}
+                    onChange={(e) => setCSVPreview({
+                      ...csvPreview,
+                      mapping: { ...csvPreview.mapping, fecha: e.target.value }
+                    })}
+                  >
+                    <option value="">Seleccionar...</option>
+                    {csvPreview.headers.map((h) => (
+                      <option key={h} value={h}>{h}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Columna de Monto Total <span className="text-red-500">*</span>
+                  </label>
+                  <select 
+                    className="w-full px-3 py-2 rounded-lg bg-background border border-input"
+                    value={csvPreview.mapping.monto || ''}
+                    onChange={(e) => setCSVPreview({
+                      ...csvPreview,
+                      mapping: { ...csvPreview.mapping, monto: e.target.value }
+                    })}
+                  >
+                    <option value="">Seleccionar...</option>
+                    {csvPreview.headers.map((h) => (
+                      <option key={h} value={h}>{h}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Columna de Tienda (opcional)
+                  </label>
+                  <select 
+                    className="w-full px-3 py-2 rounded-lg bg-background border border-input"
+                    value={csvPreview.mapping.tienda || ''}
+                    onChange={(e) => setCSVPreview({
+                      ...csvPreview,
+                      mapping: { ...csvPreview.mapping, tienda: e.target.value }
+                    })}
+                  >
+                    <option value="">Ninguna (usar tienda por defecto)</option>
+                    {csvPreview.headers.map((h) => (
+                      <option key={h} value={h}>{h}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              
+              <div className="flex gap-3 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowMappingModal(false)}
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowMappingModal(false);
+                    setCSVPreview({
+                      ...csvPreview,
+                      confidence: 'high'
+                    });
+                    toast({
+                      title: "Mapeo guardado",
+                      description: "Columnas mapeadas correctamente",
+                    });
+                  }}
+                  disabled={!csvPreview.mapping.fecha || !csvPreview.mapping.monto}
+                  className="flex-1"
+                >
+                  Confirmar
+                </Button>
+              </div>
+            </Card>
+          </div>
         )}
       </div>
     </OnboardingLayout>

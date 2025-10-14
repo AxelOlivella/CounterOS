@@ -2,4 +2,5 @@
 // These are re-exported from individual parsers for convenience
 
 export type { FacturaParsed } from './xmlParser';
-export type { VentaParsed } from './csvParser';
+export type { VentaParsed, CSVParseResult } from './csvParser';
+export type { ColumnMapping, DetectionResult } from './csvColumnDetector';

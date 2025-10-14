@@ -5,7 +5,7 @@ import { OnboardingLayout } from "@/components/onboarding/OnboardingLayout";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { parseXMLFactura } from '@/lib/parsers/xmlParser';
-import { parseCSVVentas } from '@/lib/parsers/csvParser';
+import { parseCSVVentasWithMapping } from '@/lib/parsers/csvParser';
 import { saveOnboardingData, calculateFoodCostSummary } from '@/lib/api/onboarding';
 import { logger } from '@/lib/logger';
 import { useToast } from "@/hooks/use-toast";
@@ -44,6 +44,7 @@ export default function ProcessingPage() {
       
       const filesData = sessionStorage.getItem('onboarding_files');
       const storesData = sessionStorage.getItem('onboarding_stores');
+      const csvMappingData = sessionStorage.getItem('csv_mapping');
       
       if (!filesData || !storesData) {
         throw new Error('No se encontraron archivos o tiendas en sesión');
@@ -51,6 +52,7 @@ export default function ProcessingPage() {
       
       const files = JSON.parse(filesData);
       const stores = JSON.parse(storesData);
+      const csvMapping = csvMappingData ? JSON.parse(csvMappingData) : undefined;
       
       logger.info('Starting file processing', {
         numFacturas: files.facturas?.length || 0,
@@ -108,23 +110,33 @@ export default function ProcessingPage() {
       
       if (files.ventas) {
         try {
-          ventasParsed = await parseCSVVentas(files.ventas);
+          const parseResult = await parseCSVVentasWithMapping(files.ventas, csvMapping);
+          ventasParsed = parseResult.data;
           
-          logger.info('Ventas parsed', {
+          logger.info('Ventas parsed with mapping', {
             count: ventasParsed.length,
-            totalMonto: ventasParsed.reduce((s, v) => s + v.montoTotal, 0)
+            totalMonto: ventasParsed.reduce((s, v) => s + v.montoTotal, 0),
+            mapping: parseResult.mapping,
+            confidence: parseResult.confidence,
+            errors: parseResult.errors
           });
+          
+          if (parseResult.errors.length > 0) {
+            logger.warn('CSV parsing had errors', parseResult.errors.slice(0, 5));
+          }
+          
+          if (ventasParsed.length === 0) {
+            throw new Error('No se pudieron parsear ventas del CSV. Verifica el formato.');
+          }
           
         } catch (error: any) {
           logger.error('Failed to parse ventas', error);
           
-          // Error específico con contexto
           const lines = files.ventas.split('\n');
           const preview = lines.slice(0, 3).join('\n');
           
           throw new Error(
             `Error en CSV de ventas: ${error.message}. ` +
-            `Verifica el formato del archivo (debe tener columnas: fecha, monto_total, tienda). ` +
             `Vista previa: ${preview.substring(0, 100)}...`
           );
         }
