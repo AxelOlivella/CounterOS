@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import BrandManagement from './BrandManagement';
 import CreateCorporateForm from './CreateCorporateForm';
 import BulkImportPanel from './BulkImportPanel';
+import SetupWizard from './SetupWizard';
 
 export default function AdminPage() {
   return (
@@ -15,8 +16,9 @@ export default function AdminPage() {
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">📊 Overview</TabsTrigger>
+          <TabsTrigger value="wizard">🪄 Setup Wizard</TabsTrigger>
           <TabsTrigger value="hierarchy">🏢 Jerarquía</TabsTrigger>
           <TabsTrigger value="import">📦 Importación</TabsTrigger>
         </TabsList>
@@ -82,6 +84,12 @@ export default function AdminPage() {
                 </p>
               </div>
             </div>
+          </GlassCard>
+        </TabsContent>
+
+        <TabsContent value="wizard" className="mt-6">
+          <GlassCard className="p-6">
+            <SetupWizard />
           </GlassCard>
         </TabsContent>
 
