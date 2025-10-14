@@ -8,6 +8,8 @@ import { useDashboardSummary } from '@/hooks/useDashboardSummary';
 import { LoadingState } from '@/components/ui/states/LoadingState';
 import { ErrorState } from '@/components/ui/states/ErrorState';
 import { EmptyOnboardingState } from '@/components/ui/states/EmptyOnboardingState';
+import GlassCard from '@/components/ui/GlassCard';
+import AutoGrid from '@/components/ui/AutoGrid';
 import { routes } from '@/routes';
 import { 
   TrendingUp, 
@@ -109,65 +111,57 @@ const ResumenPage = () => {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Food Cost Promedio</p>
-                <p className="text-2xl font-bold">
-                  {summaryData.avgFoodCost}%
-                </p>
-              </div>
-              <div className="text-right">
-                <Badge variant={summaryData.avgFoodCost > summaryData.target ? 'destructive' : 'default'}>
-                  Meta: {summaryData.target}%
-                </Badge>
-              </div>
+      <AutoGrid className="mb-8">
+        <GlassCard className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-zinc-300">Food Cost Promedio</p>
+              <p className="text-2xl font-bold">
+                {summaryData.avgFoodCost}%
+              </p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="text-right">
+              <Badge variant={summaryData.avgFoodCost > summaryData.target ? 'destructive' : 'default'}>
+                Meta: {summaryData.target}%
+              </Badge>
+            </div>
+          </div>
+        </GlassCard>
 
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Ahorro Este Mes</p>
-                <p className="text-2xl font-bold text-green-600">
-                  ${summaryData.totalSavings.toLocaleString()}
-                </p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-green-500" />
+        <GlassCard className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-zinc-300">Ahorro Este Mes</p>
+              <p className="text-2xl font-bold text-green-600">
+                ${summaryData.totalSavings.toLocaleString()}
+              </p>
             </div>
-          </CardContent>
-        </Card>
+            <TrendingUp className="h-8 w-8 text-green-500" />
+          </div>
+        </GlassCard>
 
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Alertas Activas</p>
-                <p className="text-2xl font-bold text-orange-500">
-                  {summaryData.alertsCount}
-                </p>
-              </div>
-              <AlertTriangle className="h-8 w-8 text-orange-500" />
+        <GlassCard className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-zinc-300">Alertas Activas</p>
+              <p className="text-2xl font-bold text-orange-500">
+                {summaryData.alertsCount}
+              </p>
             </div>
-          </CardContent>
-        </Card>
+            <AlertTriangle className="h-8 w-8 text-orange-500" />
+          </div>
+        </GlassCard>
 
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Tiendas Monitoreadas</p>
-                <p className="text-2xl font-bold">{summaryData.totalStores}</p>
-              </div>
-              <Store className="h-8 w-8 text-blue-500" />
+        <GlassCard className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-zinc-300">Tiendas Monitoreadas</p>
+              <p className="text-2xl font-bold">{summaryData.totalStores}</p>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+            <Store className="h-8 w-8 text-blue-500" />
+          </div>
+        </GlassCard>
+      </AutoGrid>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Best Performing Store */}
