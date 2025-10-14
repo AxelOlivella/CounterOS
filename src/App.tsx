@@ -44,7 +44,16 @@ const ProductMixPage = lazy(() => import("./components/pages/ProductMixPage").th
 const InventoryCountPage = lazy(() => import("./components/pages/InventoryCountPage"));
 const UploadPage = lazy(() => import("./components/pages/UploadPage").then(m => ({ default: m.UploadPage })));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutos - no refetch
+      gcTime: 10 * 60 * 1000, // 10 minutos en cache (gcTime reemplaza cacheTime en v5)
+      refetchOnWindowFocus: false,
+      retry: 1
+    }
+  }
+});
 
 // Theming component
 const ThemeApplier = () => {
