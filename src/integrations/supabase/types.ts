@@ -108,7 +108,22 @@ export type Database = {
           tenant_id?: string
           uuid_fiscal?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "compras_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "store_performance_view"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "compras_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["store_id"]
+          },
+        ]
       }
       expenses: {
         Row: {
@@ -311,7 +326,22 @@ export type Database = {
           total_compras?: number
           total_ventas?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "food_cost_daily_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "store_performance_view"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "food_cost_daily_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["store_id"]
+          },
+        ]
       }
       ingredients: {
         Row: {
@@ -897,7 +927,22 @@ export type Database = {
           tenant_id?: string
           venta_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ventas_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "store_performance_view"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "ventas_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["store_id"]
+          },
+        ]
       }
     }
     Views: {
