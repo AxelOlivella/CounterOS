@@ -28,3 +28,6 @@ port = 54326
 
 [functions.process-cfdi]
 verify_jwt = false
+
+[functions.save-onboarding-transactional]
+verify_jwt = true
