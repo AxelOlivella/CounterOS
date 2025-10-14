@@ -67,13 +67,14 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
   );
 
   const getColor = (status: string) => {
+    const rootStyles = getComputedStyle(document.documentElement);
     switch (status) {
       case "critical":
-        return "var(--status-critical-color)";
+        return (rootStyles.getPropertyValue('--status-critical-color') || '#ef4444').trim();
       case "warning":
-        return "var(--status-warning-color)";
+        return (rootStyles.getPropertyValue('--status-warning-color') || '#f59e0b').trim();
       case "ok":
-        return "var(--status-ok-color)";
+        return (rootStyles.getPropertyValue('--status-ok-color') || '#22c55e').trim();
       default:
         return "#9ca3af"; // gray-400
     }
@@ -200,7 +201,6 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
         width: 24px;
         height: 24px;
         border-radius: 50%;
-        background-color: ${color};
         border: 2px solid white;
         box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         cursor: pointer;
@@ -208,6 +208,8 @@ export function StoreHeatmap({ stores, className }: StoreHeatmapProps) {
         opacity: 0;
         transform: scale(0);
       `;
+      // Apply color explicitly to avoid any CSS-var parsing issues in inline cssText
+      inner.style.backgroundColor = color;
       el.appendChild(inner);
 
       // Staggered fade-in animation on inner element (keep root transform intact)
