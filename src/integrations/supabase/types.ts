@@ -1386,6 +1386,15 @@ export type Database = {
         }
         Returns: undefined
       }
+      save_onboarding_transaction: {
+        Args: {
+          p_facturas: Json
+          p_stores: Json
+          p_tenant_id: string
+          p_ventas: Json
+        }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin" | "supervisor" | "operator"

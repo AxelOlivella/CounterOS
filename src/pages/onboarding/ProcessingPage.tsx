@@ -6,9 +6,10 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { parseXMLFactura } from '@/lib/parsers/xmlParser';
 import { parseCSVVentasWithMapping } from '@/lib/parsers/csvParser';
-import { saveOnboardingData, calculateFoodCostSummary } from '@/lib/api/onboarding';
+import { calculateFoodCostSummary } from '@/lib/api/onboarding';
 import { logger } from '@/lib/logger';
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 
 type StepStatus = 'pending' | 'processing' | 'done';
 
@@ -157,15 +158,46 @@ export default function ProcessingPage() {
       updateStepStatus(4, 'done');
       setProgress(70);
       
-      // STEP 5: Guardar en Supabase
+      // STEP 5: Guardar en Supabase (usando Edge Function con transacción atómica)
       updateStepStatus(5, 'processing');
       setCurrentStep('Guardando en base de datos...');
       
-      const result = await saveOnboardingData({
-        stores,
-        facturas: facturasParsed,
-        ventas: ventasParsed
+      // Obtener tenantId del usuario actual
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        throw new Error('Usuario no autenticado');
+      }
+
+      // Obtener tenant_id del usuario
+      const { data: userProfile } = await supabase
+        .from('users')
+        .select('tenant_id')
+        .eq('auth_user_id', userData.user.id)
+        .single();
+
+      if (!userProfile?.tenant_id) {
+        throw new Error('No se encontró el tenant del usuario');
+      }
+
+      // Llamar a edge function con transacción atómica
+      const { data: edgeResult, error: edgeError } = await supabase.functions.invoke('save-onboarding-transactional', {
+        body: {
+          tenantId: userProfile.tenant_id,
+          stores,
+          facturas: facturasParsed,
+          ventas: ventasParsed
+        }
       });
+
+      if (edgeError) {
+        throw new Error(`Error en edge function: ${edgeError.message}`);
+      }
+
+      if (!edgeResult?.success) {
+        throw new Error(edgeResult?.error || 'Error desconocido al guardar datos');
+      }
+
+      logger.info('Data saved via edge function', edgeResult);
       
       updateStepStatus(5, 'done');
       setProgress(90);
@@ -175,8 +207,8 @@ export default function ProcessingPage() {
         foodCost: summary.foodCost,
         compras: summary.compras,
         ventas: summary.ventas,
-        periodo: result.summary.periodo,
-        storesCreated: result.stores
+        periodo: edgeResult.summary,
+        storesCreated: edgeResult.stores
       };
       
       sessionStorage.setItem('onboarding_results', JSON.stringify(resultsToSave));
