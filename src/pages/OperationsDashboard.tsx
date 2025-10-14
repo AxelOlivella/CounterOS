@@ -4,6 +4,9 @@ import { StoreAlertTable } from "@/components/dashboard/StoreAlertTable";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { EmptyState } from "@/components/ui/states/EmptyState";
 import { Button } from "@/components/ui/button";
+import GlassCard from "@/components/ui/GlassCard";
+import AutoGrid from "@/components/ui/AutoGrid";
+import Section from "@/components/ui/Section";
 import { Clock, AlertTriangle, Warehouse, Settings, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -247,50 +250,67 @@ export default function OperationsDashboard() {
       {/* 4 Hero Stats Cards */}
       {hasData && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-stagger">
-            <StatCard
-              title="FC Promedio"
-              value={`${mockData.foodCostAvg}%`}
-              delta={`+${foodCostDelta.toFixed(1)}pts`}
-              status="warning"
-              subtitle={`vs meta ${mockData.foodCostTarget}%`}
-            />
+          <Section>
+            <AutoGrid>
+              <StatCard
+                title="FC Promedio"
+                value={`${mockData.foodCostAvg}%`}
+                delta={`+${foodCostDelta.toFixed(1)}pts`}
+                status="warning"
+                subtitle={`vs meta ${mockData.foodCostTarget}%`}
+              />
 
-            <StatCard
-              title="Alertas"
-              value={totalAlerts}
-              subtitle={`🔴 ${mockData.alerts.critical} críticos, 🟡 ${mockData.alerts.warning} warnings`}
-              status={mockData.alerts.critical > 0 ? "critical" : "warning"}
-            />
+              <StatCard
+                title="Alertas"
+                value={totalAlerts}
+                subtitle={`🔴 ${mockData.alerts.critical} críticos, 🟡 ${mockData.alerts.warning} warnings`}
+                status={mockData.alerts.critical > 0 ? "critical" : "warning"}
+              />
 
-            <StatCard
-              title="Tiendas OK"
-              value={`${mockData.storesOK}/${mockData.totalStores}`}
-              subtitle={`✓ ${storesOKPercentage}% en rango`}
-              status="success"
-            />
+              <StatCard
+                title="Tiendas OK"
+                value={`${mockData.storesOK}/${mockData.totalStores}`}
+                subtitle={`✓ ${storesOKPercentage}% en rango`}
+                status="success"
+              />
 
-            <StatCard
-              title="Variabilidad"
-              value={`±${mockData.variability}pts`}
-              subtitle="Target: ±1.5pts"
-              status="warning"
-              delta="Muy alto"
-            />
-          </div>
+              <StatCard
+                title="Variabilidad"
+                value={`±${mockData.variability}pts`}
+                subtitle="Target: ±1.5pts"
+                status="warning"
+                delta="Muy alto"
+              />
+            </AutoGrid>
+          </Section>
 
           {/* Store Heatmap - Geographic View */}
-          <StoreHeatmap stores={mockStoresGeo} />
+          <Section>
+            <GlassCard className="p-6">
+              <h2 className="text-lg font-semibold mb-2">Food Cost por Tienda (Vista Geográfica)</h2>
+              <p className="text-sm text-zinc-400 mb-4">Mapa interactivo de tus {mockData.totalStores} tiendas</p>
+              <StoreHeatmap stores={mockStoresGeo} />
+            </GlassCard>
+          </Section>
 
           {/* Store Alerts Table */}
-          <StoreAlertTable
-            stores={mockStores}
-            limit={7}
-            onViewAll={() => navigate('/tiendas')}
-            onAssign={() => {
-              // Disabled - feature in development
-            }}
-          />
+          <Section>
+            <GlassCard className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <AlertTriangle className="h-5 w-5 text-orange-500" />
+                <h2 className="text-lg font-semibold">Tiendas que Requieren Atención</h2>
+              </div>
+              <p className="text-sm text-zinc-400 mb-6">Ordenadas por impacto potencial en rentabilidad</p>
+              <StoreAlertTable
+                stores={mockStores}
+                limit={7}
+                onViewAll={() => navigate('/tiendas')}
+                onAssign={() => {
+                  // Disabled - feature in development
+                }}
+              />
+            </GlassCard>
+          </Section>
         </>
       )}
     </div>
