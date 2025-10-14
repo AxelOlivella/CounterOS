@@ -6,7 +6,7 @@ interface OperationsLayoutProps {
 
 export function OperationsLayout({ children }: OperationsLayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Dashboard Navigation */}
       <DashboardNav />
       

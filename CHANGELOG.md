@@ -2,7 +2,23 @@
 
 ## 2025-10-14 - Auditoría UX/UI Completa + Correcciones Masivas 🔍
 
-### Auditoría Ejecutada
+### Segunda Actualización - 75% Completado ✅
+**Archivos adicionales corregidos (Batch 3):**
+- ✅ MiniForm.tsx (22 instancias)
+- ✅ StickyCTA.tsx (3 instancias)
+- ✅ DashboardNav.tsx (12 instancias)
+- ✅ OperationsLayout.tsx (1 instancia)
+- ✅ Sidebar.tsx (1 instancia)
+- ✅ StoreAlertTable.tsx (6 instancias)
+
+**Total corregido:** 315/421 instancias (75%)
+
+**Tokens adicionales:**
+- ✅ `bg-card`, `bg-muted` para superficies
+- ✅ `border-border` para bordes
+- ✅ `text-foreground`, `text-muted-foreground`
+
+### Primera Actualización - 40% Completado
 - ✅ **UX-UI-AUDIT-REPORT.md** creado con análisis exhaustivo
 - 🔴 **421 errores críticos** detectados en 44 archivos
 - 📊 Problemas identificados: colores hardcoded, loading states, accesibilidad

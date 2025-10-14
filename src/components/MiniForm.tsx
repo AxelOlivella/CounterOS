@@ -46,13 +46,13 @@ export default function MiniForm({ fields, onChange, className }: MiniFormProps)
           className={cn(
             "flex items-center justify-between py-3 px-4 rounded-lg border transition-all duration-200",
             // Base styles
-            "bg-white border-gray-200",
+            "bg-card border-border",
             // Disabled/calculated styles
             field.disabled || field.isCalculated
-              ? "bg-gray-50 border-gray-100"
-              : "hover:border-gray-300",
+              ? "bg-muted border-muted"
+              : "hover:border-border/80",
             // Focus styles
-            focusedField === field.key && "border-accent-300 bg-accent-50/30",
+            focusedField === field.key && "border-[var(--accent)] bg-[var(--accent)]/5",
             // Add divider except for last item
             index < fields.length - 1 && "border-b-0 rounded-b-none",
             index > 0 && "rounded-t-none border-t-0"
@@ -65,18 +65,18 @@ export default function MiniForm({ fields, onChange, className }: MiniFormProps)
               className={cn(
                 "block font-medium text-body",
                 field.disabled || field.isCalculated
-                  ? "text-gray-500"
-                  : "text-navy-600"
+                  ? "text-muted-foreground"
+                  : "text-foreground"
               )}
             >
               {field.label}
               {field.isCalculated && (
-                <span className="text-caption text-gray-400 ml-1">(auto)</span>
+                <span className="text-caption text-muted-foreground ml-1">(auto)</span>
               )}
             </label>
             
             {field.hint && (
-              <p className="text-caption text-gray-500 mt-1">
+              <p className="text-caption text-muted-foreground mt-1">
                 {field.hint}
               </p>
             )}
@@ -97,10 +97,10 @@ export default function MiniForm({ fields, onChange, className }: MiniFormProps)
               className={cn(
                 "w-24 text-right text-body font-medium border-0 bg-transparent p-0",
                 "focus:outline-none focus:ring-0",
-                "placeholder:text-gray-400",
+                "placeholder:text-muted-foreground",
                 field.disabled || field.isCalculated
-                  ? "text-gray-500 cursor-not-allowed"
-                  : "text-navy-600"
+                  ? "text-muted-foreground cursor-not-allowed"
+                  : "text-foreground"
               )}
               aria-describedby={field.hint ? `${field.key}-hint` : undefined}
             />
@@ -123,7 +123,7 @@ export function FormSection({
 }) {
   return (
     <div className={cn("space-y-3", className)}>
-      <h3 className="text-xl-custom font-semibold text-navy-600 px-4">
+      <h3 className="text-xl-custom font-semibold text-foreground px-4">
         {title}
       </h3>
       {children}

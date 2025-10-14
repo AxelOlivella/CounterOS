@@ -61,7 +61,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
               variant={isActive ? 'default' : 'ghost'}
               className={cn(
                 'w-full justify-start',
-                isActive && 'text-white'
+                isActive && 'text-primary-foreground'
               )}
               style={{
                 backgroundColor: isActive ? primaryColor : undefined,

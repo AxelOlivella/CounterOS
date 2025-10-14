@@ -49,13 +49,13 @@ export function StoreAlertTable({
         <div className="flex gap-3">
           <button
             onClick={onViewAll}
-            className="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors"
+            className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
           >
             Ver todas
           </button>
           <button
             onClick={onAssign}
-            className="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors"
+            className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
           >
             Asignar
           </button>
@@ -135,7 +135,7 @@ export function StoreAlertTable({
                 <td className="px-4 py-4 text-sm">
                   <button
                     onClick={() => handleViewStore(store.id)}
-                    className="text-blue-400 hover:text-blue-300 font-medium transition-colors hover:underline"
+                    className="text-primary hover:text-primary/80 font-medium transition-colors hover:underline"
                   >
                     Ver
                   </button>
@@ -154,7 +154,7 @@ export function StoreAlertTable({
           </p>
           <button
             onClick={onViewAll}
-            className="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors hover:underline"
+            className="text-sm text-primary hover:text-primary/80 font-medium transition-colors hover:underline"
           >
             Ver todas las {stores.length} tiendas →
           </button>

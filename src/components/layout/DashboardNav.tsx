@@ -46,24 +46,24 @@ export function DashboardNav() {
   const { tenant } = useTenant();
   
   return (
-    <nav className="bg-white border-b border-gray-200 px-6 py-3">
+    <nav className="bg-card border-b border-border px-6 py-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link
             to="/resumen"
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Volver a App</span>
           </Link>
           
-          <div className="h-6 w-px bg-gray-200" />
+          <div className="h-6 w-px bg-border" />
           
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground text-xs font-bold">
               {tenant?.name?.charAt(0) || 'C'}
             </div>
-            <span className="text-sm font-semibold text-gray-900">
+            <span className="text-sm font-semibold text-foreground">
               Operations Dashboard
             </span>
           </div>
@@ -77,11 +77,11 @@ export function DashboardNav() {
             return (
               <div
                 key={item.href}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-400 cursor-not-allowed"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground cursor-not-allowed"
               >
                 <Icon className="h-4 w-4" />
                 <span>{item.title}</span>
-                <span className="text-xs text-gray-300">(Próximamente)</span>
+                <span className="text-xs text-muted-foreground/60">(Próximamente)</span>
               </div>
             );
           }
@@ -93,10 +93,10 @@ export function DashboardNav() {
               className={({ isActive }) =>
                 cn(
                   "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors",
-                  "hover:bg-gray-50",
+                  "hover:bg-muted",
                   isActive
-                    ? "bg-blue-50 text-blue-700 border-b-2 border-blue-700"
-                    : "text-gray-600"
+                    ? "bg-primary/10 text-primary border-b-2 border-primary"
+                    : "text-muted-foreground"
                 )
               }
             >
