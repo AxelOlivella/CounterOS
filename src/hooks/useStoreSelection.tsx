@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useTenant } from '@/contexts/TenantContext';
+import { useState } from 'react';
+import { useStores } from './useStores';
 
 export interface Store {
   store_id: string;
@@ -12,41 +11,18 @@ export interface Store {
 }
 
 export const useStoreSelection = () => {
-  const { tenant } = useTenant();
-  const [stores, setStores] = useState<Store[]>([]);
+  const { data: storesData, isLoading } = useStores();
   const [selectedStoreId, setSelectedStoreId] = useState<string | 'all'>('all');
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (tenant?.tenant_id) {
-      fetchStores();
-    }
-  }, [tenant?.tenant_id]);
-
-  const fetchStores = async () => {
-    if (!tenant?.tenant_id) return;
-
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('stores')
-        .select('*')
-        .eq('tenant_id', tenant.tenant_id)
-        .eq('active', true)
-        .order('name');
-
-      if (error) {
-        // Silently fail - stores will be empty array
-        return;
-      }
-
-      setStores(data || []);
-    } catch (error) {
-      // Silently fail - stores will be empty array
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Map stores from useStores format to useStoreSelection format
+  const stores: Store[] = (storesData || []).map(store => ({
+    store_id: store.id,
+    name: store.name,
+    code: store.slug || store.id,
+    city: store.location || undefined,
+    active: store.active,
+    tenant_id: store.tenant_id
+  }));
 
   const selectedStore = stores.find(store => store.store_id === selectedStoreId);
 
@@ -58,6 +34,6 @@ export const useStoreSelection = () => {
     setSelectedStoreId,
     selectedStore,
     isConsolidatedView,
-    loading
+    loading: isLoading
   };
 };
