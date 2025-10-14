@@ -166,6 +166,15 @@ const App = () => (
             <Route path="/cargar" element={
               <ProtectedRoute>
                 <AppLayout>
+                  <UploadPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
+            {/* Manual data entry - moved to /captura-manual */}
+            <Route path="/captura-manual" element={
+              <ProtectedRoute>
+                <AppLayout>
                   <DatosPage />
                 </AppLayout>
               </ProtectedRoute>
