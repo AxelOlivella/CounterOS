@@ -9,6 +9,9 @@ import AutoGrid from "@/components/ui/AutoGrid";
 import Section from "@/components/ui/Section";
 import { Clock, AlertTriangle, Warehouse, Settings, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import KpiSkeleton from "@/components/ui/KpiSkeleton";
+import ChartSkeleton from "@/components/ui/ChartSkeleton";
 
 // Mock data - will be replaced with real data in Phase 2
 const mockData = {
@@ -178,10 +181,16 @@ const mockStoresGeo = [
 
 export default function OperationsDashboard() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   const currentTime = new Date().toLocaleTimeString("es-MX", {
     hour: "2-digit",
     minute: "2-digit",
   });
+
+  useEffect(() => {
+    // Simulate loading
+    setTimeout(() => setIsLoading(false), 1500);
+  }, []);
 
   // Simulating loading/error states for demo
   const hasData = mockStoresGeo.length > 0;
@@ -191,6 +200,23 @@ export default function OperationsDashboard() {
   const storesOKPercentage = Math.round(
     (mockData.storesOK / mockData.totalStores) * 100
   );
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6 space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              Operations Overview
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">Cargando datos...</p>
+          </div>
+        </div>
+        <KpiSkeleton />
+        <ChartSkeleton />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 space-y-6">

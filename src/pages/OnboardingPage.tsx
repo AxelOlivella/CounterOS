@@ -12,7 +12,7 @@ export function OnboardingPage() {
     {
       title: "¡Bienvenido a CounterOS!",
       description: "Tu sistema operativo para maximizar la rentabilidad",
-      icon: <CheckCircle2 className="h-12 w-12 text-green-500" />,
+      icon: <CheckCircle2 className="h-12 w-12 text-[var(--accent)]" />,
       content: (
         <p className="text-muted-foreground text-center">
           CounterOS te ayuda a controlar costos, generar P&L automáticos 
@@ -27,11 +27,11 @@ export function OnboardingPage() {
       content: (
         <ul className="text-sm space-y-2">
           <li className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-green-500" />
+            <CheckCircle2 className="h-4 w-4 text-[var(--accent)]" />
             CSV de ventas diarias (POS)
           </li>
           <li className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-green-500" />
+            <CheckCircle2 className="h-4 w-4 text-[var(--accent)]" />
             CSV de gastos mensuales
           </li>
         </ul>

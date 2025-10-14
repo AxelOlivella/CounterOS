@@ -72,26 +72,26 @@ const AlertasPage = () => {
   const getAlertIcon = (type: string) => {
     switch (type) {
       case 'warning':
-        return <AlertTriangle className="h-4 w-4 text-orange-500" />;
+        return <AlertTriangle className="h-4 w-4 text-[var(--warn)]" />;
       case 'error':
-        return <XCircle className="h-4 w-4 text-red-500" />;
+        return <XCircle className="h-4 w-4 text-[var(--danger)]" />;
       case 'info':
         return <Bell className="h-4 w-4 text-blue-500" />;
       default:
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
+        return <CheckCircle className="h-4 w-4 text-[var(--accent)]" />;
     }
   };
 
   const getAlertColor = (type: string) => {
     switch (type) {
       case 'warning':
-        return 'border-orange-200 bg-orange-50';
+        return 'border-[var(--warn)]/20 bg-[var(--warn)]/10';
       case 'error':
-        return 'border-red-200 bg-red-50';
+        return 'border-[var(--danger)]/20 bg-[var(--danger)]/10';
       case 'info':
-        return 'border-blue-200 bg-blue-50';
+        return 'border-blue-500/20 bg-blue-500/10';
       default:
-        return 'border-green-200 bg-green-50';
+        return 'border-[var(--accent)]/20 bg-[var(--accent)]/10';
     }
   };
 
@@ -223,14 +223,14 @@ const AlertasPage = () => {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="text-center p-4 border rounded-lg">
-                    <DollarSign className="h-8 w-8 mx-auto mb-2 text-red-500" />
-                    <p className="text-2xl font-bold text-red-600">$18,500</p>
+                    <DollarSign className="h-8 w-8 mx-auto mb-2 text-[var(--danger)]" />
+                    <p className="text-2xl font-bold text-[var(--danger)]">$18,500</p>
                     <p className="text-sm text-muted-foreground">Pérdida mensual estimada</p>
                   </div>
                   
                   <div className="text-center p-4 border rounded-lg">
-                    <TrendingUp className="h-8 w-8 mx-auto mb-2 text-green-500" />
-                    <p className="text-2xl font-bold text-green-600">2.5%</p>
+                    <TrendingUp className="h-8 w-8 mx-auto mb-2 text-[var(--accent)]" />
+                    <p className="text-2xl font-bold text-[var(--accent)]">2.5%</p>
                     <p className="text-sm text-muted-foreground">Reducción food cost posible</p>
                   </div>
                   

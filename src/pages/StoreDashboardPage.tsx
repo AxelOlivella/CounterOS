@@ -65,16 +65,16 @@ const StoreDashboardPage = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'high': return 'text-red-600 bg-red-50 border-red-200';
-      case 'low': return 'text-green-600 bg-green-50 border-green-200';
-      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+      case 'high': return 'text-[var(--danger)] bg-[var(--danger)]/10 border-[var(--danger)]/20';
+      case 'low': return 'text-[var(--accent)] bg-[var(--accent)]/10 border-[var(--accent)]/20';
+      default: return 'text-zinc-400 bg-zinc-400/10 border-zinc-400/20';
     }
   };
 
   const getAlertIcon = (type: string) => {
     switch (type) {
-      case 'danger': return <XCircle className="h-5 w-5 text-red-500" />;
-      case 'warning': return <AlertTriangle className="h-5 w-5 text-orange-500" />;
+      case 'danger': return <XCircle className="h-5 w-5 text-[var(--danger)]" />;
+      case 'warning': return <AlertTriangle className="h-5 w-5 text-[var(--warn)]" />;
       default: return <Info className="h-5 w-5 text-blue-500" />;
     }
   };
@@ -203,15 +203,15 @@ const StoreDashboardPage = () => {
             </div>
             <div className="flex items-center justify-center gap-6 mt-4 text-sm">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-green-500 rounded"></div>
+                <div className="w-4 h-4 bg-[var(--accent)] rounded"></div>
                 <span>Ventas</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-2 bg-red-500 rounded"></div>
+                <div className="w-4 h-2 bg-[var(--danger)] rounded"></div>
                 <span>Food Cost %</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-0.5 bg-gray-500 border-dashed"></div>
+                <div className="w-4 h-0.5 bg-zinc-500 border-dashed"></div>
                 <span>Meta (30%)</span>
               </div>
             </div>

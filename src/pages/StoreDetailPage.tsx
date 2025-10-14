@@ -375,8 +375,8 @@ export default function StoreDetailPage() {
             </table>
           </div>
 
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-gray-700">
+          <div className="mt-4 p-4 bg-[var(--danger)]/10 border border-[var(--danger)]/20 rounded-lg">
+            <p className="text-sm text-zinc-300">
               <strong>Problema principal:</strong> {store.breakdown.primaryIssue}
             </p>
           </div>
