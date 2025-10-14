@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { getCurrentTenant } from '@/lib/db_new';
 
 export interface OperationsDashboardData {
   foodCostAvg: number;
@@ -29,13 +28,9 @@ export function useOperationsDashboard() {
   return useQuery({
     queryKey: ['operations-dashboard'],
     queryFn: async (): Promise<OperationsDashboardData> => {
-      const tenantId = await getCurrentTenant();
-
-      // 1. Get all stores with performance data
+      // 1. Get all stores with performance data using secure function
       const { data: storePerf, error: perfError } = await supabase
-        .from('store_performance_view')
-        .select('*')
-        .eq('tenant_id', tenantId);
+        .rpc('get_store_performance');
 
       if (perfError) throw perfError;
 

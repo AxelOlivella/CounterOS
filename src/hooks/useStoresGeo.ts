@@ -26,9 +26,7 @@ export function useStoresGeo() {
       }
 
       const { data, error } = await supabase
-        .from("store_performance_view")
-        .select("*")
-        .eq("tenant_id", tenant.tenant_id);
+        .rpc('get_store_performance');
 
       if (error) throw error;
 

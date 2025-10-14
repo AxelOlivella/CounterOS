@@ -1262,6 +1262,25 @@ export type Database = {
           variance_qty: number
         }[]
       }
+      get_store_performance: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          city: string
+          code: string
+          current_food_cost_pct: number
+          food_cost_variance: number
+          latitude: number
+          longitude: number
+          manager_name: string
+          manager_tenure_months: number
+          name: string
+          revenue_30d: number
+          status: string
+          store_id: string
+          target_food_cost_pct: number
+          tenant_id: string
+        }[]
+      }
       get_stores_data: {
         Args: Record<PropertyKey, never>
         Returns: {
