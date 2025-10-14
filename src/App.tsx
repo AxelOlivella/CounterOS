@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { TenantProvider } from "@/contexts/TenantContext";
+import { EnterpriseProvider } from "@/contexts/EnterpriseContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OperationsLayout } from "@/components/layout/OperationsLayout";
@@ -43,6 +44,7 @@ const SupplierManagementPage = lazy(() => import("./components/pages/SupplierMan
 const ProductMixPage = lazy(() => import("./components/pages/ProductMixPage").then(m => ({ default: m.ProductMixPage })));
 const InventoryCountPage = lazy(() => import("./components/pages/InventoryCountPage"));
 const UploadPage = lazy(() => import("./components/pages/UploadPage").then(m => ({ default: m.UploadPage })));
+const AdminPage = lazy(() => import("./pages/admin/AdminPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -78,9 +80,10 @@ const App = () => (
     <TooltipProvider>
       <ThemeApplier />
       <TenantProvider>
-        <ErrorBoundary>
-          <Toaster />
-          <Sonner />
+        <EnterpriseProvider>
+          <ErrorBoundary>
+            <Toaster />
+            <Sonner />
           <BrowserRouter future={{
             v7_startTransition: true,
             v7_relativeSplatPath: true
@@ -302,12 +305,22 @@ const App = () => (
               </ProtectedRoute>
             } />
             
+            {/* Admin Panel Route - Enterprise Setup */}
+            <Route path="/admin" element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <AdminPage />
+                </AppLayout>
+              </ProtectedRoute>
+            } />
+            
             {/* 404 Handler - OBLIGATORY custom page */}
             <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
         </BrowserRouter>
         </ErrorBoundary>
+        </EnterpriseProvider>
       </TenantProvider>
     </TooltipProvider>
   </QueryClientProvider>
