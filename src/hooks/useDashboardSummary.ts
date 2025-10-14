@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getCurrentTenant } from '@/lib/db_new';
+import { useStores, Store } from './useStores';
 
 export interface DashboardSummary {
   bestStore: {
@@ -23,21 +24,14 @@ export interface DashboardSummary {
 }
 
 export function useDashboardSummary() {
+  const { data: stores, isLoading: storesLoading } = useStores();
+  
   return useQuery({
-    queryKey: ['dashboard-summary'],
+    queryKey: ['dashboard-summary', stores?.length],
     queryFn: async (): Promise<DashboardSummary> => {
       const tenantId = await getCurrentTenant();
 
-      // 1. Get all stores for this tenant
-      const { data: stores, error: storesError } = await supabase
-        .from('stores')
-        .select('store_id, name, target_food_cost_pct')
-        .eq('tenant_id', tenantId)
-        .eq('active', true);
-
-      if (storesError) throw storesError;
-
-      // If no stores yet, return empty state
+      // Use stores from cache (already loaded by useStores)
       if (!stores || stores.length === 0) {
         return {
           bestStore: { name: 'N/A', foodCost: 0, revenue: 0, improvement: '0%' },
@@ -64,8 +58,8 @@ export function useDashboardSummary() {
       if (fcError) throw fcError;
 
       // Calculate metrics per store
-      const storeMetrics = stores?.map(store => {
-        const storeData = foodCostData?.filter(fc => fc.store_id === store.store_id) || [];
+      const storeMetrics = stores.map(store => {
+        const storeData = foodCostData?.filter(fc => fc.store_id === store.id) || [];
         
         const avgFoodCost = storeData.length > 0
           ? storeData.reduce((sum, d) => sum + (d.food_cost_pct || 0), 0) / storeData.length
@@ -88,12 +82,14 @@ export function useDashboardSummary() {
         const trend = avgPrev7 > 0 ? ((avgLast7 - avgPrev7) / avgPrev7) * 100 : 0;
 
         return {
-          ...store,
+          id: store.id,
+          name: store.name,
+          target_food_cost: store.target_food_cost,
           avgFoodCost,
           totalRevenue,
           trend
         };
-      }) || [];
+      });
 
       // Sort by food cost (best = lowest)
       const sortedByFC = [...storeMetrics].sort((a, b) => a.avgFoodCost - b.avgFoodCost);
@@ -106,7 +102,7 @@ export function useDashboardSummary() {
         ? storeMetrics.reduce((sum, s) => sum + s.avgFoodCost, 0) / storeMetrics.length
         : 0;
 
-      const target = stores?.[0]?.target_food_cost_pct || 28.5;
+      const target = stores[0]?.target_food_cost || 28.5;
 
       // Calculate alerts (stores over target)
       const alertsCount = storeMetrics.filter(s => s.avgFoodCost > target).length;
@@ -142,8 +138,9 @@ export function useDashboardSummary() {
         avgFoodCost: parseFloat(avgFoodCost.toFixed(1)),
         target,
         alertsCount,
-        totalStores: stores?.length || 0
+        totalStores: stores.length
       };
-    }
+    },
+    enabled: !storesLoading && !!stores && stores.length > 0
   });
 }
