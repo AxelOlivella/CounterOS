@@ -26,7 +26,7 @@ export function MapLegend({ counts, className }: MapLegendProps) {
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--status-ok-color)' }} />
             <span className="text-sm text-gray-600">Excelente (&lt;29%)</span>
           </div>
           <div className="flex items-center gap-2">
@@ -41,7 +41,7 @@ export function MapLegend({ counts, className }: MapLegendProps) {
 
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--status-warning-color)' }} />
             <span className="text-sm text-gray-600">Warning (29-32%)</span>
           </div>
           <div className="flex items-center gap-2">
@@ -56,7 +56,7 @@ export function MapLegend({ counts, className }: MapLegendProps) {
 
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--status-critical-color)' }} />
             <span className="text-sm text-gray-600">Crítico (&gt;32%)</span>
           </div>
           <div className="flex items-center gap-2">

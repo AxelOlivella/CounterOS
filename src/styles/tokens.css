@@ -14,10 +14,18 @@
   --surface: #0b0b0c;
   --surface-2: #101013;
   
-  /* Semantic colors - HEX format for direct CSS/JS use */
-  --accent: #22c55e;   /* success/ok - green */
-  --warn:   #f59e0b;   /* warning - amber */
-  --danger: #ef4444;   /* critical - red */
+  /* Semantic colors - brand (HEX) */
+  --accent: #22c55e;   /* success/ok - green (brand) */
+  --warn:   #f59e0b;   /* warning - amber (brand) */
+  --danger: #ef4444;   /* critical - red (brand) */
+
+  /* Status tokens (HSL numeric + resolved color) - fixed, not overridden by skins */
+  --status-ok: 142 71% 45%;           /* green */
+  --status-warning: 38 92% 50%;       /* amber */
+  --status-critical: 0 73% 41%;       /* red */
+  --status-ok-color: hsl(var(--status-ok));
+  --status-warning-color: hsl(var(--status-warning));
+  --status-critical-color: hsl(var(--status-critical));
 }
 
 body {
