@@ -23,35 +23,35 @@ interface AlertItemProps {
 const severityConfig = {
   high: {
     icon: AlertTriangle,
-    bgColor: 'bg-warn-50',
-    borderColor: 'border-warn-200',
-    iconColor: 'text-warn-500',
-    titleColor: 'text-warn-900',
-    dotColor: 'bg-warn-500',
+    bgColor: 'bg-[var(--warn)]/5',
+    borderColor: 'border-[var(--warn)]/20',
+    iconColor: 'text-[var(--warn)]',
+    titleColor: 'text-foreground',
+    dotColor: 'bg-[var(--warn)]',
   },
   medium: {
     icon: TrendingDown,
-    bgColor: 'bg-yellow-50',
-    borderColor: 'border-yellow-200',
-    iconColor: 'text-yellow-500',
-    titleColor: 'text-yellow-900',
-    dotColor: 'bg-yellow-500',
+    bgColor: 'bg-[var(--warn)]/5',
+    borderColor: 'border-[var(--warn)]/15',
+    iconColor: 'text-[var(--warn)]',
+    titleColor: 'text-foreground',
+    dotColor: 'bg-[var(--warn)]',
   },
   low: {
     icon: TrendingUp,
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200',
-    iconColor: 'text-blue-500',
-    titleColor: 'text-blue-900',
-    dotColor: 'bg-blue-500',
+    bgColor: 'bg-[var(--accent)]/5',
+    borderColor: 'border-[var(--accent)]/20',
+    iconColor: 'text-[var(--accent)]',
+    titleColor: 'text-foreground',
+    dotColor: 'bg-[var(--accent)]',
   },
   info: {
     icon: Info,
-    bgColor: 'bg-gray-50',
-    borderColor: 'border-gray-200',
-    iconColor: 'text-gray-500',
-    titleColor: 'text-gray-900',
-    dotColor: 'bg-gray-500',
+    bgColor: 'bg-muted/50',
+    borderColor: 'border-muted',
+    iconColor: 'text-muted-foreground',
+    titleColor: 'text-foreground',
+    dotColor: 'bg-muted-foreground',
   },
 };
 
@@ -122,18 +122,18 @@ export default function AlertItem({
             </h3>
             
             {onAction && (
-              <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
             )}
           </div>
 
           {/* Subtitle */}
-          <p className="text-caption text-gray-600 mb-2 leading-relaxed">
+          <p className="text-caption text-muted-foreground mb-2 leading-relaxed">
             {subtitle}
           </p>
 
           {/* Cause (if provided) */}
           {cause && (
-            <p className="text-caption text-gray-500 mb-3 italic">
+            <p className="text-caption text-muted-foreground mb-3 italic">
               Causa: {cause}
             </p>
           )}
@@ -143,7 +143,7 @@ export default function AlertItem({
             <div className="flex items-center gap-4 mb-3">
               {impactMoney !== undefined && (
                 <div className="flex items-center gap-1">
-                  <span className="text-caption text-gray-500">Impacto:</span>
+                  <span className="text-caption text-muted-foreground">Impacto:</span>
                   <span className={cn(
                     "text-caption font-semibold",
                     getImpactColor(impactMoney < 0 ? -1 : 1)
@@ -155,7 +155,7 @@ export default function AlertItem({
               
               {impactPP !== undefined && (
                 <div className="flex items-center gap-1">
-                  <span className="text-caption text-gray-500">Δ:</span>
+                  <span className="text-caption text-muted-foreground">Δ:</span>
                   <span className={cn(
                     "text-caption font-semibold",
                     getImpactColor(impactPP)
@@ -173,12 +173,7 @@ export default function AlertItem({
               className={cn(
                 "inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-caption font-medium",
                 "transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1",
-                // Severity-specific button styles
-                severity === 'high' 
-                  ? "bg-warn-500 text-white hover:bg-warn-600 focus:ring-warn-300"
-                  : severity === 'medium'
-                  ? "bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-yellow-300"
-                  : "bg-accent-500 text-white hover:bg-accent-600 focus:ring-accent-300"
+                "bg-[var(--accent)] text-primary-foreground hover:bg-[var(--accent)]/90 focus:ring-[var(--accent)]/30"
               )}
               onClick={(e) => {
                 e.stopPropagation();
@@ -221,11 +216,11 @@ export function AlertsEmptyState({ className }: { className?: string }) {
         <TrendingUp className="h-8 w-8 text-accent-500" />
       </div>
       
-      <h3 className="text-xl-custom font-semibold text-navy-600 mb-2">
+      <h3 className="text-xl-custom font-semibold text-foreground mb-2">
         ¡Todo está bajo control!
       </h3>
       
-      <p className="text-body text-gray-600 max-w-sm mx-auto">
+      <p className="text-body text-muted-foreground max-w-sm mx-auto">
         No hay alertas activas. Tus métricas están dentro de los rangos esperados.
       </p>
     </div>

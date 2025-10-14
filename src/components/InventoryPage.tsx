@@ -84,11 +84,11 @@ export const InventoryPage = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'good':
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Normal</Badge>;
+        return <Badge className="bg-[var(--accent)]/10 text-[var(--accent)] border-[var(--accent)]/20">Normal</Badge>;
       case 'low':
-        return <Badge className="bg-amber-100 text-amber-800 border-amber-200">Bajo</Badge>;
+        return <Badge className="bg-[var(--warn)]/10 text-[var(--warn)] border-[var(--warn)]/20">Bajo</Badge>;
       case 'critical':
-        return <Badge className="bg-red-100 text-red-800 border-red-200">Crítico</Badge>;
+        return <Badge className="bg-[var(--danger)]/10 text-[var(--danger)] border-[var(--danger)]/20">Crítico</Badge>;
       default:
         return <Badge variant="secondary">Desconocido</Badge>;
     }
@@ -97,11 +97,11 @@ export const InventoryPage = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'good':
-        return <CheckCircle2 className="w-4 h-4 text-green-600" />;
+        return <CheckCircle2 className="w-4 h-4 text-[var(--accent)]" />;
       case 'low':
-        return <AlertTriangle className="w-4 h-4 text-amber-600" />;
+        return <AlertTriangle className="w-4 h-4 text-[var(--warn)]" />;
       case 'critical':
-        return <AlertTriangle className="w-4 h-4 text-red-600" />;
+        return <AlertTriangle className="w-4 h-4 text-[var(--danger)]" />;
       default:
         return null;
     }
@@ -155,18 +155,18 @@ export const InventoryPage = () => {
         
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <AlertTriangle className="w-8 h-8 text-amber-600" />
+            <AlertTriangle className="w-8 h-8 text-[var(--warn)]" />
             <div>
               <p className="text-sm text-muted-foreground">Stock Bajo</p>
-              <p className="text-2xl font-bold text-amber-600">{lowStockItems}</p>
+              <p className="text-2xl font-bold text-[var(--warn)]">{lowStockItems}</p>
             </div>
           </div>
         </Card>
         
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-              <span className="text-green-600 font-bold text-lg">$</span>
+            <div className="w-8 h-8 bg-[var(--accent)]/10 rounded-lg flex items-center justify-center">
+              <span className="text-[var(--accent)] font-bold text-lg">$</span>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Valor Total</p>
@@ -177,7 +177,7 @@ export const InventoryPage = () => {
         
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <CheckCircle2 className="w-8 h-8 text-green-600" />
+            <CheckCircle2 className="w-8 h-8 text-[var(--accent)]" />
             <div>
               <p className="text-sm text-muted-foreground">Último Conteo</p>
               <p className="text-lg font-semibold">20 Ene</p>
@@ -276,7 +276,7 @@ export const InventoryPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="p-4">
           <h3 className="font-semibold mb-3 flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-amber-600" />
+            <AlertTriangle className="w-5 h-5 text-[var(--warn)]" />
             Items con Stock Bajo
           </h3>
           <div className="space-y-2">

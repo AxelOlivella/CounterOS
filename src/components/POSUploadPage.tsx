@@ -74,21 +74,21 @@ export const POSUploadPage = () => {
     switch (status) {
       case 'completed':
         return (
-          <Badge className="bg-green-100 text-green-800 border-green-200">
+          <Badge className="bg-[var(--accent)]/10 text-[var(--accent)] border-[var(--accent)]/20">
             <CheckCircle2 className="w-3 h-3 mr-1" />
             Completado
           </Badge>
         );
       case 'processing':
         return (
-          <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+          <Badge className="bg-primary/10 text-primary border-primary/20">
             <RefreshCw className="w-3 h-3 mr-1 animate-spin" />
             Procesando
           </Badge>
         );
       case 'error':
         return (
-          <Badge className="bg-red-100 text-red-800 border-red-200">
+          <Badge className="bg-[var(--danger)]/10 text-[var(--danger)] border-[var(--danger)]/20">
             <AlertCircle className="w-3 h-3 mr-1" />
             Error
           </Badge>
@@ -133,7 +133,7 @@ export const POSUploadPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <CheckCircle2 className="w-8 h-8 text-green-600" />
+            <CheckCircle2 className="w-8 h-8 text-[var(--accent)]" />
             <div>
               <p className="text-sm text-muted-foreground">Archivos Procesados</p>
               <p className="text-2xl font-bold">{completedFiles.length}</p>
@@ -153,17 +153,17 @@ export const POSUploadPage = () => {
         
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <AlertCircle className="w-8 h-8 text-red-600" />
+            <AlertCircle className="w-8 h-8 text-[var(--danger)]" />
             <div>
               <p className="text-sm text-muted-foreground">Con Errores</p>
-              <p className="text-2xl font-bold text-red-600">{errorFiles}</p>
+              <p className="text-2xl font-bold text-[var(--danger)]">{errorFiles}</p>
             </div>
           </div>
         </Card>
         
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <Clock className="w-8 h-8 text-amber-600" />
+            <Clock className="w-8 h-8 text-[var(--warn)]" />
             <div>
               <p className="text-sm text-muted-foreground">Último Proceso</p>
               <p className="text-lg font-semibold">Hoy 14:30</p>
@@ -233,16 +233,16 @@ export const POSUploadPage = () => {
         </div>
         
         {/* Format Information */}
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <h5 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
+        <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
+          <h5 className="font-medium text-foreground mb-2 flex items-center gap-2">
             <FileText className="w-4 h-4" />
             Formato requerido del CSV:
           </h5>
-          <div className="bg-white p-3 rounded border font-mono text-sm overflow-x-auto">
-            <div className="text-blue-600">store_id, datetime, ticket_id, sku_code, sku_name, qty, unit_price, payment_method</div>
+          <div className="bg-card p-3 rounded border font-mono text-sm overflow-x-auto">
+            <div className="text-primary">store_id, datetime, ticket_id, sku_code, sku_name, qty, unit_price, payment_method</div>
             <div className="text-muted-foreground mt-1">CTR01, 2024-01-15 14:30:00, T001, YOG001, Yogurt Natural, 2, 45.00, Efectivo</div>
           </div>
-          <div className="mt-2 text-sm text-blue-700">
+          <div className="mt-2 text-sm text-foreground">
             <strong>Notas importantes:</strong>
             <ul className="list-disc list-inside mt-1 space-y-1">
               <li>Fecha en formato: YYYY-MM-DD HH:MM:SS</li>
@@ -300,9 +300,9 @@ export const POSUploadPage = () => {
                   </td>
                   <td className="py-4 px-2 text-right">
                     {file.errors > 0 ? (
-                      <span className="text-red-600 font-semibold">{file.errors}</span>
+                      <span className="text-[var(--danger)] font-semibold">{file.errors}</span>
                     ) : (
-                      <span className="text-green-600">0</span>
+                      <span className="text-[var(--accent)]">0</span>
                     )}
                   </td>
                   <td className="py-4 px-2 text-center text-sm text-muted-foreground">

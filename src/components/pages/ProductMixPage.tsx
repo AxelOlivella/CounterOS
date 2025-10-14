@@ -144,7 +144,7 @@ export const ProductMixPage = () => {
             <AlertCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${aggregateFoodCostPct > 30 ? 'text-red-600' : 'text-green-600'}`}>
+            <div className={`text-2xl font-bold ${aggregateFoodCostPct > 30 ? 'text-[var(--danger)]' : 'text-[var(--accent)]'}`}>
               {aggregateFoodCostPct.toFixed(1)}%
             </div>
           </CardContent>
@@ -172,10 +172,10 @@ export const ProductMixPage = () => {
       </div>
 
       {/* Insight Card */}
-      <Card className="border-yellow-200 bg-yellow-50">
+      <Card className="border-[var(--warn)]/20 bg-[var(--warn)]/5">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-yellow-600" />
+            <AlertCircle className="h-5 w-5 text-[var(--warn)]" />
             Regla de Oro
           </CardTitle>
         </CardHeader>
@@ -221,7 +221,7 @@ export const ProductMixPage = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-sm text-muted-foreground">Margen $</p>
-                      <p className="text-lg font-bold text-green-600">
+                      <p className="text-lg font-bold text-[var(--accent)]">
                         ${item.contribution_margin_dollars.toLocaleString()}
                       </p>
                     </div>
@@ -234,7 +234,7 @@ export const ProductMixPage = () => {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Food Cost %</p>
-                      <p className={`font-medium ${item.food_cost_pct > 30 ? 'text-red-600' : ''}`}>
+                      <p className={`font-medium ${item.food_cost_pct > 30 ? 'text-[var(--danger)]' : ''}`}>
                         {item.food_cost_pct.toFixed(1)}%
                       </p>
                     </div>

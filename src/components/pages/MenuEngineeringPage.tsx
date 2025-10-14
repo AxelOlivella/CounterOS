@@ -15,10 +15,10 @@ interface Store {
 
 const getCategoryIcon = (category: string) => {
   switch (category) {
-    case 'star': return <Star className="h-4 w-4 text-yellow-500" />;
-    case 'plow_horse': return <TrendingDown className="h-4 w-4 text-blue-500" />;
-    case 'puzzle': return <AlertTriangle className="h-4 w-4 text-orange-500" />;
-    case 'dog': return <XCircle className="h-4 w-4 text-red-500" />;
+    case 'star': return <Star className="h-4 w-4 text-[var(--accent)]" />;
+    case 'plow_horse': return <TrendingDown className="h-4 w-4 text-primary" />;
+    case 'puzzle': return <AlertTriangle className="h-4 w-4 text-[var(--warn)]" />;
+    case 'dog': return <XCircle className="h-4 w-4 text-[var(--danger)]" />;
     default: return null;
   }
 };
@@ -35,11 +35,11 @@ const getCategoryLabel = (category: string) => {
 
 const getCategoryColor = (category: string) => {
   switch (category) {
-    case 'star': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    case 'plow_horse': return 'bg-blue-100 text-blue-800 border-blue-200';
-    case 'puzzle': return 'bg-orange-100 text-orange-800 border-orange-200';
-    case 'dog': return 'bg-red-100 text-red-800 border-red-200';
-    default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    case 'star': return 'bg-[var(--accent)]/10 text-[var(--accent)] border-[var(--accent)]/20';
+    case 'plow_horse': return 'bg-primary/10 text-primary border-primary/20';
+    case 'puzzle': return 'bg-[var(--warn)]/10 text-[var(--warn)] border-[var(--warn)]/20';
+    case 'dog': return 'bg-[var(--danger)]/10 text-[var(--danger)] border-[var(--danger)]/20';
+    default: return 'bg-muted text-muted-foreground border-border';
   }
 };
 
@@ -210,7 +210,7 @@ export const MenuEngineeringPage = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Stars ⭐</CardTitle>
-            <Star className="h-4 w-4 text-yellow-500" />
+            <Star className="h-4 w-4 text-[var(--accent)]" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{categoryCounts.star}</div>
@@ -223,7 +223,7 @@ export const MenuEngineeringPage = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Plow Horses 🐴</CardTitle>
-            <TrendingDown className="h-4 w-4 text-blue-500" />
+            <TrendingDown className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{categoryCounts.plow_horse}</div>
@@ -236,7 +236,7 @@ export const MenuEngineeringPage = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Puzzles 🧩</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-orange-500" />
+            <AlertTriangle className="h-4 w-4 text-[var(--warn)]" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{categoryCounts.puzzle}</div>
@@ -249,10 +249,10 @@ export const MenuEngineeringPage = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Dogs 🐕</CardTitle>
-            <XCircle className="h-4 w-4 text-red-500" />
+            <XCircle className="h-4 w-4 text-[var(--danger)]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{categoryCounts.dog}</div>
+            <div className="text-2xl font-bold text-[var(--danger)]">{categoryCounts.dog}</div>
             <p className="text-xs text-muted-foreground">
               Baja popularidad + Bajo margen
             </p>
