@@ -14,6 +14,45 @@ interface OnboardingData {
   ventas: VentaParsed[];
 }
 
+// Helper: Find best store match using fuzzy matching
+function findBestStoreMatch(
+  searchName: string,
+  stores: Array<{ store_id: string; name: string }>
+): string {
+  if (stores.length === 0) throw new Error('No stores available');
+  if (stores.length === 1) return stores[0].store_id;
+  
+  // Normalizar búsqueda
+  const normalized = searchName
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+  
+  // Buscar match exacto
+  const exactMatch = stores.find(s => 
+    s.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') === normalized
+  );
+  
+  if (exactMatch) return exactMatch.store_id;
+  
+  // Buscar match parcial (contiene)
+  const partialMatch = stores.find(s =>
+    s.name.toLowerCase().includes(normalized) ||
+    normalized.includes(s.name.toLowerCase())
+  );
+  
+  if (partialMatch) return partialMatch.store_id;
+  
+  // Fallback: primera tienda
+  logger.warn('No store match found, using first store', {
+    searchName,
+    availableStores: stores.map(s => s.name)
+  });
+  
+  return stores[0].store_id;
+}
+
 export async function saveOnboardingData(data: OnboardingData) {
   const tenantId = await getCurrentTenant();
   
@@ -74,8 +113,11 @@ export async function saveOnboardingData(data: OnboardingData) {
     const comprasToInsert = [];
     
     for (const factura of data.facturas) {
-      // Encontrar store por nombre (o usar primera si solo hay 1)
-      const storeId = storesInserted[0].store_id; // TODO: mapear por nombre si múltiples
+      // Encontrar mejor match de tienda usando fuzzy matching
+      const storeId = findBestStoreMatch(
+        factura.proveedor.nombre,
+        storesInserted
+      );
       
       for (const concepto of factura.conceptos) {
         comprasToInsert.push({
@@ -109,14 +151,12 @@ export async function saveOnboardingData(data: OnboardingData) {
     
     // ═══ PASO 3: GUARDAR VENTAS (de CSV) ═══
     const ventasToInsert = data.ventas.map(venta => {
-      // Encontrar store por nombre
-      const store = storesInserted.find(s => 
-        s.name.toLowerCase() === venta.tienda.toLowerCase()
-      ) || storesInserted[0]; // fallback a primera tienda
+      // Encontrar mejor match de tienda usando fuzzy matching
+      const storeId = findBestStoreMatch(venta.tienda, storesInserted);
       
       return {
         tenant_id: tenantId,
-        store_id: store.store_id,
+        store_id: storeId,
         fecha: venta.fecha.toISOString().split('T')[0],
         monto_total: venta.montoTotal,
         num_transacciones: venta.numTransacciones || null
