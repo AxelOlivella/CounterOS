@@ -13,6 +13,7 @@ export interface Store {
   active: boolean;
   created_at: string;
   tenant_id: string;
+  brand_id: string;
 }
 
 async function fetchStores(): Promise<Store[]> {
@@ -24,7 +25,7 @@ async function fetchStores(): Promise<Store[]> {
 
   const { data: stores, error: fetchError } = await supabase
     .from('stores')
-    .select('store_id, name, slug, location, concept, target_food_cost_pct, active, created_at, tenant_id')
+    .select('store_id, name, slug, location, concept, target_food_cost_pct, active, created_at, tenant_id, brand_id')
     .eq('tenant_id', tenantId)
     .eq('active', true)
     .order('name', { ascending: true });
@@ -43,7 +44,8 @@ async function fetchStores(): Promise<Store[]> {
     target_food_cost: s.target_food_cost_pct || 28.5,
     active: s.active,
     created_at: s.created_at,
-    tenant_id: s.tenant_id
+    tenant_id: s.tenant_id,
+    brand_id: s.brand_id
   }));
 
   logger.info(`Stores fetched from cache/server: ${mappedStores.length} stores`);

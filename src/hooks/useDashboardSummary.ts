@@ -23,11 +23,23 @@ export interface DashboardSummary {
   totalStores: number;
 }
 
-export function useDashboardSummary() {
-  const { data: stores, isLoading: storesLoading } = useStores();
+export interface DashboardFilters {
+  brandId?: string;
+  storeId?: string;
+}
+
+export function useDashboardSummary(filters?: DashboardFilters) {
+  const { data: allStores, isLoading: storesLoading } = useStores();
+  
+  // Filter stores based on context
+  const stores = allStores?.filter(store => {
+    if (filters?.storeId) return store.id === filters.storeId;
+    if (filters?.brandId) return store.brand_id === filters.brandId;
+    return true;
+  });
   
   return useQuery({
-    queryKey: ['dashboard-summary', stores?.length],
+    queryKey: ['dashboard-summary', stores?.length, filters?.brandId, filters?.storeId],
     queryFn: async (): Promise<DashboardSummary> => {
       const tenantId = await getCurrentTenant();
 

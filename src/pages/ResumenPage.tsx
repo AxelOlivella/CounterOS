@@ -1,7 +1,7 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { StoreSelector } from '@/components/ui/store-selector';
-import { useStoreSelection } from '@/hooks/useStoreSelection';
+import ContextSelector from '@/components/dashboard/ContextSelector';
 import { useSEO } from '@/hooks/useSEO';
 import { useDashboardSummary } from '@/hooks/useDashboardSummary';
 import { LoadingState } from '@/components/ui/states/LoadingState';
@@ -25,10 +25,28 @@ import { useNavigate } from 'react-router-dom';
 
 const ResumenPage = () => {
   const navigate = useNavigate();
-  const { selectedStore, isConsolidatedView } = useStoreSelection();
+  const [context, setContext] = useState<{
+    level: 'corporate' | 'brand' | 'store';
+    brandId?: string;
+    storeId?: string;
+  }>({ level: 'corporate' });
   
-  // Fetch real data from Supabase
-  const { data: summaryData, isLoading, error } = useDashboardSummary();
+  // Fetch real data from Supabase with enterprise filters
+  const { data: summaryData, isLoading, error } = useDashboardSummary({
+    brandId: context.brandId,
+    storeId: context.storeId
+  });
+
+  // Descriptive text based on context
+  const getContextDescription = () => {
+    if (context.level === 'store' && context.storeId) {
+      return 'Vista detallada de tienda seleccionada';
+    }
+    if (context.level === 'brand' && context.brandId) {
+      return 'Vista consolidada de marca seleccionada';
+    }
+    return 'Vista consolidada de todas tus tiendas y oportunidades de mejora';
+  };
 
   // SEO Configuration
   useSEO({
@@ -104,19 +122,18 @@ const ResumenPage = () => {
     <div className="container mx-auto max-w-6xl">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="flex flex-col gap-4 mb-6">
           <div>
             <h1 className="text-3xl font-bold text-foreground mb-2">
               Resumen Ejecutivo
             </h1>
             <p className="text-muted-foreground">
-              {isConsolidatedView 
-                ? 'Vista consolidada de todas tus tiendas y oportunidades de mejora'
-                : `Análisis detallado de ${selectedStore?.name || 'tienda seleccionada'}`
-              }
+              {getContextDescription()}
             </p>
           </div>
-          <StoreSelector />
+          
+          {/* Enterprise Context Selector */}
+          <ContextSelector onChange={setContext} />
         </div>
       </div>
 

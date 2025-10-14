@@ -17,7 +17,12 @@ export interface FoodCostSummary {
   };
 }
 
-async function fetchFoodCostSummary(days: number): Promise<FoodCostSummary> {
+export interface FoodCostFilters {
+  brandId?: string;
+  storeId?: string;
+}
+
+async function fetchFoodCostSummary(days: number, filters?: FoodCostFilters): Promise<FoodCostSummary> {
   const tenantId = await getCurrentTenant();
   
   if (!tenantId) {
@@ -32,19 +37,26 @@ async function fetchFoodCostSummary(days: number): Promise<FoodCostSummary> {
   const startStr = startDate.toISOString().split('T')[0];
   const endStr = endDate.toISOString().split('T')[0];
 
-  // Fetch food_cost_daily para el período
-  const { data: fcData, error: fcError } = await supabase
+  // Fetch food_cost_daily para el período con filtros opcionales
+  let query = supabase
     .from('food_cost_daily')
     .select(`
       food_cost_pct,
       total_compras,
       total_ventas,
       store_id,
-      stores!inner(target_food_cost_pct)
+      stores!inner(target_food_cost_pct, brand_id)
     `)
     .eq('tenant_id', tenantId)
     .gte('fecha', startStr)
     .lte('fecha', endStr);
+
+  // Aplicar filtros si existen
+  if (filters?.storeId) {
+    query = query.eq('store_id', filters.storeId);
+  }
+
+  const { data: fcData, error: fcError } = await query;
 
   if (fcError) {
     throw fcError;
@@ -74,6 +86,11 @@ async function fetchFoodCostSummary(days: number): Promise<FoodCostSummary> {
 
   fcData.forEach((row: any) => {
     const storeId = row.store_id;
+    
+    // Filtrar por brand si se especifica
+    if (filters?.brandId && row.stores?.brand_id !== filters.brandId) {
+      return;
+    }
     
     if (!storeStats.has(storeId)) {
       storeStats.set(storeId, {
@@ -149,10 +166,10 @@ async function fetchFoodCostSummary(days: number): Promise<FoodCostSummary> {
   return summary;
 }
 
-export function useFoodCostSummary(days: number = 30) {
+export function useFoodCostSummary(days: number = 30, filters?: FoodCostFilters) {
   return useQuery({
-    queryKey: ['foodCostSummary', days],
-    queryFn: () => fetchFoodCostSummary(days),
+    queryKey: ['foodCostSummary', days, filters?.brandId, filters?.storeId],
+    queryFn: () => fetchFoodCostSummary(days, filters),
     staleTime: 2 * 60 * 1000, // 2 minutos para food cost (más dinámico)
   });
 }
