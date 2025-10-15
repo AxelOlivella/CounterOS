@@ -19,6 +19,7 @@ import NotFound from "./pages/NotFound";
 
 // Code-splitting for heavy pages
 const LandingPage = lazy(() => import("./pages/LandingPage").then(m => ({ default: m.LandingPage })));
+const LandingLite = lazy(() => import("./pages/LandingLite"));
 const SetupPage = lazy(() => import("./pages/SetupPage").then(m => ({ default: m.SetupPage })));
 const OnboardingPage = lazy(() => import("./pages/OnboardingPage"));
 const WelcomePage = lazy(() => import("./pages/onboarding/WelcomePage"));
@@ -94,6 +95,7 @@ const App = () => (
             <Route path="/" element={<LandingEnterprise />} />
             <Route path="/enterprise" element={<LandingEnterprise />} />
             <Route path="/original" element={<LandingPage />} />
+            <Route path="/lite" element={<LandingLite />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/setup" element={<SetupPage />} />
             
